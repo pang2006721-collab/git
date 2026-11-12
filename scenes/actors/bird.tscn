@@ -1,0 +1,50 @@
+[gd_scene load_steps=13 format=3]
+[ext_resource type="Script" path="res://modules/input/flap_input.gd" id="1"]
+[ext_resource type="Script" path="res://modules/movement/flap_motor.gd" id="2"]
+[ext_resource type="Script" path="res://modules/ai/flight_patrol.gd" id="3"]
+[ext_resource type="Script" path="res://modules/visual/flight_visual.gd" id="4"]
+[ext_resource type="Script" path="res://modules/possession/possessable_host.gd" id="5"]
+[ext_resource type="Texture2D" path="res://assets/art/sky/bird_v002.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/art/sky/bird_selected_v001.png" id="7"]
+[ext_resource type="Texture2D" path="res://assets/art/sky/bird_flap_v001.png" id="8"]
+[sub_resource type="AtlasTexture" id="FlapArt"]
+atlas=ExtResource("8")
+region=Rect2(524,2592,86,70)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="BirdArt"]
+atlas=ExtResource("6")
+region=Rect2(526,2593,83,65)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="SelectedArt"]
+atlas=ExtResource("7")
+region=Rect2(517,2565,96,98)
+filter_clip=true
+[sub_resource type="CircleShape2D" id="Shape"]
+radius=26.0
+[node name="Bird" type="CharacterBody2D"]
+collision_layer=2
+collision_mask=16
+motion_mode=1
+[node name="Collision" type="CollisionShape2D" parent="."]
+shape=SubResource("Shape")
+[node name="Input" type="Node" parent="."]
+script=ExtResource("1")
+jump_action=&"flap"
+[node name="Movement" type="Node" parent="."]
+script=ExtResource("2")
+[node name="Visual" type="Node2D" parent="."]
+script=ExtResource("4")
+flap_texture=SubResource("FlapArt")
+[node name="Sprite" type="Sprite2D" parent="Visual"]
+texture=SubResource("BirdArt")
+scale=Vector2(1.4,1.4)
+[node name="SelectedSprite" type="Sprite2D" parent="Visual"]
+visible=false
+texture=SubResource("SelectedArt")
+position=Vector2(-3.5,-16.1)
+scale=Vector2(1.4,1.4)
+[node name="Patrol" type="Node" parent="."]
+script=ExtResource("3")
+[node name="Host" type="Node" parent="." groups=["sky_hosts"]]
+script=ExtResource("5")
+focus_offset=Vector2(0,0)

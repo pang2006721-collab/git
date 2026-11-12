@@ -1,0 +1,20 @@
+# Windows and macOS metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor and local tool caches
+.vs/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+
+# Godot generated import cache and local exports
+.godot/
+builds/
+*.tmp.import

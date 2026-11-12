@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/art/hell/terrain/hell_platform_v001.png" id="1_art"]
+
+[sub_resource type="AtlasTexture" id="PlatformRegion"]
+atlas = ExtResource("1_art")
+region = Rect2(1125, 2793, 373, 104)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="PlatformShape"]
+size = Vector2(335, 20)
+
+[node name="RockPlatform" type="StaticBody2D"]
+collision_layer = 8
+collision_mask = 2
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, 52)
+texture = SubResource("PlatformRegion")
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+position = Vector2(0, 15)
+shape = SubResource("PlatformShape")
+one_way_collision = true
+one_way_collision_margin = 12.0

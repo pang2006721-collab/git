@@ -1,0 +1,100 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scenes/levels/heaven_prototype.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/art/heaven/heaven_background_v001.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/art/heaven/heaven_decor_v001.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/art/heaven/heaven_transition_v001.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/art/heaven/cloud_ripple_v001.png" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/actors/god.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/actors/soul.tscn" id="7"]
+[ext_resource type="Script" path="res://modules/camera/follow_camera.gd" id="8"]
+[ext_resource type="Shader" path="res://shaders/heaven_gate.gdshader" id="9"]
+[ext_resource type="Script" path="res://modules/visual/canopy_ripple_spring.gd" id="10"]
+[sub_resource type="AtlasTexture" id="BackgroundArt"]
+atlas=ExtResource("2")
+region=Rect2(0,0,1080,2440)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="BridgeArt"]
+atlas=ExtResource("4")
+region=Rect2(0,2440,1080,800)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="CloudGateArt"]
+atlas=ExtResource("4")
+region=Rect2(0,2200,1080,480)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="RippleArt"]
+atlas=ExtResource("5")
+region=Rect2(465,510,149,32)
+filter_clip=true
+[sub_resource type="ShaderMaterial" id="BridgeMaterial"]
+shader=ExtResource("9")
+[sub_resource type="ShaderMaterial" id="GateMaterial"]
+shader=ExtResource("9")
+shader_parameter/gate=true
+[sub_resource type="RectangleShape2D" id="CloudFloorShape"]
+size=Vector2(1440,60)
+[sub_resource type="RectangleShape2D" id="WallShape"]
+size=Vector2(80,1100)
+[node name="Heaven" type="Node2D"]
+script=ExtResource("1")
+[node name="Background" type="Sprite2D" parent="."]
+texture=SubResource("BackgroundArt")
+centered=false
+scale=Vector2(1.7777778,1.7777778)
+z_index=14
+[node name="SkyBridge" type="Sprite2D" parent="."]
+position=Vector2(0,4337.7778)
+texture=SubResource("BridgeArt")
+material=SubResource("BridgeMaterial")
+centered=false
+scale=Vector2(1.7777778,1.7777778)
+z_index=14
+[node name="CloudGate" type="Sprite2D" parent="."]
+position=Vector2(0,3911.1111)
+texture=SubResource("CloudGateArt")
+material=SubResource("GateMaterial")
+centered=false
+scale=Vector2(1.7777778,1.7777778)
+z_index=16
+[node name="Decorations" type="Sprite2D" parent="."]
+texture=ExtResource("3")
+centered=false
+scale=Vector2(1.7777778,1.7777778)
+z_index=20
+[node name="God" parent="." instance=ExtResource("6")]
+position=Vector2(960,743.1111)
+[node name="Ghost" parent="." instance=ExtResource("7")]
+position=Vector2(960,938)
+scale=Vector2(1.4,1.4)
+visible=false
+z_index=19
+[node name="CloudRipple" type="Sprite2D" parent="."]
+position=Vector2(960,935)
+scale=Vector2(1.1,1.1)
+z_index=21
+visible=false
+texture=SubResource("RippleArt")
+script=ExtResource("10")
+[node name="GhostSpawn" type="Marker2D" parent="."]
+position=Vector2(960,938)
+[node name="CloudSurface" type="StaticBody2D" parent="."]
+collision_layer=17
+collision_mask=4
+[node name="Collision" type="CollisionShape2D" parent="CloudSurface"]
+position=Vector2(960,970)
+shape=SubResource("CloudFloorShape")
+[node name="LeftWall" type="StaticBody2D" parent="."]
+collision_layer=16
+collision_mask=4
+[node name="Collision" type="CollisionShape2D" parent="LeftWall"]
+position=Vector2(210,600)
+shape=SubResource("WallShape")
+[node name="RightWall" type="StaticBody2D" parent="."]
+collision_layer=16
+collision_mask=4
+[node name="Collision" type="CollisionShape2D" parent="RightWall"]
+position=Vector2(1710,600)
+shape=SubResource("WallShape")
+[node name="FollowCamera" type="Camera2D" parent="."]
+script=ExtResource("8")
+target_path=NodePath("../Ghost")
+world_bounds=Rect2(0,0,1920,5760)

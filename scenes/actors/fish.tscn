@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://dobetu2o1xudk"]
+
+[ext_resource type="Script" uid="uid://d3fnra1oqnlpk" path="res://modules/input/swim_input.gd" id="1_input"]
+[ext_resource type="Script" uid="uid://leas85jucdol" path="res://modules/movement/swim_motor.gd" id="2_motor"]
+[ext_resource type="Script" uid="uid://r7nmhilryqd0" path="res://modules/visual/swim_visual.gd" id="3_visual"]
+[ext_resource type="Texture2D" uid="uid://bhn3qeotr3i2s" path="res://assets/art/characters/fish/fish_v001.png" id="4_art"]
+[ext_resource type="Script" path="res://modules/possession/possessable_host.gd" id="5_host"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/fish/fish_selected_v001.png" id="6_selected"]
+[ext_resource type="Script" path="res://modules/ai/swim_patrol.gd" id="7_patrol"]
+
+[sub_resource type="CapsuleShape2D" id="FishShape"]
+radius = 24.0
+height = 48.0
+
+[sub_resource type="AtlasTexture" id="FishRegion"]
+atlas = ExtResource("4_art")
+region = Rect2(1232, 2791, 117, 93)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="SelectedRegion"]
+atlas = ExtResource("6_selected")
+region = Rect2(1225, 2758, 130, 133)
+filter_clip = true
+
+[node name="Fish" type="CharacterBody2D" unique_id=957102691]
+collision_layer = 2
+collision_mask = 16
+motion_mode = 1
+
+[node name="Collision" type="CollisionShape2D" parent="." unique_id=1807210061]
+position = Vector2(8, 7)
+rotation = 1.5707964
+shape = SubResource("FishShape")
+
+[node name="Input" type="Node" parent="." unique_id=1889364843]
+script = ExtResource("1_input")
+
+[node name="Movement" type="Node" parent="." unique_id=1757063861]
+script = ExtResource("2_motor")
+
+[node name="Visual" type="Node2D" parent="." unique_id=1482483391]
+script = ExtResource("3_visual")
+
+[node name="Sprite" type="Sprite2D" parent="Visual" unique_id=1100535626]
+texture = SubResource("FishRegion")
+
+[node name="SelectedSprite" type="Sprite2D" parent="Visual"]
+visible = false
+position = Vector2(-0.5, -13)
+texture = SubResource("SelectedRegion")
+
+[node name="Patrol" type="Node" parent="."]
+script = ExtResource("7_patrol")
+
+[node name="Host" type="Node" parent="."]
+script = ExtResource("5_host")
+focus_offset = Vector2(0, 0)

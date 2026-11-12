@@ -1,0 +1,146 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scenes/ui/main_menu.gd" id="menu"]
+[ext_resource type="Script" path="res://modules/visual/elastic_pulse.gd" id="pulse"]
+[ext_resource type="Script" path="res://modules/visual/mouse_gaze.gd" id="gaze"]
+[ext_resource type="Script" path="res://modules/input/flap_input.gd" id="input"]
+[ext_resource type="Script" path="res://modules/input/menu_bird_drag.gd" id="drag"]
+[ext_resource type="Script" path="res://modules/movement/flap_motor.gd" id="motor"]
+[ext_resource type="Script" path="res://modules/ai/flight_patrol.gd" id="ai"]
+[ext_resource type="Script" path="res://modules/visual/flight_visual.gd" id="flight"]
+[ext_resource type="Shader" path="res://shaders/menu_god_background.gdshader" id="bg_shader"]
+[ext_resource type="Shader" path="res://shaders/menu_cloud_front.gdshader" id="cloud_shader"]
+[ext_resource type="Shader" path="res://shaders/menu_god_face.gdshader" id="face_shader"]
+[ext_resource type="Texture2D" path="res://assets/art/menu/background.png" id="background"]
+[ext_resource type="Texture2D" path="res://assets/art/menu/logo.png" id="logo"]
+[ext_resource type="Texture2D" path="res://assets/art/menu/buttons.png" id="buttons"]
+[ext_resource type="Texture2D" path="res://assets/art/menu/bird.png" id="bird"]
+[ext_resource type="Texture2D" path="res://assets/art/menu/eyes.png" id="eyes"]
+[ext_resource type="Texture2D" path="res://assets/art/menu/brows.png" id="brows"]
+[ext_resource type="Texture2D" path="res://assets/art/menu/god.png" id="god"]
+[sub_resource type="AtlasTexture" id="LogoArt"]
+atlas=ExtResource("logo")
+region=Rect2(72, 40, 872, 633)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="StartArt"]
+atlas=ExtResource("buttons")
+region=Rect2(1078, 378, 537, 350)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="SettingsArt"]
+atlas=ExtResource("buttons")
+region=Rect2(1350, 732, 512, 250)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="BirdArt"]
+atlas=ExtResource("bird")
+region=Rect2(1741, 280, 121, 98)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="GodArt"]
+atlas=ExtResource("god")
+region=Rect2(944, 87, 187, 177)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="EyesArt"]
+atlas=ExtResource("eyes")
+region=Rect2(1003, 155, 75, 36)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="BrowsArt"]
+atlas=ExtResource("brows")
+region=Rect2(1000, 140, 88, 26)
+filter_clip=true
+[sub_resource type="ShaderMaterial" id="FaceMaterial"]
+shader=ExtResource("face_shader")
+shader_parameter/eyes_art=ExtResource("eyes")
+shader_parameter/brows_art=ExtResource("brows")
+[sub_resource type="ShaderMaterial" id="BackgroundMaterial"]
+shader=ExtResource("bg_shader")
+shader_parameter/god_art=ExtResource("god")
+[sub_resource type="ShaderMaterial" id="CloudMaterial"]
+shader=ExtResource("cloud_shader")
+shader_parameter/god_art=ExtResource("god")
+[node name="MainMenu" type="Node2D"]
+script=ExtResource("menu")
+[node name="Paper" type="Polygon2D" parent="."]
+polygon=PackedVector2Array(0,0,1920,0,1920,1080,0,1080)
+color=Color(1,1,1,1)
+[node name="Background" type="Sprite2D" parent="."]
+texture=ExtResource("background")
+centered=false
+material=SubResource("BackgroundMaterial")
+[node name="God" type="Node2D" parent="."]
+position=Vector2(1034.74,189.09)
+rotation=0.122173
+script=ExtResource("gaze")
+[node name="Body" type="Sprite2D" parent="God"]
+material=SubResource("FaceMaterial")
+position=Vector2(0,-22.5)
+texture=SubResource("GodArt")
+[node name="Eyes" type="Sprite2D" parent="God"]
+position=Vector2(3,-25)
+texture=SubResource("EyesArt")
+[node name="Brows" type="Sprite2D" parent="God"]
+position=Vector2(6.5,-45)
+texture=SubResource("BrowsArt")
+[node name="Pulse" type="Node" parent="God"]
+script=ExtResource("pulse")
+interval=4.6
+first_delay=2.0
+strength=0.075
+[node name="CloudFront" type="Sprite2D" parent="."]
+texture=ExtResource("background")
+centered=false
+material=SubResource("CloudMaterial")
+[node name="Logo" type="Sprite2D" parent="."]
+position=Vector2(577,436)
+rotation=-0.034907
+scale=Vector2(1.25,1.25)
+texture=SubResource("LogoArt")
+[node name="Pulse" type="Node" parent="Logo"]
+script=ExtResource("pulse")
+interval=4.0
+first_delay=0.8
+strength=0.075
+[node name="Bird" type="CharacterBody2D" parent="."]
+position=Vector2(1773.5,395)
+collision_layer=0
+collision_mask=0
+motion_mode=1
+[node name="Input" type="Node" parent="Bird"]
+script=ExtResource("input")
+external_control=true
+[node name="Movement" type="Node" parent="Bird"]
+script=ExtResource("motor")
+gravity=720.0
+flap_speed=290.0
+move_speed=350.0
+[node name="Patrol" type="Node" parent="Bird"]
+script=ExtResource("ai")
+patrol_radius=Vector2(85,60)
+patrol_frequency=Vector2(0.8,0.7)
+[node name="MouseDrag" type="Node" parent="Bird"]
+script=ExtResource("drag")
+[node name="Visual" type="Node2D" parent="Bird"]
+script=ExtResource("flight")
+[node name="Sprite" type="Sprite2D" parent="Bird/Visual"]
+texture=SubResource("BirdArt")
+[node name="Start" type="TextureButton" parent="."]
+offset_left=1050.0
+offset_top=444.0
+offset_right=1587.0
+offset_bottom=794.0
+pivot_offset=Vector2(268.5, 237)
+focus_mode=0
+mouse_default_cursor_shape=2
+texture_normal=SubResource("StartArt")
+[node name="Pulse" type="Node" parent="Start"]
+script=ExtResource("pulse")
+strength=0.12
+[node name="Settings" type="TextureButton" parent="."]
+offset_left=1322.0
+offset_top=798.0
+offset_right=1834.0
+offset_bottom=1048.0
+pivot_offset=Vector2(256, 125)
+focus_mode=0
+mouse_default_cursor_shape=2
+texture_normal=SubResource("SettingsArt")
+[node name="Pulse" type="Node" parent="Settings"]
+script=ExtResource("pulse")
+strength=0.12

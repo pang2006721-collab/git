@@ -1,0 +1,40 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://modules/visual/god_gaze_spring.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/art/heaven/god_body_v001.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/art/heaven/god_eyes_v001.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/art/heaven/god_brows_v001.png" id="4"]
+[ext_resource type="Shader" path="res://shaders/god_face_parts.gdshader" id="5"]
+[sub_resource type="AtlasTexture" id="BodyArt"]
+atlas=ExtResource("2")
+region=Rect2(361,145,354,273)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="EyesArt"]
+atlas=ExtResource("3")
+region=Rect2(485,250,110,35)
+filter_clip=true
+[sub_resource type="AtlasTexture" id="BrowsArt"]
+atlas=ExtResource("4")
+region=Rect2(472,233,136,18)
+filter_clip=true
+[sub_resource type="ShaderMaterial" id="FaceMaterial"]
+shader=ExtResource("5")
+shader_parameter/eyes_art=ExtResource("3")
+shader_parameter/brows_art=ExtResource("4")
+[node name="God" type="Node2D"]
+scale=Vector2(1.7777778,1.7777778)
+z_index=18
+[node name="Visual" type="Node2D" parent="."]
+script=ExtResource("1")
+[node name="Body" type="Sprite2D" parent="Visual"]
+position=Vector2(-179,-273)
+texture=SubResource("BodyArt")
+material=SubResource("FaceMaterial")
+centered=false
+[node name="Eyes" type="Sprite2D" parent="Visual"]
+position=Vector2(-55,-168)
+texture=SubResource("EyesArt")
+centered=false
+[node name="Brows" type="Sprite2D" parent="Visual"]
+position=Vector2(-68,-185)
+texture=SubResource("BrowsArt")
+centered=false

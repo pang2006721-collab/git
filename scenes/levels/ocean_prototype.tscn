@@ -1,0 +1,145 @@
+[gd_scene format=3 uid="uid://c83tu6aipbc43"]
+
+[ext_resource type="Script" uid="uid://ddtxvg2tym0q2" path="res://scenes/levels/ocean_prototype.gd" id="1_level"]
+[ext_resource type="PackedScene" uid="uid://dobetu2o1xudk" path="res://scenes/actors/fish.tscn" id="2_fish"]
+[ext_resource type="Script" uid="uid://c83nncjly8hwq" path="res://modules/camera/follow_camera.gd" id="3_camera"]
+[ext_resource type="Script" uid="uid://dl5dhf74ttg3w" path="res://modules/environment/parallax_layer.gd" id="4_parallax"]
+[ext_resource type="Texture2D" uid="uid://b5lhasa7cyj50" path="res://assets/art/ocean/background/ocean_background_v001.png" id="5_background"]
+[ext_resource type="Texture2D" uid="uid://3k06xfooh5ac" path="res://assets/art/ocean/foreground/ocean_foreground_v001.png" id="6_foreground"]
+[ext_resource type="Texture2D" uid="uid://c2vv02kmmi36d" path="res://assets/art/ocean/terrain/ocean_floor_v001.png" id="7_floor"]
+[ext_resource type="Shader" uid="uid://bipr2nimjhn3t" path="res://shaders/foreground_soften.gdshader" id="8_soften"]
+[ext_resource type="PackedScene" path="res://scenes/actors/underwater_demon.tscn" id="9_demon"]
+[ext_resource type="PackedScene" path="res://scenes/actors/soul.tscn" id="10_soul"]
+[ext_resource type="Script" uid="uid://ulfy3x8n8fuj" path="res://modules/possession/possession_controller.gd" id="11_possession"]
+[ext_resource type="Script" uid="uid://jg8lqwgywtbb" path="res://modules/camera/possession_camera.gd" id="12_shot"]
+[ext_resource type="Script" uid="uid://b82kx23i2raf" path="res://modules/environment/volcano_launch.gd" id="13_launch"]
+[ext_resource type="PackedScene" uid="uid://dmnf6y30xe7am" path="res://scenes/levels/ocean_shore.tscn" id="14_shore"]
+[ext_resource type="Script" uid="uid://dm6dvreybqrgf" path="res://modules/movement/fish_shore_exit.gd" id="15_shore_motor"]
+[ext_resource type="Texture2D" uid="uid://2jh6hkdqsq36" path="res://assets/art/characters/fish/fish_stranded_v001.png" id="16_stranded"]
+[ext_resource type="Texture2D" uid="uid://b2u15f3jgvnby" path="res://assets/art/characters/fish/fish_dead_v001.png" id="17_dead"]
+[ext_resource type="PackedScene" uid="uid://bgngqd1mnb2mu" path="res://scenes/levels/jungle_prototype.tscn" id="18_jungle"]
+
+[sub_resource type="RectangleShape2D" id="LeftWall"]
+size = Vector2(400, 3440)
+
+[sub_resource type="RectangleShape2D" id="RightWall"]
+size = Vector2(385, 3440)
+
+[sub_resource type="RectangleShape2D" id="Surface"]
+size = Vector2(1920, 100)
+
+[sub_resource type="AtlasTexture" id="StrandedRegion"]
+atlas = ExtResource("16_stranded")
+region = Rect2(1087, 1968, 130, 85)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="DeadRegion"]
+atlas = ExtResource("17_dead")
+region = Rect2(1087, 1968, 130, 85)
+filter_clip = true
+
+[sub_resource type="ShaderMaterial" id="ForegroundSoftness"]
+shader = ExtResource("8_soften")
+shader_parameter/blur_pixels = 0.85
+
+[node name="OceanPrototype" type="Node2D" unique_id=799097188]
+script = ExtResource("1_level")
+
+[node name="Background" type="Node2D" parent="." unique_id=898231378]
+z_index = -20
+script = ExtResource("4_parallax")
+camera_path = NodePath("../FollowCamera")
+motion_factor = Vector2(0, 0.12)
+
+[node name="Art" type="Sprite2D" parent="Background" unique_id=600937406]
+texture = ExtResource("5_background")
+centered = false
+
+[node name="Seabed" type="StaticBody2D" parent="." unique_id=910762399]
+collision_layer = 16
+collision_mask = 2
+
+[node name="Art" type="Sprite2D" parent="Seabed" unique_id=1133760958]
+texture = ExtResource("7_floor")
+centered = false
+
+[node name="Collision" type="CollisionPolygon2D" parent="Seabed" unique_id=180913434]
+position = Vector2(-3, 31)
+polygon = PackedVector2Array(0, 3096, 120, 3092, 240, 3097, 348, 3083, 468, 3076, 604, 3073, 800, 3074, 842, 3048, 919, 2970, 1102, 2972, 1197, 3075, 1323, 3075, 1447, 3070, 1577, 3073, 1680, 3094, 1800, 3098, 1920, 3085, 1920, 3340, 0, 3340)
+
+[node name="Boundaries" type="StaticBody2D" parent="." unique_id=63686323]
+collision_layer = 16
+collision_mask = 2
+
+[node name="Left" type="CollisionShape2D" parent="Boundaries" unique_id=199870688]
+position = Vector2(152, 1618)
+shape = SubResource("LeftWall")
+
+[node name="Right" type="CollisionShape2D" parent="Boundaries" unique_id=1800917726]
+position = Vector2(1804, 1642)
+shape = SubResource("RightWall")
+
+[node name="Surface" type="CollisionShape2D" parent="Boundaries" unique_id=1730129791]
+position = Vector2(960, -50)
+shape = SubResource("Surface")
+disabled = true
+
+[node name="Fish" parent="." unique_id=2057569057 instance=ExtResource("2_fish")]
+position = Vector2(1288, 2823)
+
+[node name="UnderwaterDemon" parent="." unique_id=1029284517 instance=ExtResource("9_demon")]
+position = Vector2(1000, 3130)
+
+[node name="Soul" parent="." unique_id=1024314232 instance=ExtResource("10_soul")]
+visible = false
+position = Vector2(700, 3015)
+
+[node name="FollowCamera" type="Camera2D" parent="." unique_id=2076874060]
+position = Vector2(960, 2693)
+script = ExtResource("3_camera")
+target_path = NodePath("../UnderwaterDemon")
+world_bounds = Rect2(0, -2520, 1920, 5760)
+framing_offset = Vector2(0, -135)
+dead_zone = Vector2(100, 80)
+follow_speed = 4.5
+horizontal_look_ahead = 55.0
+upward_look_ahead = 90.0
+max_impulse_pixels = 0.0
+
+[node name="Possession" type="Node" parent="." unique_id=365021499]
+script = ExtResource("11_possession")
+soul_path = NodePath("../Soul")
+camera_path = NodePath("../FollowCamera")
+source_body_path = NodePath("../UnderwaterDemon")
+source_focus_offset = Vector2(0, -67)
+soul_initially_hidden = true
+center_soul_artwork = true
+
+[node name="PossessionCamera" type="Node" parent="." unique_id=1357721568]
+script = ExtResource("12_shot")
+
+[node name="VolcanoLaunch" type="Node" parent="." unique_id=388459785]
+script = ExtResource("13_launch")
+
+[node name="Shore" parent="." unique_id=733540706 instance=ExtResource("14_shore")]
+position = Vector2(6, -128)
+
+[node name="ShoreExit" type="Node" parent="." unique_id=649709118]
+script = ExtResource("15_shore_motor")
+stranded_texture = SubResource("StrandedRegion")
+dead_texture = SubResource("DeadRegion")
+
+[node name="Foreground" type="Node2D" parent="." unique_id=1446843460]
+z_index = 10
+script = ExtResource("4_parallax")
+camera_path = NodePath("../FollowCamera")
+motion_factor = Vector2(0, -0.025)
+
+[node name="Art" type="Sprite2D" parent="Foreground" unique_id=1364320913]
+material = SubResource("ForegroundSoftness")
+position = Vector2(960, 1620)
+scale = Vector2(1, 1.08)
+texture = ExtResource("6_foreground")
+
+[node name="Jungle" parent="." unique_id=1226406324 instance=ExtResource("18_jungle")]
+position = Vector2(21, 21)

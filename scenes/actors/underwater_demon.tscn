@@ -1,0 +1,59 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://modules/input/platformer_input.gd" id="1_input"]
+[ext_resource type="Script" path="res://modules/movement/platformer_motor.gd" id="2_motor"]
+[ext_resource type="Script" path="res://modules/visual/squash_stretch.gd" id="3_visual"]
+[ext_resource type="Script" path="res://modules/status/drowning_source.gd" id="4_status"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/hell_demon_drowning_v001.png" id="5_alive"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/hell_demon_dead_v001.png" id="6_dead"]
+
+[sub_resource type="AtlasTexture" id="AliveRegion"]
+atlas = ExtResource("5_alive")
+region = Rect2(1656, 2770, 144, 134)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="DeadRegion"]
+atlas = ExtResource("6_dead")
+region = Rect2(1656, 2770, 144, 134)
+filter_clip = true
+
+[sub_resource type="CapsuleShape2D" id="DemonShape"]
+radius = 35.0
+height = 108.0
+
+[node name="UnderwaterDemon" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 16
+floor_snap_length = 10.0
+floor_max_angle = 1.0471976
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -54)
+shape = SubResource("DemonShape")
+
+[node name="Input" type="Node" parent="."]
+script = ExtResource("1_input")
+
+[node name="Movement" type="Node" parent="."]
+script = ExtResource("2_motor")
+move_speed = 110.0
+acceleration = 360.0
+braking = 600.0
+air_control = 0.65
+jump_speed = 160.0
+gravity = 180.0
+max_fall_speed = 120.0
+fast_fall_multiplier = 1.2
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("3_visual")
+run_bounce = 0.02
+max_lean_degrees = 3.0
+
+[node name="Sprite" type="Sprite2D" parent="Visual"]
+position = Vector2(0, -67)
+texture = SubResource("AliveRegion")
+
+[node name="Drowning" type="Node" parent="."]
+script = ExtResource("4_status")
+dead_texture = SubResource("DeadRegion")

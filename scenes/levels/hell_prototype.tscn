@@ -1,0 +1,155 @@
+[gd_scene format=3 uid="uid://byngeqfacftvf"]
+
+[ext_resource type="Script" uid="uid://cf1nskb73dii5" path="res://scenes/levels/hell_prototype.gd" id="1_level"]
+[ext_resource type="PackedScene" path="res://scenes/actors/demon.tscn" id="2_demon"]
+[ext_resource type="PackedScene" path="res://scenes/props/rock_platform.tscn" id="3_platform"]
+[ext_resource type="Script" uid="uid://c83nncjly8hwq" path="res://modules/camera/follow_camera.gd" id="4_camera"]
+[ext_resource type="Script" uid="uid://dl5dhf74ttg3w" path="res://modules/environment/parallax_layer.gd" id="5_parallax"]
+[ext_resource type="Texture2D" uid="uid://b6n5wwjd8tnvp" path="res://assets/art/hell/background/hell_background_v001.png" id="7_background"]
+[ext_resource type="Texture2D" uid="uid://dwk3aetfutwxx" path="res://assets/art/hell/foreground/hell_foreground_walls_v001.png" id="8_walls"]
+[ext_resource type="Texture2D" uid="uid://gqty4aiirycr" path="res://assets/art/hell/terrain/hell_ground_v001.png" id="9_ground"]
+[ext_resource type="Texture2D" uid="uid://cfs4i3yea565q" path="res://assets/art/hell/transitions/hell_volcano_exit_v001.png" id="10_exit"]
+[ext_resource type="Shader" uid="uid://bipr2nimjhn3t" path="res://shaders/foreground_soften.gdshader" id="11_blur"]
+[ext_resource type="PackedScene" path="res://scenes/actors/soul.tscn" id="12_soul"]
+[ext_resource type="Script" uid="uid://ulfy3x8n8fuj" path="res://modules/possession/possession_controller.gd" id="13_possession"]
+[ext_resource type="Script" uid="uid://xehq021k42iv" path="res://modules/environment/vortex_exit.gd" id="14_vortex"]
+[ext_resource type="Script" uid="uid://jg8lqwgywtbb" path="res://modules/camera/possession_camera.gd" id="15_shot"]
+
+[sub_resource type="RectangleShape2D" id="GroundShape"]
+size = Vector2(1980, 146)
+
+[sub_resource type="RectangleShape2D" id="LeftWallShape"]
+size = Vector2(420, 3640)
+
+[sub_resource type="RectangleShape2D" id="RightWallShape"]
+size = Vector2(360, 3640)
+
+[sub_resource type="RectangleShape2D" id="CeilingShape"]
+size = Vector2(1980, 100)
+
+[sub_resource type="RectangleShape2D" id="ExitShape"]
+size = Vector2(540, 50)
+
+[sub_resource type="ShaderMaterial" id="ForegroundBlur"]
+shader = ExtResource("11_blur")
+shader_parameter/blur_pixels = 0.85
+
+[node name="HellPrototype" type="Node2D" unique_id=1932031599]
+script = ExtResource("1_level")
+
+[node name="Background" type="Node2D" parent="." unique_id=744154851]
+z_index = -20
+script = ExtResource("5_parallax")
+camera_path = NodePath("../FollowCamera")
+motion_factor = Vector2(0, 0.16)
+
+[node name="Art" type="Sprite2D" parent="Background" unique_id=1717820272]
+texture = ExtResource("7_background")
+centered = false
+
+[node name="Ground" type="StaticBody2D" parent="." unique_id=339250731]
+collision_mask = 6
+
+[node name="Art" type="Sprite2D" parent="Ground" unique_id=2071943084]
+texture = ExtResource("9_ground")
+centered = false
+
+[node name="Collision" type="CollisionShape2D" parent="Ground" unique_id=158057036]
+position = Vector2(995, 3186)
+shape = SubResource("GroundShape")
+
+[node name="Boundaries" type="StaticBody2D" parent="." unique_id=3230583]
+collision_layer = 16
+collision_mask = 6
+
+[node name="Left" type="CollisionShape2D" parent="Boundaries" unique_id=1892531790]
+position = Vector2(152, 1584)
+shape = SubResource("LeftWallShape")
+
+[node name="Right" type="CollisionShape2D" parent="Boundaries" unique_id=1836929045]
+position = Vector2(1815, 1605)
+shape = SubResource("RightWallShape")
+
+[node name="Ceiling" type="CollisionShape2D" parent="Boundaries" unique_id=744475633]
+position = Vector2(990, -100)
+shape = SubResource("CeilingShape")
+
+[node name="Platforms" type="Node2D" parent="." unique_id=399122751]
+
+[node name="P01" parent="Platforms" unique_id=893908441 instance=ExtResource("3_platform")]
+position = Vector2(1100, 2810)
+
+[node name="P02" parent="Platforms" unique_id=1920732417 instance=ExtResource("3_platform")]
+position = Vector2(1330, 2540)
+
+[node name="P03" parent="Platforms" unique_id=1249620306 instance=ExtResource("3_platform")]
+position = Vector2(980, 2270)
+
+[node name="P04" parent="Platforms" unique_id=1437795081 instance=ExtResource("3_platform")]
+position = Vector2(670, 2000)
+
+[node name="P05" parent="Platforms" unique_id=1928896496 instance=ExtResource("3_platform")]
+position = Vector2(990, 1730)
+
+[node name="P06" parent="Platforms" unique_id=397890141 instance=ExtResource("3_platform")]
+position = Vector2(1330, 1460)
+
+[node name="P07" parent="Platforms" unique_id=2125943389 instance=ExtResource("3_platform")]
+position = Vector2(1000, 1190)
+
+[node name="P08" parent="Platforms" unique_id=1997195448 instance=ExtResource("3_platform")]
+position = Vector2(670, 920)
+
+[node name="P09" parent="Platforms" unique_id=1559414707 instance=ExtResource("3_platform")]
+position = Vector2(960, 650)
+
+[node name="P10" parent="Platforms" unique_id=344670839 instance=ExtResource("3_platform")]
+position = Vector2(990, 380)
+
+[node name="VolcanoExitArt" type="Sprite2D" parent="." unique_id=1088356330]
+z_index = 5
+texture = ExtResource("10_exit")
+centered = false
+
+[node name="Exit" type="Area2D" parent="." unique_id=247290325]
+position = Vector2(966, 135)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("14_vortex")
+
+[node name="Collision" type="CollisionShape2D" parent="Exit" unique_id=1549786629]
+shape = SubResource("ExitShape")
+
+[node name="Mouth" type="Marker2D" parent="Exit" unique_id=1469056643]
+position = Vector2(0, -140)
+
+[node name="Demon" parent="." unique_id=502013406 instance=ExtResource("2_demon")]
+position = Vector2(1100, 2812)
+
+[node name="Soul" parent="." unique_id=2014691224 instance=ExtResource("12_soul")]
+position = Vector2(780, 3110)
+
+[node name="FollowCamera" type="Camera2D" parent="." unique_id=1149069509]
+position = Vector2(990, 2700)
+script = ExtResource("4_camera")
+target_path = NodePath("../Soul")
+
+[node name="Possession" type="Node" parent="." unique_id=1866534998]
+script = ExtResource("13_possession")
+soul_path = NodePath("../Soul")
+camera_path = NodePath("../FollowCamera")
+
+[node name="PossessionCamera" type="Node" parent="." unique_id=326605142]
+script = ExtResource("15_shot")
+
+[node name="Foreground" type="Node2D" parent="." unique_id=567246802]
+z_index = 10
+script = ExtResource("5_parallax")
+camera_path = NodePath("../FollowCamera")
+motion_factor = Vector2(0, -0.025)
+
+[node name="Art" type="Sprite2D" parent="Foreground" unique_id=1117614447]
+material = SubResource("ForegroundBlur")
+position = Vector2(990, 1620)
+scale = Vector2(1, 1.08)
+texture = ExtResource("8_walls")

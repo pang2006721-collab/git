@@ -1,0 +1,57 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://modules/input/platformer_input.gd" id="1_input"]
+[ext_resource type="Script" path="res://modules/movement/platformer_motor.gd" id="2_motor"]
+[ext_resource type="Script" path="res://modules/visual/squash_stretch.gd" id="3_visual"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/hell_demon_v001.png" id="4_art"]
+[ext_resource type="Script" path="res://modules/ai/platform_patrol.gd" id="5_ai"]
+[ext_resource type="Script" path="res://modules/possession/possessable_host.gd" id="6_host"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/hell_demon_selected_v001.png" id="7_selected"]
+
+[sub_resource type="CapsuleShape2D" id="BodyShape"]
+radius = 37.0
+height = 112.0
+
+[sub_resource type="AtlasTexture" id="DemonRegion"]
+atlas = ExtResource("4_art")
+region = Rect2(916, 1550, 149, 141)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="SelectedRegion"]
+atlas = ExtResource("7_selected")
+region = Rect2(907, 1517, 167, 184)
+filter_clip = true
+
+[node name="Demon" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 25
+floor_snap_length = 12.0
+floor_stop_on_slope = true
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -56)
+shape = SubResource("BodyShape")
+
+[node name="Input" type="Node" parent="."]
+script = ExtResource("1_input")
+
+[node name="Movement" type="Node" parent="."]
+script = ExtResource("2_motor")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("3_visual")
+
+[node name="Sprite" type="Sprite2D" parent="Visual"]
+position = Vector2(0, -70.5)
+texture = SubResource("DemonRegion")
+
+[node name="SelectedSprite" type="Sprite2D" parent="Visual"]
+visible = false
+position = Vector2(0, -82)
+texture = SubResource("SelectedRegion")
+
+[node name="Patrol" type="Node" parent="."]
+script = ExtResource("5_ai")
+
+[node name="Host" type="Node" parent="."]
+script = ExtResource("6_host")

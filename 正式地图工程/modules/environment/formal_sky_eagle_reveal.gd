@@ -19,6 +19,7 @@ var _band: int=-1
 @onready var bird: CharacterBody2D=get_node("../Bird")
 @onready var camera: FollowCamera=get_node_or_null("../../../../Camera")
 @onready var eagle: Node2D=$Eagle
+@onready var flight: Node=$Flight
 func _ready() -> void:
     process_priority=5
     eagle.look_target=bird
@@ -45,8 +46,9 @@ func _process(delta: float) -> void:
         if elapsed>=reveal_seconds:
             state=State.ACTIVE
             reveal_finished.emit()
-    # The centered distant silhouette climbs with the shot, behind the original clouds.
-    eagle.global_position=Vector2(layout.to_global(Vector2(960,0)).x,camera.global_position.y-140)
+    # Fly a broad figure eight behind the original cloud banks.
+    var anchor:=Vector2(layout.to_global(Vector2(960,0)).x,camera.global_position.y-140)
+    eagle.global_position=flight.advance(delta,anchor)
     _update_map_band()
 func _begin() -> void:
     _rest_zoom=camera.zoom
@@ -59,6 +61,7 @@ func _begin() -> void:
     eagle.show()
     eagle.scale=Vector2.ONE*eagle_final_scale*.55
     eagle.global_position=Vector2(layout.to_global(Vector2(960,0)).x,camera.global_position.y-140)
+    flight.reset(eagle.global_position)
     _update_map_band()
     revealed.emit()
 func _update_map_band() -> void:
@@ -78,6 +81,7 @@ func reset() -> void:
     elapsed=0
     _armed=false
     _band=-1
+    flight.reset(Vector2.ZERO)
     eagle.hide()
     eagle.reset()
     eagle.material.set_shader_parameter("reveal_alpha",0.0)

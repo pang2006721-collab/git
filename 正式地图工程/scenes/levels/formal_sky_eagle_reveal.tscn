@@ -2,6 +2,7 @@
 [ext_resource type="Script" path="res://modules/environment/formal_sky_eagle_reveal.gd" id="logic"]
 [ext_resource type="Script" path="res://modules/visual/eagle_flap_visual.gd" id="flap"]
 [ext_resource type="Shader" path="res://shaders/formal_sky_eagle.gdshader" id="mask"]
+[ext_resource type="Script" path="res://modules/environment/eagle_background_flight.gd" id="flight"]
 [sub_resource type="ShaderMaterial" id="EagleMask"]
 resource_local_to_scene=true
 shader=ExtResource("mask")
@@ -12,3 +13,6 @@ visible=false
 z_index=3
 material=SubResource("EagleMask")
 script=ExtResource("flap")
+
+[node name="Flight" type="Node" parent="."]
+script=ExtResource("flight")

@@ -54,6 +54,18 @@ func run():
     check(game.camera.global_position.x-half>=-.1 and game.camera.global_position.x+half<=1920.1,"The eagle view stops at both authored map edges")
     check(sprite.scale==rest_scale and sky.eagle.z_index<bird.z_index,"Bird keeps its world scale and naturally shrinks with the camera pullback")
     check(game.player==bird and bird.get_node("Input").enabled and bird.get_node("Movement").enabled and Engine.time_scale==1,"The eagle entrance keeps bird controls and normal game speed")
+    var min_pos: Vector2=sky.eagle.global_position
+    var max_pos: Vector2=min_pos
+    for i in 800:
+        sky._process(.01)
+        min_pos=min_pos.min(sky.eagle.global_position)
+        max_pos=max_pos.max(sky.eagle.global_position)
+    check(max_pos.x-min_pos.x>450 and max_pos.y-min_pos.y>140,"Eagle flies across and vertically even with a stationary camera")
+    check(sky.eagle.look_target==bird,"Roaming eagle keeps watching the player")
+    var before: Vector2=sky.eagle.global_position
+    game.camera.global_position.y-=600
+    sky._process(.016)
+    check(sky.eagle.global_position.distance_to(before)<45,"Camera movement guides the flight without snapping the eagle")
     sky.reset()
     check(not sky.eagle.visible and game.camera.zoom.is_equal_approx(Vector2.ONE*1.35) and sprite.scale==rest_scale,"Reset restores camera, character size and hidden eagle")
     print("EAGLE_SKY_REVEAL_FAILURES=",failures.size())

@@ -3,7 +3,6 @@ extends Node
 @export var horizontal_multiplier: float = 1.65
 @export var flap_multiplier: float = 1.25
 @export var flap_interval_multiplier: float = .85
-@export var squash_scale := Vector2(1.12,.78)
 @export_range(0.0,.6) var blur_amount: float = .20
 @export var blur_pixels: float = 4.0
 var amount: float = 0.0
@@ -14,7 +13,6 @@ var _last_texture: Texture2D
 @onready var motor: Node = get_node("../Movement")
 @onready var reader: PlatformerInput = get_node("../Input")
 @onready var host: Node = get_node("../Host")
-@onready var visual: Node2D = get_node("../Visual")
 @onready var sprite: Sprite2D = get_node("../Visual/Sprite")
 func _ready() -> void:
     process_physics_priority=-15
@@ -31,7 +29,6 @@ func _ready() -> void:
     _material.shader=preload("res://shaders/bird_boost_blur.gdshader")
     _material.set_shader_parameter("blur_pixels",blur_pixels)
     sprite.material=_material
-    visual.boost_stretch=squash_scale
 func _can_boost() -> bool:
     return host.claimed and reader.enabled and not reader.external_control and motor.enabled and body.visible
 func _physics_process(delta: float) -> void:
@@ -44,7 +41,6 @@ func _physics_process(delta: float) -> void:
     motor.acceleration=_base.acceleration*lerpf(1.0,horizontal_multiplier,amount)
     motor.flap_speed=_base.flap_speed*lerpf(1.0,flap_multiplier,amount)
     motor.held_flap_interval=_base.held_flap_interval*lerpf(1.0,flap_interval_multiplier,amount)
-    visual.set_boost_amount(amount)
 func _process(_delta: float) -> void:
     var direction:=body.velocity.normalized().rotated(-sprite.global_rotation)
     if sprite.flip_h: direction.x=-direction.x
@@ -62,5 +58,4 @@ func reset() -> void:
     amount=0.0
     if not _base.is_empty():
         for property in _base: motor.set(property,_base[property])
-    if is_instance_valid(visual): visual.set_boost_amount(0.0)
     if _material!=null: _material.set_shader_parameter("blur_strength",0.0)

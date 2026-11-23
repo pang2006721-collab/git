@@ -45,13 +45,16 @@ func run():
     var boosted_up: float=tick(bird,40)
     check(bird.velocity.x>normal_speed*1.5,"Holding Shift increases actual sideways speed")
     check(boosted_up<normal_up*1.15,"Holding W and Shift strengthens actual upward flaps")
-    check(visual.scale.y<.95 and visual.boost_amount>.99,"Boost visibly flattens the bird")
+    visual._wing=0.0
+    visual._pulse=0.0
+    visual._process(0.0)
+    check(visual.scale==Vector2.ONE,"Boost preserves the normal bird proportions")
     check(boost._material.get_shader_parameter("blur_strength")>.1,"Fast flight enables a restrained motion blur")
     check(shape.radius==radius and bird.get_node("Visual/Sprite").scale==sprite_scale,"Boost preserves collision size and source sprite scale")
     shift_key(false)
     tick(bird,20)
     check(boost.amount==0.0 and motor.move_speed==430.0 and motor.flap_speed==540.0,"Releasing Shift restores normal flight values")
-    check(visual.boost_amount==0.0 and boost._material.get_shader_parameter("blur_strength")==0.0,"Releasing Shift removes flattening and blur")
+    check(boost._material.get_shader_parameter("blur_strength")==0.0,"Releasing Shift removes the motion blur")
     shift_key(true)
     tick(bird,20)
     check(motor.move_speed<=430.0*1.651,"Repeated boosts do not compound their speed")

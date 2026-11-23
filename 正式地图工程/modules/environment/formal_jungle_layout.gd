@@ -39,6 +39,7 @@ func _update_nearby() -> void:
         if vine.rider!=null and vine.rider.is_in_group("idle_vine_squirrels"):
             vine.rider.set_active(near)
 func reset() -> void:
+    $SkyCloudExit.reset()
     $SkyEagle.reset()
     $CanopyTransition.reset()
     $CanopyBirdStage.reset()

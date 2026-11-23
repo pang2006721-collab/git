@@ -29,6 +29,8 @@
 
 [ext_resource type="PackedScene" path="res://scenes/levels/formal_sky_eagle_reveal.tscn" id="sky_eagle"]
 
+[ext_resource type="Script" path="res://modules/environment/formal_sky_cloud_exit.gd" id="sky_cloud_exit"]
+
 [sub_resource type="RectangleShape2D" id="JungleFloorShape"]
 size = Vector2(18304,256)
 
@@ -306,3 +308,6 @@ camera_path=NodePath("../../../../Camera")
 script=ExtResource("canopy_bird_stage")
 
 [node name="SkyEagle" parent="." instance=ExtResource("sky_eagle")]
+
+[node name="SkyCloudExit" type="Node2D" parent="."]
+script = ExtResource("sky_cloud_exit")

@@ -20,6 +20,8 @@ func run():
     var bird=layout.get_node("Bird")
     var sky=layout.get_node("SkyEagle")
     sky.set_process(false)
+    check(sky.circling_seconds==2.0 and sky.hidden_seconds==5.0,"Circling starts the call after two seconds; quiet interval lasts five")
+    sky.circling_seconds=20.0 # Isolate orbit coverage from the short production call interval.
     sky.wide_zoom=.5 # Even a requested wider zoom must stop at the authored edges.
     check(not sky.eagle.visible and sky.state==sky.State.WAITING,"The eagle does not appear before possessing the bird")
     var sprite=bird.get_node("Visual/Sprite")
@@ -83,6 +85,7 @@ func run():
     check(sky.state==sky.State.DEPARTING and not sky.eagle.screaming,"After the call the eagle resumes flapping and departs")
     sky._process(sky.departure_seconds+.01)
     check(sky.state==sky.State.HIDDEN and not sky.eagle.visible,"Eagle disappears only after flying above the viewport")
+    sky.get_node("Hail").reset() # Hail timing is covered by sky_hail_rows.gd.
     sky._process(sky.hidden_seconds-.1)
     check(sky.state==sky.State.HIDDEN,"Eagle stays absent for the configured interval")
     sky._process(.11)

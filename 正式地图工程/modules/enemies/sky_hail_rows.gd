@@ -1,10 +1,11 @@
 extends Node2D
-## 鸣叫离场后的成排冰雹。每排八格、六颗，保留相邻两个空位。
+## 鸣叫离场后的成排冰雹。每排七格、六颗，只留一个空位。
 signal row_spawned(row_index: int, gap_start: int)
 const ART = preload("res://assets/art/sky/formal/hailstone.png")
-const LANE_COUNT = 8
-const GAP_WIDTH = 2
+const LANE_COUNT = 7
+const GAP_WIDTH = 1
 @export var rows_per_wave: int = 3
+@export_range(1,5) var max_rows_per_wave: int = 5
 @export var row_interval: float = 1.1
 @export var first_row_delay: float = .3
 @export var fall_speed: float = 420.0
@@ -20,6 +21,7 @@ var _emitting: bool = false
 var _timer: float = 0.0
 var _remaining: int = 0
 var _row: int = 0
+var _wave_count: int = 0
 var _gap: int = 3
 var _previous_target := Vector2.INF
 @onready var encounter: Node = get_parent()
@@ -41,14 +43,15 @@ func _can_play() -> bool:
     return stage.active and stage.level.player==bird and bird.get_node("Host").claimed and bird.visible and not stage.level.dead and not stage.level.exit_in_progress
 func _on_departed() -> void:
     if not _can_play(): return
-    reset()
+    reset(false)
     _emitting=true
-    _remaining=maxi(rows_per_wave,1)
+    _remaining=mini(maxi(rows_per_wave,1)+_wave_count,max_rows_per_wave)
+    _wave_count+=1
     _timer=first_row_delay
     var left: float=encounter.layout.to_global(Vector2(horizontal_bounds.x,0)).x
     var width: float=(horizontal_bounds.y-horizontal_bounds.x)*absf(encounter.layout.global_scale.x)
     var lane:=int(floor((bird.global_position.x-left)/(width/LANE_COUNT)))
-    _gap=clampi(lane-1,1,LANE_COUNT-GAP_WIDTH-1)
+    _gap=clampi(lane,1,LANE_COUNT-GAP_WIDTH-1)
 func _stop_emitting() -> void:
     _emitting=false
     _remaining=0
@@ -109,7 +112,15 @@ func _view_rect() -> Rect2:
     var camera: Camera2D=encounter.camera
     var size:=camera.get_viewport_rect().size/camera.zoom
     return Rect2(camera.global_position+camera.offset-size*.5,size)
-func reset() -> void:
+func is_wave_active() -> bool:
+    if _emitting: return true
+    var bottom: float=_view_rect().end.y
+    for stone in stones:
+        # Count rows above the screen too, but not cached debris already below it.
+        if stone.art.global_position.y-float(stone.radius)*1.9<=bottom: return true
+    return false
+func reset(reset_difficulty: bool=true) -> void:
+    if reset_difficulty: _wave_count=0
     _stop_emitting()
     _timer=0.0
     _row=0

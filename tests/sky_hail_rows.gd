@@ -58,19 +58,19 @@ func run():
         has_positive=has_positive or stone.spin>0
         has_negative=has_negative or stone.spin<0
     var missing: Array[int]=[]
-    for lane in 8:
+    for lane in 7:
         if lane not in occupied: missing.append(lane)
-    check(missing.size()==2 and missing[1]==missing[0]+1,"Two adjacent empty slots form the dodge gap")
+    check(missing.size()==1,"Exactly one empty slot forms the dodge gap")
     check(has_positive and has_negative,"Individual hailstones rotate in different directions")
     var first=hail.stones[0].art
     var old_position: Vector2=first.global_position
     var old_angle: float=first.rotation
-    var step: float=(hail.horizontal_bounds.y-hail.horizontal_bounds.x)/8.0
+    var step: float=(hail.horizontal_bounds.y-hail.horizontal_bounds.x)/7.0
     var left: float=layout.to_global(Vector2(hail.horizontal_bounds.x,0)).x
-    bird.global_position=Vector2(left+(missing[0]+1)*step,height+200)
+    bird.global_position=Vector2(left+(missing[0]+.5)*step,height+200)
     hail._previous_target=bird.global_position
     for i in 16: hail._physics_process(.05)
-    check(not game.dead,"Bird passes through the two-slot gap safely")
+    check(not game.dead,"Bird passes through the single-slot gap safely")
     check(first.global_position.y>old_position.y and absf(first.rotation-old_angle)>.1,"Falling hail also self-rotates")
     bird.global_position.y=game.camera.global_position.y+2000
     hail._physics_process(.4)
@@ -79,12 +79,28 @@ func run():
     check(step/motor.move_speed+motor.move_speed/(2* motor.acceleration)<hail.row_interval,"Actual bird controller can move one lane between rows")
     for i in 13: hail._physics_process(.1)
     check(rows.size()==hail.rows_per_wave and not hail._emitting,"Each eagle departure produces a bounded burst")
+    for expected_rows in [4,5,5]:
+        rows.clear()
+        hail._on_departed()
+        for i in 120: hail._physics_process(.1)
+        check(rows.size()==expected_rows,"Successive waves increase by one row, capped at five")
+        check(not hail.is_wave_active(),"Completed wave clears all remaining falling hail")
+    sky.state=sky.State.HIDDEN
+    sky._phase_elapsed=0.0
+    hail._on_departed()
+    sky._process(5.1)
+    check(sky.state==sky.State.HIDDEN and sky._phase_elapsed==0.0,"Hail does not consume the five-second quiet interval")
+    for i in 120: hail._physics_process(.1)
+    sky._process(4.9)
+    check(sky.state==sky.State.HIDDEN,"Eagle waits five full seconds after the final hailstone clears")
+    sky._process(.11)
+    check(sky.state==sky.State.REVEALING,"Eagle rises again after the five-second rest")
     sky._begin(true)
     var row_count: int=rows.size()
     hail._physics_process(2.0)
     check(rows.size()==row_count,"Returning eagle stops new row emission")
     sky.reset()
-    check(hail.stones.is_empty() and not hail._emitting,"Replay clears all hail and pending rows")
+    check(hail.stones.is_empty() and not hail._emitting and hail._wave_count==0,"Replay clears hail, pending rows and difficulty progression")
     sky.state=sky.State.HIDDEN
     hail._on_departed()
     hail._physics_process(.31)

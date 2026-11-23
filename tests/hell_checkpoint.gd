@@ -82,5 +82,29 @@ func run() -> void:
         check(not game.dead,"Brief return grace prevents immediate death")
         await create_timer(1.3).timeout
     await shot("respawn")
+    # 重生点左侧短跳到较低平台，落地后确实能锁定左边团团。
+    game.get_node("RisingLava").reset()
+    var step=game.get_node("Platforms/CheckpointStep")
+    var reader=demon.get_node("Input")
+    demon.global_position=Vector2(1100,point.global_position.y-6)
+    demon.velocity=Vector2.ZERO
+    demon.get_node("Movement").reset()
+    await create_timer(.15).timeout
+    reader.external_control=true
+    reader.move_axis=-1.0
+    reader.jump_pressed=true
+    reader.jump_held=true
+    await physics_frame
+    await physics_frame
+    reader.jump_pressed=false
+    reader.jump_held=false
+    check(await until(func(): return demon.global_position.x<760 or game.dead,2),"Short jump reaches lower-left platform")
+    reader.move_axis=0.0
+    check(await until(func(): return demon.is_on_floor() or game.dead,2),"Short jump lands safely")
+    check(not game.dead,"Approach avoids overhead spikes")
+    check(absf(demon.global_position.y-game.SURFACE.landing_on(step).y)<10,"Player lands on new stepping platform")
+    check(await until(func(): return game.get_node("Fork").selected==game.get_node("Fork/Targets/Target04"),1),"Left ball can be locked from stepping platform")
+    game.camera.adopt_view(Vector2(850,44580),Vector2.ONE*.95)
+    await shot("left-step")
     print("HELL_CHECKPOINT_FAILURES=",failures.size())
     quit(0 if failures.is_empty() else 1)

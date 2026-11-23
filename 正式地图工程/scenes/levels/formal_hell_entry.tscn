@@ -1459,3 +1459,18 @@ script = ExtResource("segment_start")
 
 [node name="Checkpoint" parent="." instance=ExtResource("hell_checkpoint")]
 position = Vector2(1190, 44675.5)
+
+[node name="CheckpointStep" type="AnimatableBody2D" parent="Platforms"]
+z_index = 11
+position = Vector2(700, 44830)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("52_rs4er")
+
+[node name="Art" type="Sprite2D" parent="Platforms/CheckpointStep"]
+position = Vector2(0, 56)
+texture = ExtResource("53_o7s3p")
+
+[node name="Collision" type="CollisionPolygon2D" parent="Platforms/CheckpointStep"]
+position = Vector2(0, 10)
+polygon = PackedVector2Array(-124, -22, 112, -22, 122, 12, 110, 84, 27, 112, -87, 92, -123, 67, -124, 9)

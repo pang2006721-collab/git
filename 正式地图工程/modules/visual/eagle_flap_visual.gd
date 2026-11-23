@@ -1,10 +1,10 @@
 extends Node2D
 ## 三个明确拍翅关键姿势；仅下拍触发一次轻弹，目光独立追踪玩家。
 signal downstroke
-const ART = preload("res://assets/art/sky/formal/eagle_three_pose.png")
+const ART = preload("res://assets/art/sky/formal/eagle_three_pose_clean.png")
 const FRAME_COUNT = 3
-const CELL_SIZE = 512
-const EYES = [Vector4(.46575,.43024,.51458,.43024), Vector4(.46522,.43629,.51497,.43629), Vector4(.46357,.43007,.51688,.43007)]
+const CELL_SIZE = 1024
+const EYES = [Vector4(0.465911,0.431193,0.514098,0.430873), Vector4(0.466483,0.436116,0.513920,0.436159), Vector4(0.462987,0.431141,0.515283,0.430432)]
 @export_range(.4, 3.0) var cycle_seconds: float = 1.1
 @export var bounce_pixels: float = 9.0
 @export var gaze_distance: float = 500.0
@@ -17,7 +17,8 @@ var gaze := Vector2.ZERO
 func _ready() -> void:
     sprite = Sprite2D.new()
     sprite.use_parent_material = true
-    sprite.scale = Vector2.ONE * (1595.0 / 384.0)
+    sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+    sprite.scale = Vector2.ONE * (1595.0 / 768.0)
     add_child(sprite)
     for index in FRAME_COUNT:
         var frame := AtlasTexture.new()

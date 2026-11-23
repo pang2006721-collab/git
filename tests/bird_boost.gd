@@ -40,10 +40,11 @@ func run():
     Input.action_press(&"flap")
     var normal_up: float=tick(bird,40)
     var normal_speed: float=bird.velocity.x
+    check(normal_speed<370.0 and normal_speed>330.0,"Ordinary flight is one step slower for precise positioning")
     shift_key(true)
     check(Input.is_action_pressed(&"bird_boost"),"Physical Shift holds the bird boost action")
     var boosted_up: float=tick(bird,40)
-    check(bird.velocity.x>normal_speed*2.2,"Holding Shift increases actual sideways speed")
+    check(bird.velocity.x>1000.0 and motor.flap_speed>860.0,"Shift retains the existing fast sideways and upward boost speeds")
     check(boosted_up<normal_up*1.45,"Holding W and Shift strengthens actual upward flaps")
     visual._wing=0.0
     visual._pulse=0.0
@@ -53,7 +54,7 @@ func run():
     check(shape.radius==radius and bird.get_node("Visual/Sprite").scale==sprite_scale,"Boost preserves collision size and source sprite scale")
     shift_key(false)
     tick(bird,20)
-    check(boost.amount==0.0 and motor.move_speed==430.0 and motor.flap_speed==540.0,"Releasing Shift restores normal flight values")
+    check(boost.amount==0.0 and is_equal_approx(motor.move_speed,430.0*.82) and is_equal_approx(motor.flap_speed,540.0*.87),"Releasing Shift restores the lower cruising speed")
     check(boost._material.get_shader_parameter("blur_strength")==0.0,"Releasing Shift removes the motion blur")
     shift_key(true)
     tick(bird,20)

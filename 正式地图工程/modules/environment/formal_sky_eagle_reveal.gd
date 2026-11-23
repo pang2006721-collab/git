@@ -11,9 +11,9 @@ signal cycle_reset
 @export var eagle_final_scale: float=.84
 @export var entrance_clearance: float=80.0
 @export var circling_seconds: float=2.0
-@export var screech_seconds: float=1.0
+@export var screech_seconds: float=.55
 @export var screech_sink: float=45.0
-@export var departure_seconds: float=1.1
+@export var departure_seconds: float=.75
 @export var hidden_seconds: float=5.0
 enum State { WAITING, REVEALING, ACTIVE, SCREECHING, DEPARTING, HIDDEN }
 var state: State=State.WAITING
@@ -67,12 +67,12 @@ func _process(delta: float) -> void:
         if _phase_elapsed>=screech_seconds:
             _phase_elapsed=0.0
             _departure_start=eagle.global_position
-            eagle.set_screaming(false)
+            eagle.begin_departure()
             state=State.DEPARTING
         return
     if state==State.DEPARTING:
         _phase_elapsed+=delta
-        var u:=smoothstep(0.0,maxf(departure_seconds,.1),_phase_elapsed)
+        var u:=pow(clampf(_phase_elapsed/maxf(departure_seconds,.1),0.0,1.0),1.8)
         var half_view:=camera.get_viewport_rect().size.y*.5/camera.zoom.y
         var half_art: float=eagle.sprite.get_rect().size.y*.5*absf(eagle.sprite.scale.y*eagle.scale.y)
         var offscreen:=Vector2(_departure_start.x+120.0,camera.global_position.y-half_view-half_art-entrance_clearance)

@@ -83,6 +83,13 @@ func run():
     sky._process(sky.screech_seconds*.5+.01)
     check(sky._departure_start.distance_to(sky.eagle.global_position)<.01,"Departure continues smoothly from the lowered call position")
     check(sky.state==sky.State.DEPARTING and not sky.eagle.screaming,"After the call the eagle resumes flapping and departs")
+    check(sky.eagle.frame_index==1 and sky.eagle.sprite.texture!=sky.eagle.SCREECH,"Departure closes the mouth and immediately starts a power downstroke")
+    var launch_start: Vector2=sky.eagle.global_position
+    sky._process(sky.departure_seconds*.2)
+    var early_distance: float=sky.eagle.global_position.distance_to(launch_start)
+    var accelerating_start: Vector2=sky.eagle.global_position
+    sky._process(sky.departure_seconds*.2)
+    check(sky.eagle.global_position.distance_to(accelerating_start)>early_distance,"Departure accelerates instead of lingering through another wing hold")
     sky._process(sky.departure_seconds+.01)
     check(sky.state==sky.State.HIDDEN and not sky.eagle.visible,"Eagle disappears only after flying above the viewport")
     sky.get_node("Hail").reset() # Hail timing is covered by sky_hail_rows.gd.
@@ -98,6 +105,6 @@ func run():
     check(sky.state==sky.State.SCREECHING,"The sequence repeats rather than ending after one call")
     sky.reset()
     check(not sky.eagle.visible and game.camera.zoom.is_equal_approx(Vector2.ONE*1.35) and sprite.scale==rest_scale,"Reset restores camera, character size and hidden eagle")
-    check(not sky.eagle.screaming and sky._phase_elapsed==0.0,"Reset cancels the call cycle and restores normal flight art")
+    check(not sky.eagle.screaming and sky.eagle.playback_speed==1.0 and sky._phase_elapsed==0.0,"Reset cancels the call cycle and restores normal flight art")
     print("EAGLE_SKY_REVEAL_FAILURES=",failures.size())
     quit(0 if failures.is_empty() else 1)

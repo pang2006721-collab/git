@@ -16,6 +16,7 @@ var _clock: float = 0.0
 var _frames: Array[AtlasTexture] = []
 var gaze := Vector2.ZERO
 var screaming: bool = false
+var playback_speed: float = 1.0
 func _ready() -> void:
     sprite = Sprite2D.new()
     sprite.use_parent_material = true
@@ -31,7 +32,7 @@ func _ready() -> void:
     sample_frame(0)
 func _process(delta: float) -> void:
     if not is_visible_in_tree() or screaming: return
-    _clock = fposmod(_clock + delta, cycle_seconds)
+    _clock = fposmod(_clock + delta * playback_speed, cycle_seconds)
     var phase := _clock / cycle_seconds
     var index := 0 if phase < .38 else (1 if phase < .57 else 2)
     if index != frame_index:
@@ -67,7 +68,16 @@ func set_screaming(value: bool) -> void:
         _clock = 0.0
         sample_frame(0)
 
+func begin_departure() -> void:
+    set_screaming(false)
+    playback_speed = 1.45
+    # Resume on the power stroke instead of holding the raised-wing pose again.
+    _clock = cycle_seconds * .38
+    sample_frame(1)
+    downstroke.emit()
+
 func reset() -> void:
+    playback_speed = 1.0
     set_screaming(false)
     _clock = 0.0
     gaze = Vector2.ZERO

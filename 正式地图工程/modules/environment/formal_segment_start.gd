@@ -36,6 +36,9 @@ func start_segment(index: int) -> void:
         camera.make_current()
         Bgm.play_track(Bgm.Track.HELL)
 
+    elif index == 6:
+        _start_upper_sky()
+
     elif index in [3,4,5]:
         entry.reset_for_replay()
         entry.completed = true
@@ -93,3 +96,34 @@ func start_segment(index: int) -> void:
             stage.get_node("ShoreExit").release_soul()
             layout.get_node("CanopyTransition").preview_from_top_vine()
         Bgm.play_track(Bgm.Track.OCEAN)
+
+func _start_upper_sky() -> void:
+    # 重载后的全新场景，直接使用天空宿主，不触发树冠跳出或附身过场。
+    level.get_node("WallEntry").reset_for_replay()
+    level.get_node("OceanCheckpoint").restore_player()
+    var stage := level.get_node("OceanLink/FishStage")
+    stage.host.reset()
+    stage.fish.get_node("Patrol").stop()
+    stage.fish.get_node("Input").enabled=false
+    stage.fish.get_node("Movement").enabled=false
+    stage.fish.get_node("Teleport").enabled=false
+    stage.fish.hide()
+    var shore := stage.get_node("ShoreExit")
+    shore.state=shore.State.DEAD
+    var layout := stage.get_node("JungleLayout")
+    var bird := layout.get_node("Bird")
+    var possession := layout.get_node("CanopyPossession")
+    possession.enabled=false
+    possession.state=PossessionController.State.POSSESSED
+    possession.clear_selection()
+    bird.get_node("Host").take_control()
+    bird.get_node("Boost").reset()
+    bird.position=Vector2(960,layout.get_node("SkyCloudExit").height_at("sky",960)+1300)
+    bird.velocity=Vector2.ZERO
+    bird.reset_physics_interpolation()
+    bird.show()
+    layout.get_node("CanopyBirdStage")._finished(bird.get_node("Host"))
+    level.camera.set_follow_target(bird,true)
+    level.camera.set_process(true)
+    level.camera.make_current()
+    Bgm.play_track(Bgm.Track.SKY)

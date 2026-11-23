@@ -15,13 +15,13 @@ func _input(event: InputEvent) -> void:
     if event.ctrl_pressed or event.alt_pressed or event.meta_pressed:
         return
     var key: int = event.physical_keycode if event.physical_keycode != 0 else event.keycode
-    var index := 1 if key == KEY_1 else (2 if key == KEY_2 else (3 if key == KEY_3 else (4 if key == KEY_4 else (5 if key == KEY_5 else 0))))
+    var index: int = {KEY_1:1,KEY_2:2,KEY_3:3,KEY_4:4,KEY_5:5,KEY_6:6}.get(key,0)
     if index == 0: return
     get_viewport().set_input_as_handled()
     start_segment(index)
 
 func start_segment(index: int) -> void:
-    if index not in [1,2,3,4,5]: return
+    if index not in [1,2,3,4,5,6]: return
     _pending = index
     if _loading: return
     _loading = true

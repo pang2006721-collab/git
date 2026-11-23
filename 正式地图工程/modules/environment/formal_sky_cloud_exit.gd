@@ -8,7 +8,10 @@ const FOREGROUND=preload("res://shaders/formal_cloud_foreground.gdshader")
 @export var travel_seconds: float=3.6
 @export var entry_rise: float=360.0
 @export var ghost_x: float=960.0
-@export var room_framing_offset: Vector2=Vector2(0,-220)
+@export var room_framing_offset: Vector2=Vector2(0,-295)
+@export var walkway_y: float=1410.0
+@export var walkway_bounds: Vector2=Vector2(260,1660)
+@export var heaven_zoom: float=1.0
 enum State { WAITING, ENTERING, TRAVELLING, COMPLETE }
 var state: State=State.WAITING
 var elapsed: float=0.0
@@ -22,6 +25,8 @@ var _bird_z: int
 var _soul_scale: Vector2
 var _soul_z: int
 var _ripple: Sprite2D
+var gaze: Sprite2D
+var _wall_collisions: Array[CollisionShape2D]=[]
 var _floor: StaticBody2D
 var _floor_collision: CollisionPolygon2D
 @onready var layout: Node2D=get_parent()
@@ -39,6 +44,7 @@ func _ready() -> void:
     _build_foreground("heaven",0,true)
     _build_floor()
     _build_ripple()
+    _build_gaze()
     travel=TRAVEL.new()
     travel.duration=travel_seconds
     add_child(travel)
@@ -77,14 +83,20 @@ func _build_floor() -> void:
     _floor.collision_mask=4
     add_child(_floor)
     _floor_collision=CollisionPolygon2D.new()
-    var polygon:=PackedVector2Array()
-    for point in _profiles.heaven: polygon.append(Vector2(point[0],point[1]))
-    polygon.append(Vector2(polygon[-1].x,1900))
-    polygon.append(Vector2(polygon[0].x,1900))
+    var polygon:=PackedVector2Array([Vector2(walkway_bounds.x,walkway_y),Vector2(walkway_bounds.y,walkway_y),Vector2(walkway_bounds.y,1750),Vector2(walkway_bounds.x,1750)])
     _floor_collision.polygon=polygon
     _floor_collision.one_way_collision=true
     _floor_collision.disabled=true
     _floor.add_child(_floor_collision)
+    for x in [walkway_bounds.x-20,walkway_bounds.y+20]:
+        var collision:=CollisionShape2D.new()
+        var shape:=RectangleShape2D.new()
+        shape.size=Vector2(40,1100)
+        collision.shape=shape
+        collision.position=Vector2(x,walkway_y-450)
+        collision.disabled=true
+        _floor.add_child(collision)
+        _wall_collisions.append(collision)
 
 func _physics_process(delta: float) -> void:
     if state==State.WAITING:
@@ -97,7 +109,8 @@ func _physics_process(delta: float) -> void:
         if elapsed>=entry_seconds:
             bird.hide()
             state=State.TRAVELLING
-            var destination:=Vector2(ghost_x,height_at("heaven",ghost_x)-2)+room_framing_offset
+            var destination:=Vector2(ghost_x,walkway_y-2)+room_framing_offset
+            travel.rest_zoom=Vector2.ONE*heaven_zoom
             travel.travel(camera,layout.to_global(destination))
 
 func _enter() -> void:
@@ -135,13 +148,21 @@ func _build_ripple() -> void:
     _ripple.set_script(preload("res://modules/visual/canopy_ripple_spring.gd"))
     add_child(_ripple)
 
+func _build_gaze() -> void:
+    gaze=preload("res://modules/visual/formal_god_gaze.gd").new()
+    gaze.name="GodGaze"
+    gaze.target=level.get_node("Soul")
+    add_child(gaze)
+
 func _arrive() -> void:
     # 与旧版 Heaven.begin 一致：云面上方直接给向上初速、弹性回弹，立即可操作。
     state=State.COMPLETE
     elapsed=0
     level.exit_in_progress=false
-    _spawn=Vector2(ghost_x,height_at("heaven",ghost_x)-2)
+    _spawn=Vector2(ghost_x,walkway_y-2)
     _floor_collision.set_deferred("disabled",false)
+    for collision in _wall_collisions: collision.set_deferred("disabled",false)
+    gaze.enabled=true
     var soul: CharacterBody2D=level.soul
     soul.global_position=layout.to_global(_spawn)
     soul.scale=Vector2.ONE*1.4
@@ -179,6 +200,8 @@ func reset() -> void:
         level.soul.scale=_soul_scale
         level.soul.get_node("Visual").reset()
     _ripple.reset()
+    gaze.reset()
+    for collision in _wall_collisions: collision.set_deferred("disabled",true)
     state=State.WAITING
     elapsed=0
     _floor_collision.set_deferred("disabled",true)

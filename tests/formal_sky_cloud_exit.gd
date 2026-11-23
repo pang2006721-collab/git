@@ -72,7 +72,7 @@ func run() -> void:
     check(game.camera.global_position.y<start_y-300,"Same camera moves upward through existing map")
     check(await until(func():return exit.state==exit.State.COMPLETE),"Cloud travel and ghost emergence complete")
     check(arrival_snapshot.velocity==Vector2(0,-620),"Ghost gets exact legacy upward launch speed")
-    check(arrival_snapshot.position.distance_to(Vector2(960,exit.height_at("heaven",960)-2))<.1,"Ghost starts immediately at cloud surface")
+    check(arrival_snapshot.position.distance_to(Vector2(960,exit.walkway_y-2))<.1,"Ghost starts immediately at cloud surface")
     check(arrival_snapshot.input and arrival_snapshot.ripple,"Legacy launch immediately enables control and pulses cloud ripple")
     check(game.soul.scale==Vector2.ONE*1.4,"Legacy ghost size is retained")
     check(root.get_camera_2d().get_instance_id()==camera_id,"Transition preserves the existing display camera")
@@ -82,6 +82,22 @@ func run() -> void:
     check(game.camera.world_bounds==Rect2(0,0,1920,52000),"Authored world bounds remain unchanged")
     await shot("heaven")
     check(await until(func():return game.soul.is_on_floor(),4),"Ghost lands on the original painted cloud")
+    var soul=game.soul
+    var left_height:float=soul.position.y
+    var reader=soul.get_node("Input")
+    reader.external_control=true
+    reader.move_axis=-1.0
+    await create_timer(.6).timeout
+    check(absf(soul.position.y-left_height)<2,"Invisible walkway stays level while walking")
+    check(exit.gaze.gaze.x<0,"God eyes follow ghost moving left")
+    await create_timer(1.1).timeout
+    check(soul.position.x>exit.walkway_bounds.x+25,"Left air wall stops ghost leaving platform")
+    reader.move_axis=1.0
+    await create_timer(3).timeout
+    check(exit.gaze.gaze.x>0,"God eyes follow ghost moving right")
+    check(soul.position.x<exit.walkway_bounds.y-25,"Right air wall stops ghost leaving platform")
+    reader.move_axis=0
+    await shot("walkway")
     exit.reset()
     await process_frame
     check(exit.state==exit.State.WAITING and bird.visible and eagle.is_processing(),"Reset clears cloud transition and restores bird/eagle lifecycle")

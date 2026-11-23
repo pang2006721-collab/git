@@ -33,6 +33,7 @@ func _finished(host: PossessableHost) -> void:
     stage.level.player=host.body
     layout.get_node("SkyEagle").arm()
 func _on_died() -> void:
+    bird.get_node("Boost").reset()
     if possession.state==PossessionController.State.TRANSFERRING: possession.reset()
     possession.enabled=false
     possession.clear_selection()

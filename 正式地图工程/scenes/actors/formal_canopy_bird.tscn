@@ -1,6 +1,7 @@
 [gd_scene format=3]
 [ext_resource type="PackedScene" path="res://scenes/actors/bird.tscn" id="bird"]
 [ext_resource type="Script" path="res://modules/possession/formal_canopy_bird_host.gd" id="host"]
+[ext_resource type="Script" path="res://modules/movement/bird_boost.gd" id="boost"]
 [node name="Bird" instance=ExtResource("bird")]
 z_index=17
 collision_mask=48
@@ -9,3 +10,6 @@ script=ExtResource("host")
 
 [node name="Movement" parent="." index="2"]
 flap_while_held=true
+
+[node name="Boost" type="Node" parent="."]
+script=ExtResource("boost")

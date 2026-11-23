@@ -2,6 +2,8 @@ extends Node2D
 @export var flap_texture:Texture2D
 @export var flap_pose_duration:float=0.20
 @export var flap_sprite_offset:=Vector2(-0.7,2.1)
+var boost_amount: float = 0.0
+var boost_stretch := Vector2(1.12,.78)
 var _pulse := 0.0
 var _wing := 0.0
 var _pose_time:=0.0
@@ -32,13 +34,19 @@ func _process(delta: float) -> void:
 	_apply_pose()
 	_wing=move_toward(_wing,0,delta*5)
 	_pulse=move_toward(_pulse,0,delta*4)
-	scale=Vector2(1+_pulse*0.18-_wing*0.06,1-_pulse*0.12+_wing*0.12)
+	_apply_scale()
 	rotation=lerp_angle(rotation,clampf(get_parent().velocity.y/2400.0,-0.18,0.22),1-exp(-10*delta))
+func set_boost_amount(value: float) -> void:
+	boost_amount=clampf(value,0.0,1.0)
+	_apply_scale()
+func _apply_scale() -> void:
+	scale=Vector2(1+_pulse*0.18-_wing*0.06,1-_pulse*0.12+_wing*0.12)*Vector2.ONE.lerp(boost_stretch,boost_amount)
 func play_selection_pulse() -> void:
 	_pulse=1
 func play_possession_pulse() -> void:
 	_wing=1
 func reset() -> void:
+	boost_amount=0.0
 	_pose_time=0
 	_apply_pose()
 	_pulse=0

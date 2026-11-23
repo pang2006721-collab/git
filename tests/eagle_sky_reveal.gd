@@ -43,11 +43,15 @@ func run():
     shot.active=false
     sky._process(0)
     check(sky.state==sky.State.REVEALING and sky.eagle.visible,"Climbing triggers the distant eagle and bounded wide view")
+    var initial_y: float=sky.eagle.global_position.y
+    var art_half: float=sky.eagle.sprite.get_rect().size.y*.5*absf(sky.eagle.sprite.scale.y*sky.eagle.scale.y)
+    check(initial_y-art_half>game.camera.global_position.y+game.camera.get_viewport_rect().size.y*.5/game.camera.zoom.y,"Entire eagle starts below the viewport, including raised wing tips")
     var previous: float=game.camera.zoom.x
     for i in 130:
         sky._process(.015)
         check(game.camera.zoom.x<=previous+.0001,"The reveal continuously pulls back without reversing zoom")
         previous=game.camera.zoom.x
+    check(sky.eagle.global_position.y<initial_y-650,"Entrance lifts the eagle into view from below")
     game.camera._process(.016)
     check(sky.state==sky.State.ACTIVE and abs(game.camera.zoom.x-1.0)<.001,"The wide view remains after the entrance")
     var half: float=game.camera.get_viewport_rect().size.x*.5/game.camera.zoom.x

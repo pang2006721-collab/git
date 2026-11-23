@@ -6,6 +6,7 @@ signal reveal_finished
 @export var reveal_seconds: float=1.8
 @export var wide_zoom: float=1.0
 @export var eagle_final_scale: float=.84
+@export var entrance_clearance: float=80.0
 enum State { WAITING, REVEALING, ACTIVE }
 var state: State=State.WAITING
 var elapsed: float=0
@@ -14,6 +15,7 @@ var _start_y:=0.0
 var _rest_zoom:=Vector2.ONE
 var _bounded_wide_zoom:=Vector2.ONE
 var _band: int=-1
+var _entrance_lift: float=0.0
 @onready var layout: Node2D=get_parent()
 @onready var stage: Node=get_node("../..")
 @onready var bird: CharacterBody2D=get_node("../Bird")
@@ -48,7 +50,8 @@ func _process(delta: float) -> void:
             reveal_finished.emit()
     # Fly a broad figure eight behind the original cloud banks.
     var anchor:=Vector2(layout.to_global(Vector2(960,0)).x,camera.global_position.y-140)
-    eagle.global_position=flight.advance(delta,anchor)
+    var rising:=1.0-smoothstep(0.0,reveal_seconds,elapsed)
+    eagle.global_position=flight.advance(delta,anchor)+Vector2(0.0,_entrance_lift*rising)
     _update_map_band()
 func _begin() -> void:
     _rest_zoom=camera.zoom
@@ -60,8 +63,14 @@ func _begin() -> void:
     eagle.reset()
     eagle.show()
     eagle.scale=Vector2.ONE*eagle_final_scale*.55
-    eagle.global_position=Vector2(layout.to_global(Vector2(960,0)).x,camera.global_position.y-140)
-    flight.reset(eagle.global_position)
+    var anchor:=Vector2(layout.to_global(Vector2(960,0)).x,camera.global_position.y-140)
+    # Start the complete silhouette below the widest entrance view, including raised wings.
+    var half_view:=viewport_size.y*.5/minf(_rest_zoom.y,_bounded_wide_zoom.y)
+    var half_art: float=eagle.sprite.get_rect().size.y*.5*absf(eagle.sprite.scale.y*eagle.scale.y)
+    _entrance_lift=half_view+half_art+entrance_clearance+140.0
+    flight.reset(anchor)
+    eagle.global_position=anchor+Vector2(0.0,_entrance_lift)
+    eagle.material.set_shader_parameter("reveal_alpha",0.0)
     _update_map_band()
     revealed.emit()
 func _update_map_band() -> void:
@@ -81,6 +90,7 @@ func reset() -> void:
     elapsed=0
     _armed=false
     _band=-1
+    _entrance_lift=0.0
     flight.reset(Vector2.ZERO)
     eagle.hide()
     eagle.reset()

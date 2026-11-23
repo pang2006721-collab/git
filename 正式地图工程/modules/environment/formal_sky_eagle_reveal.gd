@@ -21,6 +21,7 @@ var _band: int=-1
 @onready var eagle: Node2D=$Eagle
 func _ready() -> void:
     process_priority=5
+    eagle.look_target=bird
     eagle.hide()
     eagle.reset()
 func arm() -> void:

@@ -1,8 +1,15 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://modules/environment/ocean_checkpoint.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/art/ocean/checkpoint/diamond.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/art/ocean/checkpoint/bubble.png" id="3"]
+
+[ext_resource type="Script" path="res://modules/visual/checkpoint_attention.gd" id="attention"]
+[ext_resource type="Texture2D" path="res://assets/art/ocean/jellyfish/warning.png" id="attention_art"]
+[ext_resource type="Shader" path="res://shaders/checkpoint_white_ink.gdshader" id="white_ink"]
+
+[sub_resource type="ShaderMaterial" id="WhiteInk"]
+shader = ExtResource("white_ink")
 
 [sub_resource type="AtlasTexture" id="Diamond"]
 atlas = ExtResource("2")
@@ -27,3 +34,12 @@ texture = SubResource("Bubble")
 z_index = 16
 rotation = 0.55
 texture = SubResource("Diamond")
+
+[node name="Attention" type="Sprite2D" parent="."]
+visible = false
+z_index = 20
+position = Vector2(-85, -62)
+scale = Vector2(0.38, 0.38)
+material = SubResource("WhiteInk")
+texture = ExtResource("attention_art")
+script = ExtResource("attention")

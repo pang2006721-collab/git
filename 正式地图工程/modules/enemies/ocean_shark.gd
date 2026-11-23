@@ -5,6 +5,9 @@ signal dash_started
 signal player_hit(direction: Vector2)
 
 enum State { WAITING, LOCKING, DASHING }
+@export var automatic_attacks: bool = true
+@export_enum("交替:0","左侧:-1","右侧:1") var entry_side: int = 0
+@export var lock_vertical_offset: float = -100.0
 @export var spawn_interval: float = 6.0
 @export var first_spawn_delay: float = 2.0
 @export var lock_seconds: float = 1.0
@@ -64,7 +67,7 @@ func _physics_process(delta: float) -> void:
     state_elapsed += delta
     match state:
         State.WAITING:
-            if cycle_elapsed >= (first_spawn_delay if _first_attack else spawn_interval): _begin_lock()
+            if automatic_attacks and cycle_elapsed >= (first_spawn_delay if _first_attack else spawn_interval): _begin_lock()
         State.LOCKING:
             _follow_lock_view()
             locked_point = _predicted_target(global_position)
@@ -100,10 +103,10 @@ func _begin_lock() -> void:
     state = State.LOCKING
     state_elapsed = 0.0
     cycle_elapsed = 0.0
-    _side = -_side
+    _side = -_side if entry_side==0 else entry_side
     var view := _view_rect()
     var inset := minf(210.0,view.size.x*.22)
-    var relative_y := clampf(_target_center().y-view.position.y-100.0,150.0,view.size.y-150.0)
+    var relative_y := clampf(_target_center().y-view.position.y+lock_vertical_offset,150.0,view.size.y-150.0)
     _screen_anchor = Vector2(inset if _side<0 else view.size.x-inset,relative_y)
     sprite.play(&"idle")
     show()

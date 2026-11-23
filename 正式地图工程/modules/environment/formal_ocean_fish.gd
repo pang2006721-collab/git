@@ -27,6 +27,7 @@ func _ready() -> void:
     $ShoreExit.died_on_shore.connect(_on_stranded_fish_died)
     $Shark.configure(fish,get_node("../../Camera"))
     $Shark.player_hit.connect(_on_shark_hit)
+    $FinalSharks.player_hit.connect(_on_final_shark_hit)
     $Octopus.configure(fish,get_node("../../Camera"))
     $Octopus.ink_sprayed.connect($InkOverlay.splash)
     $JellyfishBoss.configure(fish,get_node("../../Camera"),level.to_global(Vector2(960,0)).x)
@@ -55,6 +56,10 @@ func _on_stranded_fish_died() -> void:
 
 func _on_shark_hit(direction: Vector2) -> void:
     if fish.position.y<=$ShoreExit.surface_y+shark_surface_safe_depth: return
+    $SharkKnockback.impact_direction = direction
+    level.die(&"shark")
+
+func _on_final_shark_hit(direction: Vector2) -> void:
     $SharkKnockback.impact_direction = direction
     level.die(&"shark")
 
@@ -107,6 +112,7 @@ func _on_player_died() -> void:
     possession.clear_selection()
 
 func reset() -> void:
+    $FinalSharks.reset()
     $JellyfishReveal.reset()
     fish.get_node("Stun").reset(false)
     $JungleHandoff.reset()

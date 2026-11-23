@@ -30,6 +30,8 @@
 
 [ext_resource type="PackedScene" path="res://scenes/effects/jellyfish_reveal_camera.tscn" id="jellyfish_reveal"]
 
+[ext_resource type="PackedScene" path="res://scenes/enemies/ocean_final_sharks.tscn" id="final_sharks"]
+
 [sub_resource type="AtlasTexture" id="StrandedFish"]
 atlas = ExtResource("stranded_art")
 region = Rect2(1087,1968,130,85)
@@ -119,6 +121,9 @@ one_way_collision_margin = 8.0
 
 [node name="SurfaceGrab" type="Node2D" parent="."]
 script = ExtResource("surface_grab")
+enabled = false
+
+[node name="FinalSharks" parent="." instance=ExtResource("final_sharks")]
 
 [node name="JungleLayout" parent="." instance=ExtResource("jungle_layout")]
 

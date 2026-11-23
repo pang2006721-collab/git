@@ -7,6 +7,7 @@ const TENDRIL = preload("res://modules/visual/jellyfish_net_tendril.gd")
 const WARNING = preload("res://modules/visual/tentacle_warning.gd")
 const CAUGHT_ART = preload("res://assets/art/characters/fish/abilities/entangled.png")
 enum State { WAITING, WARNING, REACHING, CAUGHT, COOLDOWN, FINISHED }
+@export var enabled: bool = true
 @export var trigger_depth: float = 1100.0
 @export var warning_seconds: float = 1.4
 @export var warning_rise_speed: float = 360.0
@@ -48,7 +49,7 @@ func _ready() -> void:
     prompt = PROMPT.new()
     add_child(prompt)
 func _physics_process(delta: float) -> void:
-    if not stage.active or stage.level.dead or stage.level.player!=fish: return
+    if not enabled or not stage.active or stage.level.dead or stage.level.player!=fish: return
     _hold_surface_route()
     if shore.state!=shore.State.SWIMMING:
         if state in [State.WARNING,State.REACHING]: _end_round(true)
@@ -246,7 +247,7 @@ func _end_round(retreat_on_miss: bool = false) -> void:
         elapsed = 0
 func blocks_exit() -> bool:
     # 闪避已成功，即使落空动画仍在播放也立即允许出水。
-    return not _evaded and state!=State.WAITING and rounds_completed<total_rounds and state!=State.FINISHED
+    return enabled and not _evaded and state!=State.WAITING and rounds_completed<total_rounds and state!=State.FINISHED
 func _hold_surface_route() -> void:
     if not blocks_exit(): return
     var depth: float = fish.position.y-shore.surface_y

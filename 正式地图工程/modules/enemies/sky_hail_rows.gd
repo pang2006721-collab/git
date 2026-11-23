@@ -1,9 +1,10 @@
 extends Node2D
-## 鸣叫离场后的成排冰雹。每排七格、六颗，只留一个空位。
+## 六颗与七颗交替错排；普通小缝封住，只保留每排一个错位通道。
 signal row_spawned(row_index: int, gap_start: int)
 const ART = preload("res://assets/art/sky/formal/hailstone.png")
 const LANE_COUNT = 7
 const GAP_WIDTH = 1
+const BIRD_RADIUS = 26.0
 @export var rows_per_wave: int = 3
 @export_range(1,5) var max_rows_per_wave: int = 5
 @export var row_interval: float = 1.1
@@ -22,6 +23,10 @@ var _timer: float = 0.0
 var _remaining: int = 0
 var _row: int = 0
 var _wave_count: int = 0
+var _row_pattern: int = 0
+var _last_gap_center: float = INF
+var _last_gap_half_width: float = 0.0
+var last_row_layout: Dictionary = {}
 var _gap: int = 3
 var _previous_target := Vector2.INF
 @onready var encounter: Node = get_parent()
@@ -50,8 +55,9 @@ func _on_departed() -> void:
     _timer=first_row_delay
     var left: float=encounter.layout.to_global(Vector2(horizontal_bounds.x,0)).x
     var width: float=(horizontal_bounds.y-horizontal_bounds.x)*absf(encounter.layout.global_scale.x)
-    var lane:=int(floor((bird.global_position.x-left)/(width/LANE_COUNT)))
-    _gap=clampi(lane,1,LANE_COUNT-GAP_WIDTH-1)
+    var lanes:=LANE_COUNT+_row_pattern%2
+    var lane:=int(floor((bird.global_position.x-left)/(width/lanes)))
+    _gap=clampi(lane,1,lanes-GAP_WIDTH-1)
 func _stop_emitting() -> void:
     _emitting=false
     _remaining=0
@@ -80,7 +86,7 @@ func _physics_process(delta: float) -> void:
         stone.age+=delta
         art.rotation+=stone.spin*delta
         var relative:=Geometry2D.get_closest_point_to_segment(Vector2.ZERO,previous-last_target,art.global_position-target)
-        if relative.length()<float(stone.radius)+26.0: hit=true
+        if relative.length()<float(stone.radius)+BIRD_RADIUS: hit=true
         if art.global_position.y>bottom or stone.age>8.0:
             art.hide()
             art.queue_free()
@@ -88,15 +94,32 @@ func _physics_process(delta: float) -> void:
     if hit:
         encounter.stage.level.die(&"hail")
 func _spawn_row() -> void:
-    if _row>0:
-        _gap=clampi(_gap+(-1 if _rng.randf()<.5 else 1),1,LANE_COUNT-GAP_WIDTH-1)
+    var lanes:=LANE_COUNT+_row_pattern%2
     var left: float=encounter.layout.to_global(Vector2(horizontal_bounds.x,0)).x
     var width: float=(horizontal_bounds.y-horizontal_bounds.x)*absf(encounter.layout.global_scale.x)
-    var step:=width/LANE_COUNT
-    var diameter:=minf(step*.72,180.0)
+    var step:=width/lanes
+    var diameter:=minf(step*.90,240.0)
+    var radius:=diameter*.45
+    var gap_half_width:=step-radius-BIRD_RADIUS
+    if is_finite(_last_gap_center):
+        # Choose the nearest reachable opening with no shared straight-up corridor.
+        var choices: Array[int]=[]
+        var nearest:=INF
+        for candidate in range(1,lanes-1):
+            var center:=left+(candidate+.5)*step
+            var distance:=absf(center-_last_gap_center)
+            if distance<=_last_gap_half_width+gap_half_width+12.0: continue
+            if distance<nearest-1.0:
+                nearest=distance
+                choices.clear()
+            if absf(distance-nearest)<=1.0: choices.append(candidate)
+        if not choices.is_empty(): _gap=choices[_rng.randi_range(0,choices.size()-1)]
+    _gap=clampi(_gap,1,lanes-2)
+    _last_gap_center=left+(_gap+.5)*step
+    _last_gap_half_width=gap_half_width
     var y:=_view_rect().position.y-spawn_above_view
-    for lane in LANE_COUNT:
-        if lane>=_gap and lane<_gap+GAP_WIDTH: continue
+    for lane in lanes:
+        if lane==_gap: continue
         var art:=Sprite2D.new()
         art.texture=_texture
         art.texture_filter=CanvasItem.TEXTURE_FILTER_LINEAR
@@ -105,9 +128,11 @@ func _spawn_row() -> void:
         add_child(art)
         art.global_position=Vector2(left+(lane+.5)*step,y)
         var spin:=_rng.randf_range(spin_min,maxf(spin_max,spin_min))*(-1 if (lane+_row)%2==0 else 1)
-        stones.append({"art":art,"lane":lane,"row":_row,"speed":fall_speed,"spin":spin,"radius":diameter*.38,"age":0.0})
+        stones.append({"art":art,"lane":lane,"row":_row,"speed":fall_speed,"spin":spin,"radius":radius,"age":0.0})
+    last_row_layout={"count":lanes-1,"lanes":lanes,"gap":_gap,"center":_last_gap_center,"safe_left":_last_gap_center-gap_half_width,"safe_right":_last_gap_center+gap_half_width,"pitch":step,"radius":radius}
     row_spawned.emit(_row,_gap)
     _row+=1
+    _row_pattern+=1
 func _view_rect() -> Rect2:
     var camera: Camera2D=encounter.camera
     var size:=camera.get_viewport_rect().size/camera.zoom
@@ -120,10 +145,15 @@ func is_wave_active() -> bool:
         if stone.art.global_position.y-float(stone.radius)*1.9<=bottom: return true
     return false
 func reset(reset_difficulty: bool=true) -> void:
-    if reset_difficulty: _wave_count=0
+    if reset_difficulty:
+        _wave_count=0
+        _row_pattern=0
     _stop_emitting()
     _timer=0.0
     _row=0
+    _last_gap_center=INF
+    _last_gap_half_width=0.0
+    last_row_layout.clear()
     _previous_target=Vector2.INF
     for stone in stones:
         var art: Sprite2D=stone.art

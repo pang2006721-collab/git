@@ -34,7 +34,12 @@ func run():
     game.camera.global_position=bird.global_position
     game.camera.set_process(false)
     var rows: Array[Dictionary]=[]
-    hail.row_spawned.connect(func(index,gap): rows.append({"index":index,"gap":gap}))
+    var counts: Array[int]=[]
+    hail.row_spawned.connect(func(index,_gap):
+        var row_data: Dictionary=hail.last_row_layout.duplicate()
+        row_data.index=index
+        rows.append(row_data)
+        counts.append(row_data.count))
     sky.state=sky.State.ACTIVE
     hail._physics_process(.5)
     check(hail.stones.is_empty(),"No hail falls while the eagle circles")
@@ -47,7 +52,7 @@ func run():
     check(hail.stones.is_empty(),"Hail waits until the eagle has completely departed")
     sky._process(sky.departure_seconds+.01)
     hail._physics_process(hail.first_row_delay+.01)
-    check(hail.stones.size()==6 and rows.size()==1,"Each row contains exactly six hailstones")
+    check(hail.stones.size()==6 and rows.size()==1,"First row contains exactly six hailstones")
     var occupied: Array[int]=[]
     var height: float=hail.stones[0].art.global_position.y
     var has_positive:=false
@@ -74,9 +79,19 @@ func run():
     check(first.global_position.y>old_position.y and absf(first.rotation-old_angle)>.1,"Falling hail also self-rotates")
     bird.global_position.y=game.camera.global_position.y+2000
     hail._physics_process(.4)
-    check(rows.size()==2 and abs(rows[1].gap-rows[0].gap)<=1,"Following row shifts its gap by at most one slot")
+    check(rows.size()==2 and rows[1].count==7,"Following row alternates to seven hailstones")
+    check(rows[0].safe_right<rows[1].safe_left or rows[1].safe_right<rows[0].safe_left,"Adjacent openings never leave a shared vertical shortcut")
+    for row_data in rows:
+        check((row_data.radius+26.0)*2>=row_data.pitch,"Ordinary gaps are too narrow for the bird")
     var motor=bird.get_node("Movement")
-    check(step/motor.move_speed+motor.move_speed/(2* motor.acceleration)<hail.row_interval,"Actual bird controller can move one lane between rows")
+    Input.action_press(&"bird_boost")
+    for i in 10: bird.get_node("Boost")._physics_process(.02)
+    var boosted_speed: float=motor.move_speed
+    var boosted_acceleration: float=motor.acceleration
+    var shift_distance: float=absf(rows[1].center-rows[0].center)
+    check(shift_distance/motor.move_speed+motor.move_speed/(2*motor.acceleration)<hail.row_interval,"Actual Shift speed reaches the next staggered opening in time")
+    Input.action_release(&"bird_boost")
+    bird.get_node("Boost").reset()
     for i in 13: hail._physics_process(.1)
     check(rows.size()==hail.rows_per_wave and not hail._emitting,"Each eagle departure produces a bounded burst")
     for expected_rows in [4,5,5]:
@@ -84,7 +99,15 @@ func run():
         hail._on_departed()
         for i in 120: hail._physics_process(.1)
         check(rows.size()==expected_rows,"Successive waves increase by one row, capped at five")
+        for index in range(1,rows.size()):
+            var before: Dictionary=rows[index-1]
+            var after: Dictionary=rows[index]
+            check(before.safe_right<after.safe_left or after.safe_right<before.safe_left,"Every later pair also blocks a straight vertical shortcut")
+            var distance: float=absf(after.center-before.center)
+            check(distance/boosted_speed+boosted_speed/(2*boosted_acceleration)<hail.row_interval,"Every staggered transition is reachable with the real boost controller")
         check(not hail.is_wave_active(),"Completed wave clears all remaining falling hail")
+    for i in counts.size():
+        check(counts[i]==6+i%2,"Six/seven alternation continues across successive waves")
     sky.state=sky.State.HIDDEN
     sky._phase_elapsed=0.0
     hail._on_departed()

@@ -3,7 +3,7 @@ extends Node2D
 signal activated
 const SURFACE = preload("res://modules/environment/hell_surface.gd")
 @export_node_path("AnimatableBody2D") var platform_path: NodePath = ^"../Platforms/Static04"
-@export var lift_height: float = 55.0
+@export var lift_height: float = 76.0
 @export var lift_seconds: float = 0.45
 @export var bob_height: float = 8.0
 @export var bob_period: float = 2.0

@@ -33,7 +33,8 @@ scale = Vector2(1.4, 1.4)
 texture = SubResource("Stone")
 
 [node name="Diamond" type="Sprite2D" parent="."]
-position = Vector2(0, -89)
+z_index = -1
+position = Vector2(0, -68)
 rotation = 0.105
 scale = Vector2(1, 1)
 texture = SubResource("Diamond")

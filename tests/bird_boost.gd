@@ -43,8 +43,8 @@ func run():
     shift_key(true)
     check(Input.is_action_pressed(&"bird_boost"),"Physical Shift holds the bird boost action")
     var boosted_up: float=tick(bird,40)
-    check(bird.velocity.x>normal_speed*1.5,"Holding Shift increases actual sideways speed")
-    check(boosted_up<normal_up*1.15,"Holding W and Shift strengthens actual upward flaps")
+    check(bird.velocity.x>normal_speed*2.2,"Holding Shift increases actual sideways speed")
+    check(boosted_up<normal_up*1.45,"Holding W and Shift strengthens actual upward flaps")
     visual._wing=0.0
     visual._pulse=0.0
     visual._process(0.0)
@@ -57,7 +57,7 @@ func run():
     check(boost._material.get_shader_parameter("blur_strength")==0.0,"Releasing Shift removes the motion blur")
     shift_key(true)
     tick(bird,20)
-    check(motor.move_speed<=430.0*1.651,"Repeated boosts do not compound their speed")
+    check(motor.move_speed<=430.0*2.401,"Repeated boosts do not compound their speed")
     motor.enabled=false
     boost._physics_process(.02)
     check(boost.amount==0.0 and motor.move_speed==430.0 and visual.scale.y>=.99,"Disabled cinematic controls cancel boost and restore the normal body shape immediately")

@@ -1,8 +1,9 @@
 extends Node
 ## 仅正式小鸟拥有的长按加速；不改变碰撞体或 NPC 巡飞。
-@export var horizontal_multiplier: float = 1.65
-@export var flap_multiplier: float = 1.25
-@export var flap_interval_multiplier: float = .85
+@export var horizontal_multiplier: float = 2.4
+@export var acceleration_multiplier: float = 3.2
+@export var flap_multiplier: float = 1.6
+@export var flap_interval_multiplier: float = .75
 @export_range(0.0,.6) var blur_amount: float = .20
 @export var blur_pixels: float = 4.0
 var amount: float = 0.0
@@ -38,7 +39,7 @@ func _physics_process(delta: float) -> void:
     var held:=Input.is_action_pressed(&"bird_boost")
     amount=move_toward(amount,1.0 if held else 0.0,delta*(8.0 if held else 6.0))
     motor.move_speed=_base.move_speed*lerpf(1.0,horizontal_multiplier,amount)
-    motor.acceleration=_base.acceleration*lerpf(1.0,horizontal_multiplier,amount)
+    motor.acceleration=_base.acceleration*lerpf(1.0,acceleration_multiplier,amount)
     motor.flap_speed=_base.flap_speed*lerpf(1.0,flap_multiplier,amount)
     motor.held_flap_interval=_base.held_flap_interval*lerpf(1.0,flap_interval_multiplier,amount)
 func _process(_delta: float) -> void:

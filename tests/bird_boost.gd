@@ -40,12 +40,13 @@ func run():
     Input.action_press(&"flap")
     var normal_up: float=tick(bird,40)
     var normal_speed: float=bird.velocity.x
+    var normal_flap_interval: float=motor.held_flap_interval
     check(normal_speed<370.0 and normal_speed>330.0,"Ordinary flight is one step slower for precise positioning")
     shift_key(true)
     check(Input.is_action_pressed(&"bird_boost"),"Physical Shift holds the bird boost action")
     var boosted_up: float=tick(bird,40)
-    check(bird.velocity.x>1000.0 and motor.flap_speed>860.0,"Shift retains the existing fast sideways and upward boost speeds")
-    check(boosted_up<normal_up*1.45,"Holding W and Shift strengthens actual upward flaps")
+    check(bird.velocity.x>1000.0,"Shift retains fast sideways flight")
+    check(is_equal_approx(boosted_up,normal_up) and motor.held_flap_interval==normal_flap_interval,"Shift leaves actual upward flap speed and cadence unchanged")
     visual._wing=0.0
     visual._pulse=0.0
     visual._process(0.0)

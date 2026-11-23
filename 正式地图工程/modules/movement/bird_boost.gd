@@ -1,12 +1,10 @@
 extends Node
-## 仅正式小鸟拥有的长按加速；不改变碰撞体或 NPC 巡飞。
+## 正式小鸟长按 Shift 仅加强左右飞行；不改变拍翅上升与碰撞体。
 @export var normal_speed_multiplier: float = .82
 @export var normal_flap_multiplier: float = .87
 @export var normal_acceleration_multiplier: float = .85
 @export var horizontal_multiplier: float = 2.4
 @export var acceleration_multiplier: float = 3.2
-@export var flap_multiplier: float = 1.6
-@export var flap_interval_multiplier: float = .75
 @export_range(0.0,.6) var blur_amount: float = .20
 @export var blur_pixels: float = 4.0
 var amount: float = 0.0
@@ -43,13 +41,13 @@ func _physics_process(delta: float) -> void:
     amount=move_toward(amount,1.0 if held else 0.0,delta*(8.0 if held else 6.0))
     motor.move_speed=_base.move_speed*lerpf(normal_speed_multiplier,horizontal_multiplier,amount)
     motor.acceleration=_base.acceleration*lerpf(normal_acceleration_multiplier,acceleration_multiplier,amount)
-    motor.flap_speed=_base.flap_speed*lerpf(normal_flap_multiplier,flap_multiplier,amount)
-    motor.held_flap_interval=_base.held_flap_interval*lerpf(1.0,flap_interval_multiplier,amount)
+    motor.flap_speed=_base.flap_speed*normal_flap_multiplier
+    motor.held_flap_interval=_base.held_flap_interval
 func _process(_delta: float) -> void:
-    var direction:=body.velocity.normalized().rotated(-sprite.global_rotation)
+    var direction:=Vector2(signf(body.velocity.x),0.0).rotated(-sprite.global_rotation)
     if sprite.flip_h: direction.x=-direction.x
     _material.set_shader_parameter("blur_direction",direction)
-    _material.set_shader_parameter("blur_strength",amount*blur_amount*smoothstep(60.0,260.0,body.velocity.length()))
+    _material.set_shader_parameter("blur_strength",amount*blur_amount*smoothstep(60.0,260.0,absf(body.velocity.x)))
     if sprite.texture!=_last_texture:
         _last_texture=sprite.texture
         if sprite.texture is AtlasTexture:

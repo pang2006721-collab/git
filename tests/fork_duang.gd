@@ -36,8 +36,7 @@ func run() -> void:
 		rig._throw()
 		while rig.flying:await process_frame
 		check(target.art.visible and target.art.scale.x>1.15,"Fork hit visibly squashes the target")
-		await create_timer(.4).timeout
-		check(rig.lodged==target,"Fork can still lodge in the intended target")
+		check(rig.lodged==target,"Fork flight retains the intended target")
 		var previous:Vector2=camera.global_position
 		var largest_step:=0.0
 		var demon_pop:=false
@@ -46,7 +45,6 @@ func run() -> void:
 		var arrival_uniform:=true
 		var ball_pop:=false
 		var composite_restored:=false
-		rig._swap_and_bounce()
 		for frame in 180:
 			await process_frame
 			if rig.held:
@@ -91,7 +89,7 @@ func run() -> void:
 	var incoming:Vector2=(upper.global_position-rig.fork.global_position).normalized()
 	var tip:Vector2=Vector2.RIGHT.rotated(rig.fork.global_rotation+deg_to_rad(rig.fork_tip_angle_degrees))
 	check(incoming.dot(tip)>.999,"Flying fork tip points along its travel direction")
-	await create_timer(.6).timeout
+	while rig.flying:await process_frame
 	check(Vector2.RIGHT.rotated(upper.art.rotation).dot(incoming)>.999,"Embedded fork retains the incoming direction from the right")
 	rig.reset()
 	game.demon.get_node("Movement").enabled=false

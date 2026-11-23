@@ -34,11 +34,10 @@ func run() -> void:
 		check(absf(peek.x)<=attention.maximum_peek_pixels.x+.01 and absf(peek.y)<=attention.maximum_peek_pixels.y+.01,"Interest offset is capped in screen pixels")
 		check(rig.selected==target,"Automatic target selection remains functional")
 		rig._throw()
-		await create_timer(.6).timeout
-		check(rig.lodged==target,"Fork can still lodge in the intended target")
+		while rig.flying:await process_frame
+		check(rig.lodged==target,"Fork flight retains the intended target")
 		var previous:Vector2=camera.global_position
 		var largest_step:=0.0
-		rig._swap_and_bounce()
 		for frame in 180:
 			await process_frame
 			var step:float=camera.global_position.distance_to(previous)
@@ -66,7 +65,7 @@ func run() -> void:
 	var incoming:Vector2=(upper.global_position-rig.fork.global_position).normalized()
 	var tip:Vector2=Vector2.RIGHT.rotated(rig.fork.global_rotation+deg_to_rad(rig.fork_tip_angle_degrees))
 	check(incoming.dot(tip)>.999,"Flying fork tip points along its travel direction")
-	await create_timer(.6).timeout
+	while rig.flying:await process_frame
 	check(Vector2.RIGHT.rotated(upper.art.rotation).dot(incoming)>.999,"Embedded fork retains the incoming direction from the right")
 	rig.reset()
 	game.demon.get_node("Movement").enabled=false

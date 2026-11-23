@@ -1,5 +1,5 @@
 extends Node2D
-## 锁定来自 Nodes Plus；动作按投叉、插中、交换和弹射顺序执行。
+## 锁定来自 Nodes Plus；一次投叉命中后自动交换并弹射。
 const SURFACE = preload("res://modules/environment/hell_surface.gd")
 signal exchanged(body: Node2D)
 signal interaction_reset
@@ -131,7 +131,17 @@ func _throw() -> void:
     motion.tween_callback(func():
         flying = false
         lodged.set_state(2)
-        fork.hide())
+        fork.hide()
+        # Finish the throw tween before starting the exchange tween.
+        _auto_exchange.call_deferred(lodged))
+
+func _auto_exchange(target: Node2D) -> void:
+    # A replay/reset between the hit and this deferred call cancels the old arrival.
+    if not is_instance_valid(target) or lodged != target:
+        return
+    if not demon.get_node("Host").claimed or get_parent().dead or get_parent().exit_in_progress:
+        return
+    _swap_and_bounce()
 
 func _swap_and_bounce() -> void:
     if flying or swapping or launching or not is_instance_valid(lodged):

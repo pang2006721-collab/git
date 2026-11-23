@@ -61,10 +61,8 @@ func run() -> void:
     check(is_instance_valid(fork.selected), "Fork locks from lava platform edge")
     fork._throw()
     await create_timer(0.6).timeout
-    check(not fork.flying and is_instance_valid(fork.lodged), "Fork lodges in target")
-    check(fork.lodged.scale.y < 1, "Target remains compressed")
-    fork._swap_and_bounce()
-    check(fork.launching, "Second Shift starts swap and bounce")
+    check(not fork.flying and fork.held, "Fork hit automatically exchanges and returns the fork")
+    check(fork.swapping or fork.launching, "One Shift continues into swap and bounce")
     await create_timer(1.2).timeout
     check(not fork.launching and game.demon.position.y < 51400, "Bounce reaches a platform above target")
     game.restart()

@@ -35,12 +35,11 @@ func run() -> void:
 		check(rig.selected==target,"Automatic target selection remains functional")
 		rig._throw()
 		check(not rig.held,"Throw immediately removes the held fork")
-		await create_timer(.6).timeout
-		check(not rig.held,"Waiting for teleport stays empty handed")
-		check(rig.lodged==target,"Fork can still lodge in the intended target")
+		await create_timer(.1).timeout
+		check(not rig.held and rig.flying,"Fork stays out of the hand during its flight")
+		check(rig.lodged==target,"Fork flight retains the intended target")
 		var previous:Vector2=camera.global_position
 		var largest_step:=0.0
-		rig._swap_and_bounce()
 		for frame in 180:
 			await process_frame
 			if rig.held:
@@ -71,7 +70,7 @@ func run() -> void:
 	var incoming:Vector2=(upper.global_position-rig.fork.global_position).normalized()
 	var tip:Vector2=Vector2.RIGHT.rotated(rig.fork.global_rotation+deg_to_rad(rig.fork_tip_angle_degrees))
 	check(incoming.dot(tip)>.999,"Flying fork tip points along its travel direction")
-	await create_timer(.6).timeout
+	while rig.flying:await process_frame
 	check(Vector2.RIGHT.rotated(upper.art.rotation).dot(incoming)>.999,"Embedded fork retains the incoming direction from the right")
 	rig.reset()
 	game.demon.get_node("Movement").enabled=false

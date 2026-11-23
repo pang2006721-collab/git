@@ -67,6 +67,8 @@
 
 [ext_resource type="PackedScene" path="res://scenes/environment/ocean_checkpoint.tscn" id="ocean_checkpoint"]
 
+[ext_resource type="PackedScene" path="res://scenes/environment/jungle_checkpoint.tscn" id="jungle_checkpoint"]
+
 [sub_resource type="ShaderMaterial" id="targetmaterial1"]
 shader = ExtResource("target_shader")
 shader_parameter/visibility_mask = ExtResource("targetmask1")
@@ -1478,3 +1480,5 @@ position = Vector2(0, 10)
 polygon = PackedVector2Array(-124, -22, 112, -22, 122, 12, 110, 84, 27, 112, -87, 92, -123, 67, -124, 9)
 
 [node name="OceanCheckpoint" parent="." instance=ExtResource("ocean_checkpoint")]
+
+[node name="JungleCheckpoint" parent="." instance=ExtResource("jungle_checkpoint")]

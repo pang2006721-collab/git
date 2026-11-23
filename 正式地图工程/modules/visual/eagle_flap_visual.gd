@@ -2,6 +2,7 @@ extends Node2D
 ## 三个明确拍翅关键姿势；仅下拍触发一次轻弹，目光独立追踪玩家。
 signal downstroke
 const ART = preload("res://assets/art/sky/formal/eagle_three_pose_clean.png")
+const SCREECH = preload("res://assets/art/sky/formal/eagle_screech.png")
 const FRAME_COUNT = 3
 const CELL_SIZE = 1024
 const EYES = [Vector4(0.465911,0.431193,0.514098,0.430873), Vector4(0.466483,0.436116,0.513920,0.436159), Vector4(0.462987,0.431141,0.515283,0.430432)]
@@ -14,6 +15,7 @@ var frame_index: int = 0
 var _clock: float = 0.0
 var _frames: Array[AtlasTexture] = []
 var gaze := Vector2.ZERO
+var screaming: bool = false
 func _ready() -> void:
     sprite = Sprite2D.new()
     sprite.use_parent_material = true
@@ -28,7 +30,7 @@ func _ready() -> void:
         _frames.append(frame)
     sample_frame(0)
 func _process(delta: float) -> void:
-    if not is_visible_in_tree(): return
+    if not is_visible_in_tree() or screaming: return
     _clock = fposmod(_clock + delta, cycle_seconds)
     var phase := _clock / cycle_seconds
     var index := 0 if phase < .38 else (1 if phase < .57 else 2)
@@ -53,7 +55,20 @@ func sample_frame(index: int) -> void:
     if material is ShaderMaterial:
         material.set_shader_parameter("pose_index", float(frame_index))
         material.set_shader_parameter("eye_centers", EYES[frame_index])
+func set_screaming(value: bool) -> void:
+    screaming = value
+    sprite.position = Vector2.ZERO
+    if material is ShaderMaterial:
+        material.set_shader_parameter("screech_pose", value)
+        material.set_shader_parameter("gaze", Vector2.ZERO)
+    if value:
+        sprite.texture = SCREECH
+    else:
+        _clock = 0.0
+        sample_frame(0)
+
 func reset() -> void:
+    set_screaming(false)
     _clock = 0.0
     gaze = Vector2.ZERO
     if is_instance_valid(sprite): sprite.position = Vector2.ZERO

@@ -1,6 +1,7 @@
 shader_type canvas_item;
 #include "res://shaders/formal_sky_reference.gdshaderinc"
 uniform float reveal_alpha = 0.0;
+uniform bool screech_pose = false;
 uniform vec2 gaze = vec2(0.0);
 uniform float pose_index = 0.0;
 uniform vec4 eye_centers = vec4(.46575,.43024,.51458,.43024);
@@ -20,12 +21,12 @@ void fragment(){
     vec2 shift=gaze*vec2(2.8,2.2)/1024.0;
     vec4 c=texture(TEXTURE,UV);
     vec4 looking=texture(TEXTURE,UV-shift/vec2(3.0,1.0));
-    c=mix(c,looking,eyes);
+    if(!screech_pose) c=mix(c,looking,eyes);
     // A continuous brown-only color wash leaves eyes, pale fills and contour coverage intact.
     float r=max(c.r,.001);
     float brown=smoothstep(.20,.28,(c.r-c.g)/r)*smoothstep(.36,.44,(c.r-c.b)/r);
     float interior=smoothstep(.20,.40,c.r);
-    c.rgb=mix(c.rgb,vec3(125.0,80.0,19.0)/255.0,brown*interior);
+    if(!screech_pose) c.rgb=mix(c.rgb,vec3(125.0,80.0,19.0)/255.0,brown*interior);
     c.a*=(1.0-cover)*reveal_alpha;
     if(p.x<0.0 || p.x>1920.0 || p.y<0.0) c.a=0.0;
     COLOR=c;

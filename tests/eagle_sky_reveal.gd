@@ -70,7 +70,31 @@ func run():
     game.camera.global_position.y-=600
     sky._process(.016)
     check(sky.eagle.global_position.distance_to(before)<45,"Camera movement guides the flight without snapping the eagle")
+    var wide_rest: Vector2=game.camera.zoom
+    sky.circling_seconds=sky._phase_elapsed+.02
+    sky._process(.03)
+    check(sky.state==sky.State.SCREECHING and sky.eagle.screaming,"Circling periodically switches to the approved upward-screech pose")
+    check(sky.eagle.sprite.texture==sky.eagle.SCREECH,"Screech displays the approved flat-color image")
+    var call_start: Vector2=sky.eagle.global_position
+    sky._process(sky.screech_seconds*.5)
+    check(sky.eagle.global_position.y>call_start.y and sky.eagle.global_position.y<call_start.y+sky.screech_sink,"Calling eagle slowly sinks instead of holding a still pose")
+    sky._process(sky.screech_seconds*.5+.01)
+    check(sky._departure_start.distance_to(sky.eagle.global_position)<.01,"Departure continues smoothly from the lowered call position")
+    check(sky.state==sky.State.DEPARTING and not sky.eagle.screaming,"After the call the eagle resumes flapping and departs")
+    sky._process(sky.departure_seconds+.01)
+    check(sky.state==sky.State.HIDDEN and not sky.eagle.visible,"Eagle disappears only after flying above the viewport")
+    sky._process(sky.hidden_seconds-.1)
+    check(sky.state==sky.State.HIDDEN,"Eagle stays absent for the configured interval")
+    sky._process(.11)
+    check(sky.state==sky.State.REVEALING and sky.eagle.visible,"Next cycle starts below the screen")
+    check(sky.eagle.global_position.y>game.camera.global_position.y+500,"Repeat entrance begins below the viewport")
+    sky._process(sky.reveal_seconds+.01)
+    check(sky.state==sky.State.ACTIVE and game.camera.zoom==wide_rest,"Repeat entrance resumes circling without zooming the camera again")
+    sky.circling_seconds=.2
+    sky._process(.21)
+    check(sky.state==sky.State.SCREECHING,"The sequence repeats rather than ending after one call")
     sky.reset()
     check(not sky.eagle.visible and game.camera.zoom.is_equal_approx(Vector2.ONE*1.35) and sprite.scale==rest_scale,"Reset restores camera, character size and hidden eagle")
+    check(not sky.eagle.screaming and sky._phase_elapsed==0.0,"Reset cancels the call cycle and restores normal flight art")
     print("EAGLE_SKY_REVEAL_FAILURES=",failures.size())
     quit(0 if failures.is_empty() else 1)

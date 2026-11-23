@@ -3,6 +3,8 @@ extends Node2D
 signal revealed
 signal reveal_finished
 signal screeched
+signal departed
+signal cycle_reset
 @export var reveal_ascent: float=320.0
 @export var reveal_seconds: float=1.8
 @export var wide_zoom: float=1.0
@@ -76,6 +78,7 @@ func _process(delta: float) -> void:
             eagle.hide()
             _phase_elapsed=0.0
             state=State.HIDDEN
+            departed.emit()
         return
     if state==State.ACTIVE:
         _phase_elapsed+=delta
@@ -135,6 +138,7 @@ func _update_map_band() -> void:
     material.set_shader_parameter("map_current",load("res://assets/art/reference_map/%02d.png"%band))
     material.set_shader_parameter("map_below",load("res://assets/art/reference_map/%02d.png"%mini(8,band+1)))
 func reset() -> void:
+    cycle_reset.emit()
     if state!=State.WAITING and is_instance_valid(camera): camera.zoom=_rest_zoom
     state=State.WAITING
     elapsed=0

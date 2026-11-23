@@ -76,13 +76,14 @@ func _retry() -> void:
 	var from_zoom: Vector2 = camera.zoom
 	impact_shake.stop()
 	death_animation.reset()
-	var checkpoint := level.get_node("Checkpoint")
-	var use_checkpoint: bool = checkpoint.active
+	var checkpoint: Node2D = level.get_active_checkpoint()
+	var use_checkpoint: bool = checkpoint != null
 	level.restart()
 	level.dead = true
 	entry.reset_for_replay()
 	if use_checkpoint:
 		checkpoint.restore_player()
+		level.player.hide()
 	level.soul.hide()
 	level.demon.hide()
 	camera.set_process(false)
@@ -98,7 +99,8 @@ func _retry() -> void:
 	while not streamer.is_view_ready() and waited < 2.0:
 		await get_tree().create_timer(0.05, true, false, true).timeout
 		waited += 0.05
-	level.demon.show()
+	if use_checkpoint: level.player.show()
+	else: level.demon.show()
 	state = State.ENTERING
 	level.process_mode = _saved_mode
 	output.process_mode = _saved_output_mode
@@ -107,7 +109,7 @@ func _retry() -> void:
 		checkpoint.finish_return()
 		level.dead = false
 		state = State.PLAYING
-		camera.resume_follow_from_current_position(level.demon)
+		camera.resume_follow_from_current_position(level.player)
 		camera.set_process(true)
 		retry_finished.emit()
 	else:

@@ -80,7 +80,7 @@ func _physics_process(delta: float) -> void:
 func die(reason: StringName = &"impact") -> void:
 	if dead or exit_in_progress or not visible or not $WallEntry.completed:
 		return
-	if $Checkpoint.grace_remaining > 0.0:
+	if $Checkpoint.grace_remaining > 0.0 or $OceanCheckpoint.grace_remaining > 0.0:
 		return
 	var teleport := player.get_node_or_null("Teleport")
 	if teleport != null and teleport.is_invulnerable():
@@ -113,3 +113,8 @@ func restart() -> void:
 	for platform in platforms:
 		platform.reset()
 	camera.set_follow_target(soul, true)
+
+func get_active_checkpoint() -> Node2D:
+	if $OceanCheckpoint.active: return $OceanCheckpoint
+	if $Checkpoint.active: return $Checkpoint
+	return null

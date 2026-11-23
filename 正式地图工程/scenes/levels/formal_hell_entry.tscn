@@ -63,6 +63,8 @@
 [ext_resource type="Texture2D" uid="uid://druls3abs7vib" path="res://assets/art/hell/layers/wall_right/25.png" id="wall_right_25"]
 [ext_resource type="Texture2D" uid="uid://bgme0ckr31w40" path="res://assets/art/hell/new/zzz.png" id="zzz_art"]
 
+[ext_resource type="PackedScene" path="res://scenes/environment/hell_checkpoint.tscn" id="hell_checkpoint"]
+
 [sub_resource type="ShaderMaterial" id="targetmaterial1"]
 shader = ExtResource("target_shader")
 shader_parameter/visibility_mask = ExtResource("targetmask1")
@@ -1454,3 +1456,6 @@ script = ExtResource("segment_start")
 [node name="RisingLava" parent="." unique_id=2111210648 instance=ExtResource("rising_lava")]
 
 [node name="FlyingEnemies" parent="." unique_id=382193664 instance=ExtResource("flying_enemies")]
+
+[node name="Checkpoint" parent="." instance=ExtResource("hell_checkpoint")]
+position = Vector2(1190, 44675.5)

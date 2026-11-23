@@ -76,9 +76,13 @@ func _retry() -> void:
 	var from_zoom: Vector2 = camera.zoom
 	impact_shake.stop()
 	death_animation.reset()
+	var checkpoint := level.get_node("Checkpoint")
+	var use_checkpoint: bool = checkpoint.active
 	level.restart()
 	level.dead = true
 	entry.reset_for_replay()
+	if use_checkpoint:
+		checkpoint.restore_player()
 	level.soul.hide()
 	level.demon.hide()
 	camera.set_process(false)
@@ -99,7 +103,15 @@ func _retry() -> void:
 	level.process_mode = _saved_mode
 	output.process_mode = _saved_output_mode
 	streamer.process_mode = _saved_streamer_mode
-	entry.play()
+	if use_checkpoint:
+		checkpoint.finish_return()
+		level.dead = false
+		state = State.PLAYING
+		camera.resume_follow_from_current_position(level.demon)
+		camera.set_process(true)
+		retry_finished.emit()
+	else:
+		entry.play()
 
 func _entry_finished() -> void:
 	if state != State.ENTERING:

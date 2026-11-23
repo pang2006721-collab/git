@@ -1,9 +1,14 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://modules/environment/jungle_checkpoint.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/art/jungle/checkpoint/diamond.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/art/jungle/checkpoint/binding.png" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/environment/checkpoint_branch.tscn" id="4"]
+
+[ext_resource type="Shader" path="res://shaders/jungle_binding_outline.gdshader" id="outline"]
+
+[sub_resource type="ShaderMaterial" id="BindingOutline"]
+shader = ExtResource("outline")
 
 [sub_resource type="AtlasTexture" id="Diamond"]
 atlas = ExtResource("2")
@@ -12,7 +17,7 @@ filter_clip = true
 
 [sub_resource type="AtlasTexture" id="Binding"]
 atlas = ExtResource("3")
-region = Rect2(1117,827,86,110)
+region = Rect2(1111,821,98,122)
 filter_clip = true
 
 [node name="JungleCheckpoint" type="Node2D"]
@@ -26,6 +31,7 @@ texture = SubResource("Diamond")
 
 [node name="Binding" type="Sprite2D" parent="."]
 z_index = 11
+material = SubResource("BindingOutline")
 texture = SubResource("Binding")
 
 [node name="Contact" type="Marker2D" parent="."]

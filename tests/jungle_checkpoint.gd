@@ -25,6 +25,7 @@ func run() -> void:
     game.get_node("WallEntry").reset_for_replay()
     game.get_node("WallEntry").completed=true
     var point=game.get_node("JungleCheckpoint")
+    check(point.global_position.y>23190 and point.global_position.y<23230,"Binding hangs below the main vine underside")
     var body=point.body
     point.restore_player()
     var branch=point.get_node("Branch")

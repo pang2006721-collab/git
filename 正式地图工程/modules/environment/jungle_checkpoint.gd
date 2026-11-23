@@ -1,10 +1,10 @@
 extends Node2D
 ## 主藤蔓上的静止绑钻；碰触崩开绑藤，复活落在短暂承重的小树枝上。
 signal activated
-@export var map_position: Vector2 = Vector2(1100,22846)
+@export var map_position: Vector2 = Vector2(1100,23213)
 @export var trigger_radius: float = 105.0
 @export var float_lift: float = 90.0
-@export var branch_offset: Vector2 = Vector2(240,150)
+@export var branch_offset: Vector2 = Vector2(-430,120)
 @export var respawn_grace_seconds: float = 1.5
 var active: bool = false
 var grace_remaining: float = 0.0
@@ -38,15 +38,17 @@ func activate() -> void:
 
 func _burst_binding() -> void:
     var texture: AtlasTexture=$Binding.texture
+    var strip_width: float=texture.region.size.x/4.0
     for i in 4:
         var crop:=AtlasTexture.new()
         crop.atlas=texture.atlas
-        crop.region=Rect2(texture.region.position+Vector2(i*21.5,0),Vector2(21.5,texture.region.size.y))
+        crop.region=Rect2(texture.region.position+Vector2(i*strip_width,0),Vector2(strip_width,texture.region.size.y))
         crop.filter_clip=true
         var piece:=Sprite2D.new()
         piece.texture=crop
+        piece.material=$Binding.material
         piece.z_index=11
-        piece.position=Vector2((i-1.5)*21.5,0)
+        piece.position=Vector2((i-1.5)*strip_width,0)
         add_child(piece)
         var motion:=create_tween().set_parallel(true)
         motion.tween_property(piece,"position",piece.position+Vector2((i-1.5)*85,35 if i%2==0 else -55),.4).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)

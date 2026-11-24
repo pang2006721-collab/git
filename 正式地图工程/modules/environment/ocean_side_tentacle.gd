@@ -62,6 +62,7 @@ func _ready() -> void:
 
 func _eligible() -> bool:
     var ocean_y: float = level.to_local(fish.global_position).y
+    if stage.has_node("Pacing") and not stage.get_node("Pacing").side_tentacle_allowed: return false
     return stage.active and stage.host.claimed and level.player == fish and not level.dead and not level.exit_in_progress and level.visible and ocean_y >= 29978.0 and ocean_y <= 39138.0
 
 func _physics_process(delta: float) -> void:

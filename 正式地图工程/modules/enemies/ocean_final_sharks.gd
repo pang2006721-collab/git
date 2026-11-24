@@ -30,6 +30,9 @@ func _physics_process(_delta: float) -> void:
         return
     var depth: float = fish.position.y-shore.surface_y
     if depth>trigger_depth or depth<80.0 or fish.velocity.y>-40.0: return
+    if stage.has_node("Pacing"):
+        if not stage.get_node("Pacing").can_start_final(): return
+        stage.get_node("Pacing").prepare_final()
     triggered = true
     for shark in sharks:
         shark.lock_seconds = lock_seconds

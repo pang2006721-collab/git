@@ -32,6 +32,8 @@
 
 [ext_resource type="PackedScene" path="res://scenes/enemies/ocean_final_sharks.tscn" id="final_sharks"]
 
+[ext_resource type="Script" path="res://modules/environment/ocean_encounter_pacing.gd" id="pacing"]
+
 [sub_resource type="AtlasTexture" id="StrandedFish"]
 atlas = ExtResource("stranded_art")
 region = Rect2(1087,1968,130,85)
@@ -145,3 +147,6 @@ camera_path = NodePath("../../../Camera")
 script = ExtResource("jungle_handoff")
 
 [node name="JellyfishReveal" parent="." instance=ExtResource("jellyfish_reveal")]
+
+[node name="Pacing" type="Node" parent="."]
+script = ExtResource("pacing")

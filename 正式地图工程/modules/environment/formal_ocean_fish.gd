@@ -1,7 +1,5 @@
 extends Node2D
 ## 仅装配旧鱼角色、附身和游泳程序；原海图与地形仍由正式场景提供。
-@export var octopus_zone_bottom: float = 36000.0
-@export var octopus_zone_top: float = 33000.0
 @export var shark_surface_safe_depth: float = 1200.0
 var active: bool = false
 var _spawn: Vector2
@@ -29,7 +27,7 @@ func _ready() -> void:
     $Shark.player_hit.connect(_on_shark_hit)
     $FinalSharks.player_hit.connect(_on_final_shark_hit)
     $Octopus.configure(fish,get_node("../../Camera"))
-    $Octopus.ink_sprayed.connect($InkOverlay.splash)
+    $Octopus.ink_sprayed.connect(_on_ink_sprayed)
     $JellyfishBoss.configure(fish,get_node("../../Camera"),level.to_global(Vector2(960,0)).x)
     $BossTentacleNet.configure(fish,$JellyfishBoss,$SideTentacle)
     $BossTentacleNet.player_hit.connect(_on_boss_net_hit)
@@ -37,37 +35,35 @@ func _ready() -> void:
         lane.configure(fish,get_node("../../Camera"))
         lane.player_hit.connect(_on_pink_shark_hit)
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
     var y: float = level.to_local(fish.global_position).y
     var can_attack: bool = $ShoreExit.state==$ShoreExit.State.SWIMMING and active and host.claimed and level.player == fish and not level.dead and not level.exit_in_progress and level.visible and y >= 29978.0 and y <= 39138.0
-    var near_surface: bool = fish.position.y<=$ShoreExit.surface_y+shark_surface_safe_depth
-    $Shark.enabled = can_attack and not near_surface
-    # 浅水区连已发出的冲刺也退场，不把深水追击带到出水位置。
-    if near_surface and $Shark.state!=$Shark.State.WAITING: $Shark.reset()
-    $JellyfishBoss.enabled = can_attack
-    $BossTentacleNet.enabled = can_attack and y>=32000.0
-    for lane in $PinkSharks.get_children(): lane.damage_enabled = can_attack
-    if not (level.dead and level.death_reason in [&"shark",&"pink_shark"]):
-        $Octopus.enabled = can_attack and y<=octopus_zone_bottom and y>=octopus_zone_top
-        if not can_attack: $InkOverlay.reset()
+    $Pacing.update(delta,can_attack,y)
+
+func _on_ink_sprayed() -> void:
+    if $Pacing.damage_allowed(): $InkOverlay.splash()
 
 func _on_stranded_fish_died() -> void:
     if level.player==fish: level.die(&"stranded")
 
 func _on_shark_hit(direction: Vector2) -> void:
+    if not $Pacing.damage_allowed(): return
     if fish.position.y<=$ShoreExit.surface_y+shark_surface_safe_depth: return
     $SharkKnockback.impact_direction = direction
     level.die(&"shark")
 
 func _on_final_shark_hit(direction: Vector2) -> void:
+    if not $Pacing.damage_allowed(): return
     $SharkKnockback.impact_direction = direction
     level.die(&"shark")
 
 func _on_pink_shark_hit(direction: Vector2) -> void:
+    if not $Pacing.damage_allowed(): return
     $SharkKnockback.impact_direction = direction
     level.die(&"pink_shark")
 
 func _on_boss_net_hit(direction: Vector2) -> void:
+    if not $Pacing.damage_allowed(): return
     fish.get_node("Stun").apply(direction)
 
 func activate() -> void:
@@ -112,6 +108,7 @@ func _on_player_died() -> void:
     possession.clear_selection()
 
 func reset() -> void:
+    $Pacing.reset()
     $FinalSharks.reset()
     $JellyfishReveal.reset()
     fish.get_node("Stun").reset(false)

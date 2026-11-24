@@ -10,6 +10,7 @@ signal appeared(octopus: Node2D)
         if enabled == value: return
         enabled = value
         if is_node_ready(): reset()
+var spawn_allowed: bool = true
 var target: CharacterBody2D
 var camera: Camera2D
 var cycle_elapsed: float = 0.0
@@ -31,7 +32,7 @@ func configure(player: CharacterBody2D, view: Camera2D) -> void:
     for visitor in visitors: visitor.configure(player,view)
 
 func _physics_process(delta: float) -> void:
-    if not enabled or _finishing_visit or not is_instance_valid(target): return
+    if not enabled or not spawn_allowed or _finishing_visit or not is_instance_valid(target): return
     if is_inf(_next_encounter_y):
         _next_encounter_y = target.global_position.y-first_encounter_distance
     cycle_elapsed = minf(cycle_elapsed+delta,spawn_interval)
@@ -61,6 +62,7 @@ func finish_current_visit() -> void:
     for visitor in visitors: visitor.finish_current_visit()
 
 func reset() -> void:
+    spawn_allowed = true
     cycle_elapsed = spawn_interval
     _side = 1
     _next_encounter_y = INF

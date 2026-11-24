@@ -42,7 +42,7 @@ func run() -> void:
     check(pink.get_children().all(func(lane):return not lane.started and not lane.running),"Pink waves clear before middle zone")
     octopus.visitors[0].state=octopus.visitors[0].State.SWIMMING
     pacing.update(0,true,35000)
-    check(not octopus.spawn_allowed and not stage.get_node("BossTentacleNet").enabled,"Existing octopus visit prevents stacked visitor and tentacle attacks")
+    check(not octopus.spawn_allowed and stage.get_node("BossTentacleNet").enabled,"Existing octopus visit prevents duplicate visitors while jellyfish keeps attacking")
     ink.splash()
     fish.global_position=game.to_global(Vector2(960,33000))
     pacing.update(0,true,33000)

@@ -83,7 +83,9 @@ func update(delta: float,can_attack: bool,y: float) -> void:
     shark.enabled=can_attack and late and not final_phase and not blocked and screen_clear and not octopus_busy
     if (not late or final_phase or blocked or not screen_clear) and shark.state!=shark.State.WAITING:
         shark.cancel_pending_attack()
-    net.enabled=can_attack and middle and not blocked and screen_clear and not octopus_busy and not final_phase
+    # 水母是全程压力，不随粉红鲨/章鱼/追击鲨的分段或访客入场而停攻。
+    # 墨汁期间仍有预警和障碍，但命中回调沿用保护，避免盲视连续受罚。
+    net.enabled=can_attack and not blocked and not final_phase
     if not net.enabled and not net.rows.is_empty(): net.reset()
     side_tentacle_allowed=can_attack and not blocked and screen_clear and not final_phase and shark.state==shark.State.WAITING and not octopus_busy
     if not can_attack: ink.reset()

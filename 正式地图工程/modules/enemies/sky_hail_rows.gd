@@ -42,7 +42,11 @@ func _ready() -> void:
     encounter.departed.connect(_on_departed)
     encounter.revealed.connect(_stop_emitting)
     encounter.cycle_reset.connect(reset)
-    get_node("../../../../..").died.connect(reset)
+    get_node("../../../../..").died.connect(_on_player_died)
+func _on_player_died() -> void:
+    _stop_emitting()
+    process_mode=Node.PROCESS_MODE_ALWAYS
+
 func _can_play() -> bool:
     var stage: Node=encounter.stage
     return stage.active and stage.level.player==bird and bird.get_node("Host").claimed and bird.visible and not stage.level.dead and not stage.level.exit_in_progress
@@ -62,10 +66,11 @@ func _stop_emitting() -> void:
     _emitting=false
     _remaining=0
 func _physics_process(delta: float) -> void:
-    if not _can_play():
+    var can_hit: bool=_can_play()
+    if not can_hit and not encounter.stage.level.dead:
         if _emitting or not stones.is_empty(): reset()
         return
-    if _emitting:
+    if _emitting and can_hit:
         _timer-=delta
         if _timer<=0:
             _spawn_row()
@@ -86,7 +91,9 @@ func _physics_process(delta: float) -> void:
         stone.age+=delta
         art.rotation+=stone.spin*delta
         var relative:=Geometry2D.get_closest_point_to_segment(Vector2.ZERO,previous-last_target,art.global_position-target)
-        if relative.length()<float(stone.radius)+BIRD_RADIUS: hit=true
+        if can_hit and not stone.get("hit_reported",false) and relative.length()<float(stone.radius)+BIRD_RADIUS:
+            stone.hit_reported=true
+            hit=true
         if art.global_position.y>bottom or stone.age>8.0:
             art.hide()
             art.queue_free()
@@ -145,6 +152,7 @@ func is_wave_active() -> bool:
         if stone.art.global_position.y-float(stone.radius)*1.9<=bottom: return true
     return false
 func reset(reset_difficulty: bool=true) -> void:
+    process_mode=Node.PROCESS_MODE_INHERIT
     if reset_difficulty:
         _wave_count=0
         _row_pattern=0

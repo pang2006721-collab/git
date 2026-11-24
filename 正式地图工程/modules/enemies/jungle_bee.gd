@@ -65,7 +65,12 @@ func _physics_process(delta: float) -> void:
         _tick_deflection(delta)
         return
     if not encounter.is_active():
-        flight.tick(self,target,encounter.flight_bounds(),delta,encounter.enemies())
+        if mode==Mode.DARTING:
+            velocity=_dart_velocity
+            move_and_slide()
+            if elapsed>=dart_seconds: _set_mode(Mode.RECOVERING)
+        else:
+            flight.tick(self,target,encounter.flight_bounds(),delta,encounter.enemies())
         _pose(delta)
         return
     var motion_start: Vector2=global_position
@@ -118,7 +123,6 @@ func _physics_process(delta: float) -> void:
             _hit=true
             encounter.defeat_player()
             stung.emit()
-            _set_mode(Mode.RECOVERING)
         elif elapsed>=dart_seconds: _set_mode(Mode.RECOVERING)
     elif mode==Mode.RECOVERING:
         velocity=velocity.move_toward(Vector2.ZERO,delta*1400)

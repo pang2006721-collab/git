@@ -91,15 +91,11 @@ func _on_player_died() -> void:
     $JungleHandoff.cancel()
     $SurfaceGrab.reset()
     $JellyfishBoss.enabled = false
-    $BossTentacleNet.enabled = false
-    $Shark.cancel_pending_attack()
+    $BossTentacleNet.finish_existing()
+    $Shark.finish_current_attack()
     for lane in $PinkSharks.get_children(): lane.damage_enabled = false
-    if level.death_reason in [&"shark",&"pink_shark"]:
-        $Octopus.finish_current_visit()
-        $InkOverlay.process_mode = Node.PROCESS_MODE_ALWAYS
-    else:
-        $Octopus.enabled = false
-        $InkOverlay.reset()
+    $Octopus.finish_current_visit()
+    $InkOverlay.process_mode = Node.PROCESS_MODE_ALWAYS
     fish.get_node("Teleport").enabled = false
     fish.get_node("Teleport").reset()
     if possession.state == PossessionController.State.TRANSFERRING:

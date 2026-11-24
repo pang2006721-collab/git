@@ -44,7 +44,7 @@ func _cancel() -> void:
     for shark in sharks: shark.cancel_pending_attack()
 
 func _on_death() -> void:
-    _cancel()
+    for shark in sharks: shark.finish_current_attack()
 
 func reset() -> void:
     _cancel()

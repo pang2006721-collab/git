@@ -63,6 +63,7 @@ func run() -> void:
     check(await until(func():return trio.triggered),"Reset rearms wave")
     trio.player_hit.emit(Vector2.LEFT)
     check(game.dead and game.death_reason==&"shark","Final sharks can hit in shallow water")
-    check(trio.sharks.all(func(s):return not s.visible and not s.enabled),"Death clears all final sharks")
+    check(trio.sharks.all(func(s):return s.visible and not s.enabled),"Death preserves all final sharks and stops further damage")
+    check(await until(func():return trio.sharks.all(func(s):return s.state==s.State.WAITING)),"Final sharks naturally finish their committed attacks after death")
     print("OCEAN_FINAL_SHARKS_FAILURES=",failures.size())
     quit(0 if failures.is_empty() else 1)

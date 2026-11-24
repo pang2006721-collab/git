@@ -5,6 +5,8 @@ signal player_hit(direction: Vector2)
 const WARNING = preload("res://modules/visual/tentacle_warning.gd")
 const TENDRIL = preload("res://modules/visual/jellyfish_net_tendril.gd")
 @export var enabled: bool = false
+var spawn_allowed: bool = true
+var damage_enabled: bool = true
 @export var wave_interval: float = 1.65
 @export var minimum_ascent: float = 180.0
 @export var spawn_ahead_pixels: float = 800.0
@@ -48,7 +50,7 @@ func _physics_process(delta: float) -> void:
     _elapsed += delta
     _blink_grace = maxf(0,_blink_grace-delta)
     var fish_y := to_local(target.global_position).y
-    if _blink_grace<=0 and boss.state==boss.State.PRESENT and _elapsed>=wave_interval and (_last_row_y==INF or _last_row_y-fish_y>=minimum_ascent): _spawn_row()
+    if spawn_allowed and _blink_grace<=0 and boss.state==boss.State.PRESENT and _elapsed>=wave_interval and (_last_row_y==INF or _last_row_y-fish_y>=minimum_ascent): _spawn_row()
     var remove: Array[Dictionary] = []
     for row in rows:
         row.age += delta
@@ -81,8 +83,9 @@ func _physics_process(delta: float) -> void:
             var local_center: Vector2 = tendril.to_local(center)
             var nearby: bool = local_center.y>=minf(tendril.start.y,tendril.finish.y)-tentacle_thickness and local_center.y<=maxf(tendril.start.y,tendril.finish.y)+tentacle_thickness
             var teleport := target.get_node_or_null("Teleport")
-            if row.dodge_grace<=0 and nearby and not _hit and (stun==null or not stun.is_protected()) and (teleport==null or not teleport.is_invulnerable()) and tendril.touches(center,24+(stun.contact_margin if stun!=null else 0)):
+            if damage_enabled and not row.get("hit_reported",false) and row.dodge_grace<=0 and nearby and not _hit and (stun==null or not stun.is_protected()) and (teleport==null or not teleport.is_invulnerable()) and tendril.touches(center,24+(stun.contact_margin if stun!=null else 0)):
                 _hit = true
+                row.hit_reported=true
                 player_hit.emit(Vector2(signf(tendril.finish.x-tendril.start.x),.15))
         if row_top-fish_y>1900: remove.append(row)
     for row in remove:
@@ -150,7 +153,16 @@ func _on_teleported(_from: Vector2, _destination: Vector2) -> void:
         row.dodge_grace = .65
     _blink_grace = .65
 
+func finish_existing() -> void:
+    process_mode=Node.PROCESS_MODE_ALWAYS
+    enabled=true
+    spawn_allowed=false
+    damage_enabled=false
+
 func reset() -> void:
+    process_mode=Node.PROCESS_MODE_INHERIT
+    spawn_allowed=true
+    damage_enabled=true
     enabled = false
     for row in rows: row.node.queue_free()
     rows.clear()

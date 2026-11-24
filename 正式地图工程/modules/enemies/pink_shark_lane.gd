@@ -17,6 +17,7 @@ var left_edge: float = -260.0
 var right_edge: float = 2180.0
 var _clock: float = 0.0
 var _anchors: Array
+var _contacts: Dictionary = {}
 @onready var sharks: Array[Node] = get_children()
 @onready var lead: Area2D = $Lead
 @onready var follower: Area2D = $Follower
@@ -57,9 +58,13 @@ func _physics_process(delta: float) -> void:
     var teleport := target.get_node_or_null("Teleport")
     if teleport != null and teleport.is_invulnerable(): return
     for shark in sharks:
+        var id: int = shark.get_instance_id()
         if shark.overlaps_body(target):
-            player_hit.emit(Vector2(float(direction),0))
-            return
+            if not _contacts.has(id):
+                _contacts[id] = true
+                player_hit.emit(Vector2(float(direction),0))
+        else:
+            _contacts.erase(id)
 
 func _view_rect() -> Rect2:
     var size := camera.get_viewport_rect().size/camera.zoom
@@ -78,6 +83,7 @@ func _register_frame(sprite: AnimatedSprite2D) -> void:
     sprite.offset = Vector2(256,256)-Vector2(pivot[0],pivot[1])
 
 func reset() -> void:
+    _contacts.clear()
     running = false
     damage_enabled = false
     started = false

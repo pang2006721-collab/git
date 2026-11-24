@@ -14,6 +14,7 @@ var _rng:=RandomNumberGenerator.new()
 
 func _ready() -> void:
     _rng.randomize()
+    level.died.connect(func(): process_mode=Node.PROCESS_MODE_ALWAYS)
     enemy_spawned.connect(level.get_node("CameraAttention").notify_incoming)
 
 func is_active() -> bool:
@@ -88,6 +89,7 @@ func _shoot(aim: Vector2, origin: Vector2) -> void:
     total_shots+=1
 
 func reset() -> void:
+    process_mode=Node.PROCESS_MODE_INHERIT
     _next_side=-1.0
     elapsed=0
     for child in $Enemies.get_children()+$Projectiles.get_children():

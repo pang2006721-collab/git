@@ -68,17 +68,16 @@ func _eligible() -> bool:
 func _physics_process(delta: float) -> void:
     if level.dead:
         linger_elapsed = 0.0
-        if attacking and level.death_reason == &"tentacle":
+        if attacking:
             _clock += delta
             _sample_attack()
-        return
-    if not _eligible():
-        linger_elapsed = 0.0
-        if not level.dead and attacking: reset()
         return
     if attacking:
         _clock += delta
         _sample_attack()
+        return
+    if not _eligible():
+        linger_elapsed = 0.0
         return
     _cooldown = maxf(0.0, _cooldown - delta)
     var next_side := _side_at_fish()
@@ -168,6 +167,7 @@ func _sample_attack() -> void:
         fish.get_node("Stun").apply(Vector2(float(-side),.25))
 
 func _touches_fish() -> bool:
+    if level.dead or level.player!=fish: return false
     if fish.get_node("Teleport").is_invulnerable() or fish.get_node("Stun").is_protected(): return false
     var shape := fish.get_node("Collision") as CollisionShape2D
     var center := _rig.to_local(shape.global_position)

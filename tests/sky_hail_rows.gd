@@ -132,7 +132,11 @@ func run():
     hail._previous_target=bird.global_position
     hail._physics_process(.05)
     check(game.dead and game.death_reason==&"hail","A direct hail hit defeats the bird")
-    check(hail.stones.is_empty() and not hail._emitting,"Death clears the active hail burst")
+    check(not hail.stones.is_empty() and not hail._emitting,"Death preserves falling hail and stops subsequent rows")
+    var falling: Sprite2D = hail.stones[0].art
+    var before: Vector2 = falling.global_position
+    hail._physics_process(.1)
+    check(falling.global_position.y>before.y,"Hail continues falling after a hit")
     print("SKY_HAIL_ROWS_FAILURES=",failures.size())
     game.queue_free()
     await process_frame

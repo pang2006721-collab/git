@@ -23,9 +23,9 @@ enum State { WAITING, LOCKING, DASHING }
 @export var enabled: bool = false:
     set(value):
         if enabled == value: return
+        if value and _finishing and state!=State.WAITING: return
         enabled = value
-        # 暂时失控时可完成当前冲刺；玩家死亡由统一清理和自身检查立即退场。
-        if is_node_ready() and state != State.DASHING: reset()
+        if is_node_ready() and not _finishing and state != State.DASHING: reset()
 var target: CharacterBody2D
 var camera: Camera2D
 var state: State = State.WAITING
@@ -38,6 +38,7 @@ var _screen_anchor := Vector2.ZERO
 var _anchors: Dictionary
 var _hit_reported: bool = false
 var _first_attack: bool = true
+var _finishing: bool = false
 @onready var visual: Node2D = $Visual
 @onready var sprite: AnimatedSprite2D = $Visual/Art
 
@@ -54,20 +55,19 @@ func configure(player: CharacterBody2D, view: Camera2D) -> void:
     camera = view
 
 func _physics_process(delta: float) -> void:
-    if _target_dead():
-        cancel_pending_attack()
-        return
+    if _target_dead() and not _finishing:
+        finish_current_attack()
     if state == State.DASHING and is_instance_valid(camera):
         state_elapsed += delta
         if enabled: cycle_elapsed += delta
         _advance_dash(delta)
         return
-    if not enabled or not is_instance_valid(target) or not is_instance_valid(camera): return
+    if (not enabled and not _finishing) or not is_instance_valid(target) or not is_instance_valid(camera): return
     cycle_elapsed += delta
     state_elapsed += delta
     match state:
         State.WAITING:
-            if automatic_attacks and cycle_elapsed >= (first_spawn_delay if _first_attack else spawn_interval): _begin_lock()
+            if enabled and automatic_attacks and cycle_elapsed >= (first_spawn_delay if _first_attack else spawn_interval): _begin_lock()
         State.LOCKING:
             _follow_lock_view()
             locked_point = _predicted_target(global_position)
@@ -80,15 +80,20 @@ func _physics_process(delta: float) -> void:
                 sprite.play(&"windup")
 
 func _process(_delta: float) -> void:
-    if _target_dead():
-        cancel_pending_attack()
-        return
-    if enabled and state == State.LOCKING: _follow_lock_view()
+    if _target_dead() and not _finishing:
+        finish_current_attack()
+    if (enabled or _finishing) and state == State.LOCKING: _follow_lock_view()
 
 func _target_dead() -> bool:
     if not is_instance_valid(target): return false
     var stage := target.get_parent()
     return stage.get("level")!=null and stage.level.dead
+
+func finish_current_attack() -> void:
+    # 命中/死亡只停后续出手，现有蓄力和冲刺完整播放到出画。
+    _finishing=true
+    enabled=false
+    _hit_reported=true
 
 func cancel_pending_attack() -> void:
     enabled = false
@@ -227,8 +232,11 @@ func _finish_attack() -> void:
     hide()
     sprite.pause()
     if not enabled: cycle_elapsed = 0.0
+    if _finishing: _first_attack=true
+    _finishing=false
 
 func reset() -> void:
+    _finishing=false
     _first_attack = true
     cycle_elapsed = 0.0
     state_elapsed = 0.0

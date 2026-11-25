@@ -7,8 +7,10 @@ const GAP_WIDTH = 1
 const BIRD_RADIUS = 26.0
 @export var rows_per_wave: int = 3
 @export_range(1,5) var max_rows_per_wave: int = 5
-@export var row_interval: float = 1.1
+@export var row_interval: float = 1.35
 @export var first_row_delay: float = .3
+@export var melt_seconds: float = .38
+@export var flame_reach: float = 42.0
 @export var fall_speed: float = 420.0
 @export var fall_gravity: float = 100.0
 @export var spin_min: float = .8
@@ -90,11 +92,24 @@ func _physics_process(delta: float) -> void:
         stone.speed+=fall_gravity*delta
         stone.age+=delta
         art.rotation+=stone.spin*delta
+        if stone.get("melting",false):
+            stone.melt_elapsed+=delta
+            var remaining: float=maxf(0.0,1.0-stone.melt_elapsed/maxf(melt_seconds,.01))
+            art.scale=stone.original_scale*remaining
+            art.modulate=Color(1,1,1,smoothstep(0.0,.3,remaining))
+            stone.radius=stone.original_radius*remaining
         var relative:=Geometry2D.get_closest_point_to_segment(Vector2.ZERO,previous-last_target,art.global_position-target)
+        var fire: Node=bird.get_node("Boost")
+        if can_hit and not stone.get("melting",false) and fire.is_burning() and relative.length()<float(stone.radius)+BIRD_RADIUS+flame_reach:
+            stone.melting=true
+            stone.melt_elapsed=0.0
+            stone.hit_reported=true
+            stone.original_scale=art.scale
+            stone.original_radius=stone.radius
         if can_hit and not stone.get("hit_reported",false) and relative.length()<float(stone.radius)+BIRD_RADIUS:
             stone.hit_reported=true
             hit=true
-        if art.global_position.y>bottom or stone.age>8.0:
+        if art.global_position.y>bottom or stone.age>8.0 or (stone.get("melting",false) and stone.melt_elapsed>=melt_seconds):
             art.hide()
             art.queue_free()
             stones.remove_at(i)

@@ -78,7 +78,7 @@ func run():
     check(not game.dead,"Bird passes through the single-slot gap safely")
     check(first.global_position.y>old_position.y and absf(first.rotation-old_angle)>.1,"Falling hail also self-rotates")
     bird.global_position.y=game.camera.global_position.y+2000
-    hail._physics_process(.4)
+    hail._physics_process(hail.row_interval-.8+.02)
     check(rows.size()==2 and rows[1].count==7,"Following row alternates to seven hailstones")
     check(rows[0].safe_right<rows[1].safe_left or rows[1].safe_right<rows[0].safe_left,"Adjacent openings never leave a shared vertical shortcut")
     for row_data in rows:
@@ -89,10 +89,10 @@ func run():
     var boosted_speed: float=motor.move_speed
     var boosted_acceleration: float=motor.acceleration
     var shift_distance: float=absf(rows[1].center-rows[0].center)
-    check(shift_distance/motor.move_speed+motor.move_speed/(2*motor.acceleration)<hail.row_interval,"Actual Shift speed reaches the next staggered opening in time")
+    check(shift_distance/motor.move_speed+motor.move_speed/(2*motor.acceleration)<hail.row_interval,"Ordinary flight reaches the next staggered opening in time")
     Input.action_release(&"bird_boost")
     bird.get_node("Boost").reset()
-    for i in 13: hail._physics_process(.1)
+    for i in int(ceil(hail.row_interval/.1))+2: hail._physics_process(.1)
     check(rows.size()==hail.rows_per_wave and not hail._emitting,"Each eagle departure produces a bounded burst")
     for expected_rows in [4,5,5]:
         rows.clear()
@@ -104,7 +104,7 @@ func run():
             var after: Dictionary=rows[index]
             check(before.safe_right<after.safe_left or after.safe_right<before.safe_left,"Every later pair also blocks a straight vertical shortcut")
             var distance: float=absf(after.center-before.center)
-            check(distance/boosted_speed+boosted_speed/(2*boosted_acceleration)<hail.row_interval,"Every staggered transition is reachable with the real boost controller")
+            check(distance/boosted_speed+boosted_speed/(2*boosted_acceleration)<hail.row_interval,"Every staggered transition remains reachable at ordinary flight speed")
         check(not hail.is_wave_active(),"Completed wave clears all remaining falling hail")
     for i in counts.size():
         check(counts[i]==6+i%2,"Six/seven alternation continues across successive waves")

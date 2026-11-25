@@ -1,16 +1,21 @@
 extends Node
-## 正式小鸟长按 Shift 仅加强左右飞行；不改变拍翅上升与碰撞体。
+## Shift 燃烧融冰；身体颜色提示热量，过热后完全冷却才能重燃。
 @export var normal_speed_multiplier: float = .82
 @export var normal_flap_multiplier: float = .87
 @export var normal_acceleration_multiplier: float = .85
-@export var horizontal_multiplier: float = 2.4
-@export var acceleration_multiplier: float = 3.2
-@export_range(0.0,.6) var blur_amount: float = .20
-@export var blur_pixels: float = 4.0
+@export var burn_seconds: float = 1.2
+@export var cool_seconds: float = 3.0
+@export var cooling_delay: float = .3
 var amount: float = 0.0
+var heat: float = 0.0
+var overheated: bool = false
+var burning: bool = false
+var _release_required: bool = false
+var _cool_wait: float = 0.0
+var _clock: float = 0.0
 var _base: Dictionary = {}
 var _material: ShaderMaterial
-var _last_texture: Texture2D
+var _fire: Sprite2D
 @onready var body: CharacterBody2D = get_parent()
 @onready var motor: Node = get_node("../Movement")
 @onready var reader: PlatformerInput = get_node("../Input")
@@ -28,36 +33,62 @@ func _ready() -> void:
             InputMap.action_add_event(&"bird_boost",key)
     _base={"move_speed":motor.move_speed,"acceleration":motor.acceleration,"flap_speed":motor.flap_speed,"held_flap_interval":motor.held_flap_interval}
     _material=ShaderMaterial.new()
-    _material.shader=preload("res://shaders/bird_boost_blur.gdshader")
-    _material.set_shader_parameter("blur_pixels",blur_pixels)
+    _material.shader=preload("res://shaders/bird_heat.gdshader")
     sprite.material=_material
+    _fire=Sprite2D.new()
+    _fire.texture=preload("res://assets/art/sky/formal/bird_burning.png")
+    _fire.material=_material
+    _fire.scale=Vector2.ONE*1.6
+    sprite.get_parent().add_child(_fire)
+    _fire.hide()
 func _can_boost() -> bool:
     return host.claimed and reader.enabled and not reader.external_control and motor.enabled and body.visible
 func _physics_process(delta: float) -> void:
     if not _can_boost():
         reset()
         return
-    var held:=Input.is_action_pressed(&"bird_boost")
-    amount=move_toward(amount,1.0 if held else 0.0,delta*(8.0 if held else 6.0))
-    motor.move_speed=_base.move_speed*lerpf(normal_speed_multiplier,horizontal_multiplier,amount)
-    motor.acceleration=_base.acceleration*lerpf(normal_acceleration_multiplier,acceleration_multiplier,amount)
+    tick(delta,Input.is_action_pressed(&"bird_boost"))
+    motor.move_speed=_base.move_speed*normal_speed_multiplier
+    motor.acceleration=_base.acceleration*normal_acceleration_multiplier
     motor.flap_speed=_base.flap_speed*normal_flap_multiplier
     motor.held_flap_interval=_base.held_flap_interval
-func _process(_delta: float) -> void:
-    var direction:=Vector2(signf(body.velocity.x),0.0).rotated(-sprite.global_rotation)
-    if sprite.flip_h: direction.x=-direction.x
-    _material.set_shader_parameter("blur_direction",direction)
-    _material.set_shader_parameter("blur_strength",amount*blur_amount*smoothstep(60.0,260.0,absf(body.velocity.x)))
-    if sprite.texture!=_last_texture:
-        _last_texture=sprite.texture
-        if sprite.texture is AtlasTexture:
-            var frame: AtlasTexture=sprite.texture
-            var size: Vector2=frame.atlas.get_size()
-            _material.set_shader_parameter("frame_uv",Vector4(frame.region.position.x/size.x,frame.region.position.y/size.y,frame.region.end.x/size.x,frame.region.end.y/size.y))
-        else:
-            _material.set_shader_parameter("frame_uv",Vector4(0,0,1,1))
+func tick(delta: float,held: bool) -> void:
+    if not held: _release_required=false
+    burning=held and not overheated and not _release_required
+    if burning:
+        heat=minf(1.0,heat+delta/maxf(burn_seconds,.01))
+        _cool_wait=cooling_delay
+        if heat>=1.0:
+            overheated=true
+            _release_required=true
+            burning=false
+    else:
+        var cooling: float=maxf(0.0,delta-_cool_wait)
+        _cool_wait=maxf(0.0,_cool_wait-delta)
+        heat=maxf(0.0,heat-cooling/maxf(cool_seconds,.01))
+        if overheated and heat<=0.0:
+            overheated=false
+            body.get_node("Visual").play_selection_pulse()
+    amount=1.0 if burning else 0.0
+func is_burning() -> bool:
+    return burning and _can_boost()
+func _process(delta: float) -> void:
+    _clock+=delta
+    _material.set_shader_parameter("heat",heat)
+    _fire.visible=burning
+    sprite.self_modulate.a=0.0 if burning else 1.0
+    _fire.flip_h=sprite.flip_h
+    _fire.position=sprite.position
+    _fire.scale=Vector2.ONE*1.6*(1.0+.025*sin(_clock*(30.0 if heat>.75 else 16.0)))
 func reset() -> void:
     amount=0.0
+    heat=0.0
+    burning=false
+    overheated=false
+    _release_required=false
+    _cool_wait=0.0
+    sprite.self_modulate.a=1.0
+    if is_instance_valid(_fire): _fire.hide()
     if not _base.is_empty():
         for property in _base: motor.set(property,_base[property])
-    if _material!=null: _material.set_shader_parameter("blur_strength",0.0)
+    if _material!=null: _material.set_shader_parameter("heat",0.0)

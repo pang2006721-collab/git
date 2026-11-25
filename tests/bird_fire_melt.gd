@@ -1,0 +1,69 @@
+extends SceneTree
+var failures:Array[String]=[]
+func _initialize():run.call_deferred()
+func check(ok:bool,message:String):
+    if not ok: failures.append(message);push_error(message)
+func run():
+    var game=load("res://scenes/levels/formal_hell_entry.tscn").instantiate()
+    root.add_child(game)
+    current_scene=game
+    game.set_physics_process(false)
+    game.get_node("WallEntry").reset_for_replay()
+    game.get_node("WallEntry").completed=true
+    game.get_node("CameraAttention").enabled=false
+    game.died.disconnect(game.get_node("DeathFlow")._on_death)
+    var stage=game.get_node("OceanLink/FishStage")
+    stage.activate()
+    stage.set_physics_process(false)
+    for name in ["Shark","Octopus","PinkSharks","SideTentacle","JellyfishBoss","BossTentacleNet","SurfaceGrab"]:
+        stage.get_node(name).process_mode=Node.PROCESS_MODE_DISABLED
+    var layout=stage.get_node("JungleLayout")
+    var bird=layout.get_node("Bird")
+    bird.get_node("Host").take_control()
+    bird.get_node("Movement").set_physics_process(false)
+    bird.get_node("Patrol").set_physics_process(false)
+    game.player=bird
+    var sky=layout.get_node("SkyEagle")
+    sky.set_process(false)
+    var hail=sky.get_node("Hail")
+    hail.set_physics_process(false)
+    hail._rng.seed=43
+    game.camera.zoom=Vector2.ONE
+    game.camera.global_position=bird.global_position
+    game.camera.set_process(false)
+
+    bird.get_node("Input").external_control=false
+    var fire=bird.get_node("Boost")
+    fire.set_physics_process(false)
+    fire.tick(.5,true)
+    check(fire.is_burning() and fire.heat>0.4,"Shift burns and gradually heats")
+    fire.tick(.8,true)
+    check(fire.overheated and not fire.is_burning(),"Holding Shift reaches an automatic overheat cutoff")
+    fire.tick(3.5,true)
+    fire.tick(.1,true)
+    check(not fire.is_burning(),"Holding through cooldown cannot automatically relight")
+    fire.tick(.01,false)
+    fire.tick(.1,true)
+    check(fire.is_burning(),"Release and press relights after cooling")
+    hail._spawn_row()
+    var stone:Dictionary=hail.stones[0]
+    bird.global_position=stone.art.global_position+Vector2(0,40)
+    var old_scale:Vector2=stone.art.scale
+    hail._physics_process(.01)
+    check(not game.dead and stone.get("melting",false),"Burning contact starts melting without killing bird")
+    var point:Vector2=stone.art.global_position
+    hail._physics_process(.15)
+    check(stone.art.scale.x<old_scale.x and stone.art.scale.x>0,"Hail shrinks gradually instead of instantly disappearing")
+    check(stone.art.global_position.y>point.y,"Melting hail continues falling")
+    fire.reset()
+    hail._physics_process(.25)
+    check(not hail.stones.has(stone),"Already ignited hail finishes melting after flame ends")
+    check(fire.heat==0 and not fire.overheated,"Reset clears fire and heat")
+    hail.reset()
+    bird.global_position=game.camera.global_position
+    hail._spawn_row()
+    bird.global_position=hail.stones[0].art.global_position
+    hail._physics_process(.001)
+    check(game.dead,"Unlit bird still dies to solid hail")
+    print("BIRD_FIRE_MELT_FAILURES=",failures.size())
+    quit(0 if failures.is_empty() else 1)

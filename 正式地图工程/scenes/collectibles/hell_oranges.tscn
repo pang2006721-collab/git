@@ -1,151 +1,153 @@
-[gd_scene format=3]
-[ext_resource type="Script" path="res://modules/collectibles/hell_orange_trail.gd" id="trail"]
-[ext_resource type="Script" path="res://modules/collectibles/orange_pickup.gd" id="orange"]
-[ext_resource type="Texture2D" path="res://assets/art/collectibles/orange.png" id="art"]
-[node name="HellOranges" type="Node2D"]
-z_index=15
-script=ExtResource("trail")
+[gd_scene format=3 uid="uid://dnww7vstr7krf"]
 
-[node name="Checkpoint01" type="Node2D" parent="."]
-position=Vector2(1040.0,44512.46484375)
-script=ExtResource("orange")
+[ext_resource type="Texture2D" uid="uid://h6aa7rdqvcx8" path="res://assets/art/collectibles/orange.png" id="art"]
+[ext_resource type="Script" uid="uid://cim5aftitsa6t" path="res://modules/collectibles/orange_pickup.gd" id="orange"]
+[ext_resource type="Script" uid="uid://cr4yns703phje" path="res://modules/collectibles/hell_orange_trail.gd" id="trail"]
 
-[node name="Art" type="Sprite2D" parent="Checkpoint01"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="HellOranges" type="Node2D" unique_id=1112492311]
+z_index = 15
+script = ExtResource("trail")
 
-[node name="Checkpoint02" type="Node2D" parent="."]
-position=Vector2(1190.0,44512.46484375)
-script=ExtResource("orange")
+[node name="Checkpoint01" type="Node2D" parent="." unique_id=335786430]
+position = Vector2(1056, 44512)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="Checkpoint02"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="Checkpoint01" unique_id=572763700]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="Checkpoint03" type="Node2D" parent="."]
-position=Vector2(1340.0,44512.46484375)
-script=ExtResource("orange")
+[node name="Checkpoint02" type="Node2D" parent="." unique_id=141516551]
+position = Vector2(1184, 44512)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="Checkpoint03"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="Checkpoint02" unique_id=1294765121]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="ExitJump01" type="Node2D" parent="."]
-position=Vector2(1101.0,41961.0)
-script=ExtResource("orange")
+[node name="Checkpoint03" type="Node2D" parent="." unique_id=1387583173]
+position = Vector2(1312, 44512)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="ExitJump01"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="Checkpoint03" unique_id=320419882]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="ExitJump02" type="Node2D" parent="."]
-position=Vector2(1261.0,41961.0)
-script=ExtResource("orange")
+[node name="ExitJump01" type="Node2D" parent="." unique_id=1330515432]
+position = Vector2(1120, 41968)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="ExitJump02"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="ExitJump01" unique_id=1696493390]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="FirstLedge01" type="Node2D" parent="."]
-position=Vector2(1273.0,51115.96875)
-script=ExtResource("orange")
+[node name="ExitJump02" type="Node2D" parent="." unique_id=669233652]
+position = Vector2(1248, 41968)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="FirstLedge01"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="ExitJump02" unique_id=75278877]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="FirstLedge02" type="Node2D" parent="."]
-position=Vector2(1433.0,51115.96875)
-script=ExtResource("orange")
+[node name="FirstLedge01" type="Node2D" parent="." unique_id=2120702915]
+position = Vector2(1296, 51120)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="FirstLedge02"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="FirstLedge01" unique_id=1855970090]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="FirstTransfer01" type="Node2D" parent="."]
-position=Vector2(1619.0,51242.5)
-script=ExtResource("orange")
+[node name="FirstLedge02" type="Node2D" parent="." unique_id=1870171951]
+position = Vector2(1424, 51120)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="FirstTransfer01"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="FirstLedge02" unique_id=510349163]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="LastLedge01" type="Node2D" parent="."]
-position=Vector2(1570.0,42209.51171875)
-script=ExtResource("orange")
+[node name="FirstTransfer01" type="Node2D" parent="." unique_id=1809649185]
+position = Vector2(1616, 51248)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="LastLedge01"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="FirstTransfer01" unique_id=1425051389]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="MiddleJump01" type="Node2D" parent="."]
-position=Vector2(915.0,49158.0)
-script=ExtResource("orange")
+[node name="LastLedge01" type="Node2D" parent="." unique_id=1288776661]
+position = Vector2(1568, 42208)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="MiddleJump01"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="LastLedge01" unique_id=1667292689]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="MiddleJump02" type="Node2D" parent="."]
-position=Vector2(1075.0,49158.0)
-script=ExtResource("orange")
+[node name="MiddleJump01" type="Node2D" parent="." unique_id=1547336837]
+position = Vector2(928, 49152)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="MiddleJump02"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="MiddleJump01" unique_id=1607469239]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="MiddleLanding01" type="Node2D" parent="."]
-position=Vector2(863.0,49531.01171875)
-script=ExtResource("orange")
+[node name="MiddleJump02" type="Node2D" parent="." unique_id=1274140001]
+position = Vector2(1056, 49152)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="MiddleLanding01"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="MiddleJump02" unique_id=847403768]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="MiddleLanding02" type="Node2D" parent="."]
-position=Vector2(1023.0,49531.01171875)
-script=ExtResource("orange")
+[node name="MiddleLanding01" type="Node2D" parent="." unique_id=803449026]
+position = Vector2(880, 49536)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="MiddleLanding02"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="MiddleLanding01" unique_id=1971825663]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="SecondTransfer01" type="Node2D" parent="."]
-position=Vector2(881.0,47210.0)
-script=ExtResource("orange")
+[node name="MiddleLanding02" type="Node2D" parent="." unique_id=1864625861]
+position = Vector2(1008, 49536)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="SecondTransfer01"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="MiddleLanding02" unique_id=1810595063]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="SecondTransfer02" type="Node2D" parent="."]
-position=Vector2(1041.0,47210.0)
-script=ExtResource("orange")
+[node name="SecondTransfer01" type="Node2D" parent="." unique_id=1778263266]
+position = Vector2(896, 47216)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="SecondTransfer02"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="SecondTransfer01" unique_id=355296435]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="TransferExit01" type="Node2D" parent="."]
-position=Vector2(1276.15661621094,50262.96875)
-script=ExtResource("orange")
+[node name="SecondTransfer02" type="Node2D" parent="." unique_id=2103585953]
+position = Vector2(1024, 47216)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="TransferExit01"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="SecondTransfer02" unique_id=711575530]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="UpperLanding01" type="Node2D" parent="."]
-position=Vector2(912.0,50437.0)
-script=ExtResource("orange")
+[node name="TransferExit01" type="Node2D" parent="." unique_id=574774823]
+position = Vector2(1280, 50256)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="UpperLanding01"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="TransferExit01" unique_id=2069606309]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
 
-[node name="UpperLanding02" type="Node2D" parent="."]
-position=Vector2(1072.0,50437.0)
-script=ExtResource("orange")
+[node name="UpperLanding01" type="Node2D" parent="." unique_id=1157958973]
+position = Vector2(928, 50432)
+script = ExtResource("orange")
 
-[node name="Art" type="Sprite2D" parent="UpperLanding02"]
-texture=ExtResource("art")
-scale=Vector2(0.85,0.85)
+[node name="Art" type="Sprite2D" parent="UpperLanding01" unique_id=1509558627]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="UpperLanding02" type="Node2D" parent="." unique_id=1012593001]
+position = Vector2(1056, 50432)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="UpperLanding02" unique_id=760967916]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")

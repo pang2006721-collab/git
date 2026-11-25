@@ -33,7 +33,7 @@ func run():
             check(a.global_position.distance_to(b.global_position)>=125,"Orange groups keep a clear minimum spacing")
     var left=trail.get_node("FirstLedge01")
     var right=trail.get_node("FirstLedge02")
-    check(absf(left.position.y-right.position.y)<.01 and is_equal_approx(right.position.x-left.position.x,160),"Orange pairs share a baseline with consistent spacing")
+    check(absf(left.position.y-right.position.y)<.01 and is_equal_approx(right.position.x-left.position.x,128),"Orange pairs share a baseline with consistent spacing")
     var orange=trail.get_child(0)
     var initial:Vector2=orange.global_position
     orange._process(.3)

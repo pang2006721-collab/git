@@ -6,7 +6,8 @@ extends Node2D
 @export var bob_height: float = 7.0
 @export var sway_width: float = 4.0
 @export var bob_period: float = 2.4
-@export var pickup_radius: float = 26.0
+@export var artwork_scale: float = .85
+@export var pickup_radius: float = 43.0
 var collected: bool = false
 var _clock: float = 0.0
 var _offset: Vector2
@@ -22,7 +23,7 @@ func _ready() -> void:
     _clock=float(get_index())*.43
     art=Sprite2D.new()
     art.texture=preload("res://assets/art/collectibles/orange.png")
-    art.scale=Vector2.ONE*.52
+    art.scale=Vector2.ONE*artwork_scale
     add_child(art)
     _process(0)
 func _process(delta: float) -> void:
@@ -35,6 +36,6 @@ func collect() -> void:
     var tween=create_tween()
     tween.set_parallel(true)
     tween.tween_property(art,"position:y",-26.0,.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-    tween.tween_property(art,"scale",Vector2.ONE*.68,.18)
+    tween.tween_property(art,"scale",Vector2.ONE*artwork_scale*1.3,.18)
     tween.tween_property(art,"modulate:a",0.0,.18)
     tween.chain().tween_callback(hide)

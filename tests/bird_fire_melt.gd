@@ -69,10 +69,10 @@ func run():
     bird.global_position.x+=80
     hail._physics_process(.1)
     check(absf(stone.art.global_position.x-bird.global_position.x)<1,"Melting block moves with the bird head")
-    check(is_equal_approx(paid_heat-fire.heat,.4*.25/.8),"Heat is transferred gradually in proportion to actual melting time")
+    check(is_equal_approx(paid_heat-fire.heat,.3*.25/.8),"Heat is transferred gradually in proportion to actual melting time")
     hail._physics_process(.56)
     check(not hail.stones.has(stone) and not game.dead,"Sustained flame fully melts the block safely")
-    check(is_equal_approx(paid_heat-fire.heat,.4),"Complete melt consumes exactly forty percent in total")
+    check(is_equal_approx(paid_heat-fire.heat,.3),"Complete melt consumes exactly thirty percent in total")
     hail.reset()
     fire.reset()
     fire.heat=1.0

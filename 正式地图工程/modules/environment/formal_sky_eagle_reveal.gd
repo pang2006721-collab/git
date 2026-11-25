@@ -10,11 +10,11 @@ signal cycle_reset
 @export var wide_zoom: float=1.0
 @export var eagle_final_scale: float=.84
 @export var entrance_clearance: float=80.0
-@export var circling_seconds: float=2.0
+@export var circling_seconds: float=1.5
 @export var screech_seconds: float=.55
 @export var screech_sink: float=45.0
 @export var departure_seconds: float=.75
-@export var hidden_seconds: float=5.0
+@export var hidden_seconds: float=3.5
 enum State { WAITING, REVEALING, ACTIVE, SCREECHING, DEPARTING, HIDDEN }
 var state: State=State.WAITING
 var elapsed: float=0

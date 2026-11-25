@@ -17,7 +17,7 @@ func run():
     game.demon.get_node("Movement").set_physics_process(false)
     trail.set_physics_process(false)
     await physics_frame
-    check(trail.get_child_count()==18,"Moving-platform oranges are removed; eighteen remain on static routes")
+    check(trail.get_child_count()==40,"Forty oranges guide static routes and the jumps toward upper teleport targets")
     for orange in trail.get_children():
         check(orange.global_position.is_finite(),"Orange has a valid static world position: "+str(orange.name))
         var shape=CircleShape2D.new()
@@ -45,6 +45,14 @@ func run():
     check(orange.collected and trail.collected_count==1,"Player collects an actual orange")
     trail._physics_process(0)
     check(trail.collected_count==1,"Same orange cannot count twice")
+    orange._process(.04)
+    check(orange.visible and orange.art.scale.x>.85 and orange.art.modulate.a==1,"Pickup first pops visibly without fading out")
+    game.demon.global_position+=Vector2(90,-30)
+    orange._process(.18)
+    var target:Vector2=game.demon.get_node("Collision").global_position
+    check(orange.visible and orange.art.scale.x<.85 and orange.global_position.distance_to(target)<initial.distance_to(target),"Orange shrinks and flies toward the moving player")
+    orange._process(.2)
+    check(not orange.visible and orange.global_position.is_equal_approx(target),"Orange finishes inside player body")
     game.restart()
     check(orange.collected and trail.collected_count==1,"Death retry preserves collected oranges and total")
     var other=trail.get_child(1)

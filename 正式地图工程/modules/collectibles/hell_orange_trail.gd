@@ -20,7 +20,7 @@ func _physics_process(_delta: float) -> void:
         if orange.collected: continue
         var closest: Vector2=Geometry2D.get_closest_point_to_segment(orange.global_position,before,center)
         if closest.distance_to(orange.global_position)>orange.pickup_radius+body_radius: continue
-        orange.collect()
+        orange.collect(body)
         collected_ids[orange.name]=true
         collected_count=collected_ids.size()
         orange_collected.emit(collected_count,orange.name)

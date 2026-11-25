@@ -151,3 +151,179 @@ script = ExtResource("orange")
 [node name="Art" type="Sprite2D" parent="UpperLanding02" unique_id=760967916]
 scale = Vector2(0.85, 0.85)
 texture = ExtResource("art")
+
+[node name="FirstJumpGuide01" type="Node2D" parent="."]
+position = Vector2(1344, 51616)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="FirstJumpGuide01"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="FirstJumpGuide02" type="Node2D" parent="."]
+position = Vector2(1456, 51520)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="FirstJumpGuide02"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="FirstJumpGuide03" type="Node2D" parent="."]
+position = Vector2(1568, 51424)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="FirstJumpGuide03"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="LowJumpRow01" type="Node2D" parent="."]
+position = Vector2(832, 50928)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="LowJumpRow01"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="LowJumpRow02" type="Node2D" parent="."]
+position = Vector2(960, 50928)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="LowJumpRow02"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="LowJumpRow03" type="Node2D" parent="."]
+position = Vector2(1088, 50928)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="LowJumpRow03"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="RightRestRow01" type="Node2D" parent="."]
+position = Vector2(1216, 49376)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="RightRestRow01"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="RightRestRow02" type="Node2D" parent="."]
+position = Vector2(1344, 49376)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="RightRestRow02"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="RightRestRow03" type="Node2D" parent="."]
+position = Vector2(1472, 49376)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="RightRestRow03"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="LowerMiddleRow01" type="Node2D" parent="."]
+position = Vector2(832, 46752)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="LowerMiddleRow01"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="LowerMiddleRow02" type="Node2D" parent="."]
+position = Vector2(960, 46752)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="LowerMiddleRow02"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="LowerMiddleRow03" type="Node2D" parent="."]
+position = Vector2(1088, 46752)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="LowerMiddleRow03"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="RightMiddleRow01" type="Node2D" parent="."]
+position = Vector2(1216, 46544)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="RightMiddleRow01"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="RightMiddleRow02" type="Node2D" parent="."]
+position = Vector2(1344, 46544)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="RightMiddleRow02"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="RightMiddleRow03" type="Node2D" parent="."]
+position = Vector2(1472, 46544)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="RightMiddleRow03"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="UpperMiddleRow01" type="Node2D" parent="."]
+position = Vector2(912, 46336)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="UpperMiddleRow01"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="UpperMiddleRow02" type="Node2D" parent="."]
+position = Vector2(1040, 46336)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="UpperMiddleRow02"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="UpperMiddleRow03" type="Node2D" parent="."]
+position = Vector2(1168, 46336)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="UpperMiddleRow03"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="CheckpointJumpGuide01" type="Node2D" parent="."]
+position = Vector2(560, 44688)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="CheckpointJumpGuide01"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="CheckpointJumpGuide02" type="Node2D" parent="."]
+position = Vector2(432, 44592)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="CheckpointJumpGuide02"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="CheckpointJumpGuide03" type="Node2D" parent="."]
+position = Vector2(304, 44496)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="CheckpointJumpGuide03"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")
+
+[node name="UpperRest01" type="Node2D" parent="."]
+position = Vector2(1568, 43664)
+script = ExtResource("orange")
+
+[node name="Art" type="Sprite2D" parent="UpperRest01"]
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("art")

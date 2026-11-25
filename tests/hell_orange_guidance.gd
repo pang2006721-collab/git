@@ -17,9 +17,9 @@ func run():
     game.demon.get_node("Movement").set_physics_process(false)
     trail.set_physics_process(false)
     await physics_frame
-    check(trail.get_child_count()==30,"Hell has thirty oranges in fifteen short guidance groups")
+    check(trail.get_child_count()==18,"Moving-platform oranges are removed; eighteen remain on static routes")
     for orange in trail.get_children():
-        check(orange.global_position.is_finite(),"Orange has a valid existing map anchor: "+str(orange.name))
+        check(orange.global_position.is_finite(),"Orange has a valid static world position: "+str(orange.name))
         var shape=CircleShape2D.new()
         shape.radius=35
         var query=PhysicsShapeQueryParameters2D.new()
@@ -27,16 +27,13 @@ func run():
         query.transform=Transform2D(0,orange.global_position)
         query.collision_mask=9
         check(root.world_2d.direct_space_state.intersect_shape(query).is_empty(),"Orange lies outside solid platform and wall: "+str(orange.name))
-    var moving=trail.get_node("MovingRise01")
-    moving.anchor.sync_to_physics=false
-    moving._process(0)
-    var anchor_position:Vector2=moving.anchor.position
-    var old_moving:Vector2=moving.global_position
-    moving.anchor.position+=Vector2(80,-35)
-    moving._process(0)
-    check(moving.global_position.is_equal_approx(old_moving+Vector2(80,-35)),"Guidance oranges follow moving platforms")
-    moving.anchor.position=anchor_position
-    moving._process(0)
+    for a in trail.get_children():
+        for b in trail.get_children():
+            if a==b:continue
+            check(a.global_position.distance_to(b.global_position)>=125,"Orange groups keep a clear minimum spacing")
+    var left=trail.get_node("FirstLedge01")
+    var right=trail.get_node("FirstLedge02")
+    check(absf(left.position.y-right.position.y)<.01 and is_equal_approx(right.position.x-left.position.x,160),"Orange pairs share a baseline with consistent spacing")
     var orange=trail.get_child(0)
     var initial:Vector2=orange.global_position
     orange._process(.3)

@@ -35,13 +35,13 @@ func run():
     bird.get_node("Input").external_control=false
     var fire=bird.get_node("Boost")
     fire.set_physics_process(false)
-    fire.tick(1.5,false)
+    fire.tick(3.0,false)
     check(not fire.is_burning() and is_equal_approx(fire.heat,.5),"Bird gradually charges and reddens without Shift")
     fire.tick(.2,true)
     check(fire.is_burning() and fire.heat<.5,"Shift consumes accumulated flame instead of adding redness")
     fire.tick(1.0,true)
-    check(not fire.is_burning() and fire.heat==0,"Empty charge extinguishes flame")
-    fire.tick(3.1,true)
+    check(not fire.is_burning() and fire.heat>0,"Duration cap ends flame without wasting all saved heat")
+    fire.tick(6.1,true)
     fire.tick(.1,true)
     check(not fire.is_burning() and fire.heat==1,"Holding Shift cannot relight automatically after refill")
     fire.tick(.01,false)
@@ -51,14 +51,23 @@ func run():
     var stone:Dictionary=hail.stones[0]
     bird.global_position=stone.art.global_position+Vector2(0,40)
     var old_scale:Vector2=stone.art.scale
+    var heat_before: float=fire.heat
     hail._physics_process(.01)
+    check(is_equal_approx(heat_before-fire.heat,.4),"One ice block absorbs exactly forty percent of total heat")
     check(not game.dead and stone.get("melting",false),"Burning contact starts melting without killing bird")
+    var paid_heat:float=fire.heat
     var point:Vector2=stone.art.global_position
     hail._physics_process(.15)
     check(stone.art.scale.x<old_scale.x and stone.art.scale.x>0,"Hail shrinks gradually instead of instantly disappearing")
-    check(stone.art.global_position.y>point.y,"Melting hail continues falling")
+    check(stone.art.global_position.y<bird.global_position.y and absf(stone.art.global_position.x-bird.global_position.x)<1,"Melting hail settles on top of the bird")
+    bird.global_position.x+=80
+    hail._physics_process(.1)
+    check(absf(stone.art.global_position.x-bird.global_position.x)<1,"Melting block moves with the bird head")
+    check(is_equal_approx(fire.heat,paid_heat),"A melting block does not charge heat every frame")
+    fire.heat=.3
+    check(not fire.absorb_heat(.4) and is_equal_approx(fire.heat,.3),"Insufficient heat cannot buy another melt or go negative")
     fire.reset()
-    hail._physics_process(.25)
+    hail._physics_process(.6)
     check(not hail.stones.has(stone),"Already ignited hail finishes melting after flame ends")
     check(fire.heat==0 and not fire.burning,"Reset clears fire and heat")
     hail.reset()

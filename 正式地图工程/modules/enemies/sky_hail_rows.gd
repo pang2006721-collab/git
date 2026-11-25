@@ -9,7 +9,8 @@ const BIRD_RADIUS = 26.0
 @export_range(1,5) var max_rows_per_wave: int = 5
 @export var row_interval: float = 1.35
 @export var first_row_delay: float = .3
-@export var melt_seconds: float = .38
+@export var melt_seconds: float = .8
+@export_range(0,1) var melt_heat_cost: float = .4
 @export var flame_reach: float = 42.0
 @export var fall_speed: float = 420.0
 @export var fall_gravity: float = 100.0
@@ -88,8 +89,9 @@ func _physics_process(delta: float) -> void:
         var stone: Dictionary=stones[i]
         var art: Sprite2D=stone.art
         var previous: Vector2=art.global_position
-        art.global_position+=Vector2(0,stone.speed*delta+fall_gravity*delta*delta*.5)
-        stone.speed+=fall_gravity*delta
+        if not stone.get("melting",false) or not can_hit:
+            art.global_position+=Vector2(0,stone.speed*delta+fall_gravity*delta*delta*.5)
+            stone.speed+=fall_gravity*delta
         stone.age+=delta
         art.rotation+=stone.spin*delta
         if stone.get("melting",false):
@@ -98,11 +100,16 @@ func _physics_process(delta: float) -> void:
             art.scale=stone.original_scale*remaining
             art.modulate=Color(1,1,1,smoothstep(0.0,.3,remaining))
             stone.radius=stone.original_radius*remaining
+            if can_hit:
+                var head: Vector2=target+Vector2(0,-42.0-float(stone.radius)*1.05)
+                var settle: float=smoothstep(0.0,.12,stone.melt_elapsed)
+                art.global_position=stone.melt_origin.lerp(head,settle)
         var relative:=Geometry2D.get_closest_point_to_segment(Vector2.ZERO,previous-last_target,art.global_position-target)
         var fire: Node=bird.get_node("Boost")
-        if can_hit and not stone.get("melting",false) and fire.is_burning() and relative.length()<float(stone.radius)+BIRD_RADIUS+flame_reach:
+        if can_hit and not stone.get("melting",false) and fire.is_burning() and relative.length()<float(stone.radius)+BIRD_RADIUS+flame_reach and fire.absorb_heat(melt_heat_cost):
             stone.melting=true
             stone.melt_elapsed=0.0
+            stone.melt_origin=art.global_position
             stone.hit_reported=true
             stone.original_scale=art.scale
             stone.original_radius=stone.radius

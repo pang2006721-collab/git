@@ -6,7 +6,7 @@ func run():
     var bird=current_scene.get_node("OceanLink/FishStage/JungleLayout/Bird")
     var fire=bird.get_node("Boost")
     for location in [KEY_LOCATION_UNSPECIFIED,KEY_LOCATION_LEFT,KEY_LOCATION_RIGHT]:
-        fire.tick(3.1,false)
+        fire.tick(6.1,false)
         var key=InputEventKey.new()
         key.physical_keycode=KEY_SHIFT
         key.keycode=KEY_SHIFT

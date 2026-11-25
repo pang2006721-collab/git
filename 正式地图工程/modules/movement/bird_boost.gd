@@ -4,11 +4,13 @@ extends Node
 @export var normal_flap_multiplier: float = .87
 @export var normal_acceleration_multiplier: float = .85
 @export var burn_seconds: float = 1.2
-@export var charge_seconds: float = 3.0
-@export_range(0.01,1.0) var minimum_charge: float = .12
+@export var charge_seconds: float = 6.0
+@export_range(0.01,1.0) var minimum_charge: float = .4
 var amount: float = 0.0
 var heat: float = 0.0
 var burning: bool = false
+@export var burn_heat_per_second: float = .05
+var _burn_elapsed: float = 0.0
 var _was_held: bool = false
 var _clock: float = 0.0
 var _base: Dictionary = {}
@@ -50,10 +52,13 @@ func _physics_process(delta: float) -> void:
     motor.held_flap_interval=_base.held_flap_interval
 func tick(delta: float,held: bool) -> void:
     if not held: burning=false
-    elif not _was_held and heat>=minimum_charge: burning=true
+    elif not _was_held and heat>=minimum_charge:
+        burning=true
+        _burn_elapsed=0.0
     if burning:
-        heat=maxf(0.0,heat-delta/maxf(burn_seconds,.01))
-        if heat<=0.0: burning=false
+        _burn_elapsed+=delta
+        heat=maxf(0.0,heat-delta*burn_heat_per_second)
+        if heat<=0.0 or _burn_elapsed>=burn_seconds: burning=false
     else:
         var previous: float=heat
         heat=minf(1.0,heat+delta/maxf(charge_seconds,.01))
@@ -61,6 +66,11 @@ func tick(delta: float,held: bool) -> void:
             body.get_node("Visual").play_selection_pulse()
     _was_held=held
     amount=1.0 if burning else 0.0
+func absorb_heat(cost: float) -> bool:
+    if not is_burning() or heat+.01<cost: return false
+    heat=maxf(0.0,heat-cost)
+    if heat<=0.0: burning=false
+    return true
 func is_burning() -> bool:
     return burning and _can_boost()
 func _process(delta: float) -> void:
@@ -76,6 +86,7 @@ func reset() -> void:
     heat=0.0
     burning=false
     _was_held=false
+    _burn_elapsed=0.0
     sprite.self_modulate.a=1.0
     if is_instance_valid(_fire): _fire.hide()
     if not _base.is_empty():

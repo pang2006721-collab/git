@@ -26,11 +26,9 @@ func _ready() -> void:
     process_priority=1
     if not InputMap.has_action(&"bird_boost"):
         InputMap.add_action(&"bird_boost")
-        for location in [KEY_LOCATION_LEFT,KEY_LOCATION_RIGHT]:
-            var key:=InputEventKey.new()
-            key.physical_keycode=KEY_SHIFT
-            key.location=location
-            InputMap.action_add_event(&"bird_boost",key)
+        var key:=InputEventKey.new()
+        key.physical_keycode=KEY_SHIFT
+        InputMap.action_add_event(&"bird_boost",key)
     _base={"move_speed":motor.move_speed,"acceleration":motor.acceleration,"flap_speed":motor.flap_speed,"held_flap_interval":motor.held_flap_interval}
     _material=ShaderMaterial.new()
     _material.shader=preload("res://shaders/bird_heat.gdshader")

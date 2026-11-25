@@ -89,13 +89,22 @@ func _physics_process(delta: float) -> void:
         var stone: Dictionary=stones[i]
         var art: Sprite2D=stone.art
         var previous: Vector2=art.global_position
+        var fire: Node=bird.get_node("Boost")
+        if stone.get("melting",false):
+            var transfer: float=minf(delta,maxf(0.0,melt_seconds-stone.melt_elapsed))
+            var cost: float=melt_heat_cost*transfer/maxf(melt_seconds,.01)
+            if can_hit and fire.absorb_heat(cost):
+                stone.melt_elapsed=minf(melt_seconds,stone.melt_elapsed+transfer)
+            else:
+                stone.melting=false
+                stone.hit_reported=true
+                if can_hit: hit=true
         if not stone.get("melting",false) or not can_hit:
             art.global_position+=Vector2(0,stone.speed*delta+fall_gravity*delta*delta*.5)
             stone.speed+=fall_gravity*delta
         stone.age+=delta
         art.rotation+=stone.spin*delta
         if stone.get("melting",false):
-            stone.melt_elapsed+=delta
             var remaining: float=maxf(0.0,1.0-stone.melt_elapsed/maxf(melt_seconds,.01))
             art.scale=stone.original_scale*remaining
             art.modulate=Color(1,1,1,smoothstep(0.0,.3,remaining))
@@ -105,14 +114,14 @@ func _physics_process(delta: float) -> void:
                 var settle: float=smoothstep(0.0,.12,stone.melt_elapsed)
                 art.global_position=stone.melt_origin.lerp(head,settle)
         var relative:=Geometry2D.get_closest_point_to_segment(Vector2.ZERO,previous-last_target,art.global_position-target)
-        var fire: Node=bird.get_node("Boost")
-        if can_hit and not stone.get("melting",false) and fire.is_burning() and relative.length()<float(stone.radius)+BIRD_RADIUS+flame_reach and fire.absorb_heat(melt_heat_cost):
+        if can_hit and not stone.get("melting",false) and not stone.get("hit_reported",false) and fire.is_burning() and fire.heat>=melt_heat_cost*minf(delta,melt_seconds)/maxf(melt_seconds,.01) and relative.length()<float(stone.radius)+BIRD_RADIUS+flame_reach:
             stone.melting=true
-            stone.melt_elapsed=0.0
+            if not stone.has("melt_elapsed"):
+                stone.melt_elapsed=0.0
+                stone.original_scale=art.scale
+                stone.original_radius=stone.radius
             stone.melt_origin=art.global_position
             stone.hit_reported=true
-            stone.original_scale=art.scale
-            stone.original_radius=stone.radius
         if can_hit and not stone.get("hit_reported",false) and relative.length()<float(stone.radius)+BIRD_RADIUS:
             stone.hit_reported=true
             hit=true

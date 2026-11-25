@@ -5,7 +5,7 @@ extends Node
 @export var normal_acceleration_multiplier: float = .85
 @export var burn_seconds: float = 1.2
 @export var charge_seconds: float = 6.0
-@export_range(0.01,1.0) var minimum_charge: float = .4
+@export_range(0.01,1.0) var minimum_charge: float = 1.0
 var amount: float = 0.0
 var heat: float = 0.0
 var burning: bool = false
@@ -67,7 +67,7 @@ func tick(delta: float,held: bool) -> void:
     _was_held=held
     amount=1.0 if burning else 0.0
 func absorb_heat(cost: float) -> bool:
-    if not is_burning() or heat+.01<cost: return false
+    if not is_burning() or heat<cost: return false
     heat=maxf(0.0,heat-cost)
     if heat<=0.0: burning=false
     return true

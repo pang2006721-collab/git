@@ -1,17 +1,15 @@
 extends Node
-## Shift 燃烧融冰；身体颜色提示热量，过热后完全冷却才能重燃。
+## 平时自动积攒火焰，身体逐渐变红；Shift 释放并消耗积累。
 @export var normal_speed_multiplier: float = .82
 @export var normal_flap_multiplier: float = .87
 @export var normal_acceleration_multiplier: float = .85
 @export var burn_seconds: float = 1.2
-@export var cool_seconds: float = 3.0
-@export var cooling_delay: float = .3
+@export var charge_seconds: float = 3.0
+@export_range(0.01,1.0) var minimum_charge: float = .12
 var amount: float = 0.0
 var heat: float = 0.0
-var overheated: bool = false
 var burning: bool = false
-var _release_required: bool = false
-var _cool_wait: float = 0.0
+var _was_held: bool = false
 var _clock: float = 0.0
 var _base: Dictionary = {}
 var _material: ShaderMaterial
@@ -51,22 +49,17 @@ func _physics_process(delta: float) -> void:
     motor.flap_speed=_base.flap_speed*normal_flap_multiplier
     motor.held_flap_interval=_base.held_flap_interval
 func tick(delta: float,held: bool) -> void:
-    if not held: _release_required=false
-    burning=held and not overheated and not _release_required
+    if not held: burning=false
+    elif not _was_held and heat>=minimum_charge: burning=true
     if burning:
-        heat=minf(1.0,heat+delta/maxf(burn_seconds,.01))
-        _cool_wait=cooling_delay
-        if heat>=1.0:
-            overheated=true
-            _release_required=true
-            burning=false
+        heat=maxf(0.0,heat-delta/maxf(burn_seconds,.01))
+        if heat<=0.0: burning=false
     else:
-        var cooling: float=maxf(0.0,delta-_cool_wait)
-        _cool_wait=maxf(0.0,_cool_wait-delta)
-        heat=maxf(0.0,heat-cooling/maxf(cool_seconds,.01))
-        if overheated and heat<=0.0:
-            overheated=false
+        var previous: float=heat
+        heat=minf(1.0,heat+delta/maxf(charge_seconds,.01))
+        if previous<1.0 and heat>=1.0:
             body.get_node("Visual").play_selection_pulse()
+    _was_held=held
     amount=1.0 if burning else 0.0
 func is_burning() -> bool:
     return burning and _can_boost()
@@ -82,9 +75,7 @@ func reset() -> void:
     amount=0.0
     heat=0.0
     burning=false
-    overheated=false
-    _release_required=false
-    _cool_wait=0.0
+    _was_held=false
     sprite.self_modulate.a=1.0
     if is_instance_valid(_fire): _fire.hide()
     if not _base.is_empty():

@@ -8,163 +8,163 @@ script=ExtResource("trail")
 [node name="StartLanding01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Floating24")
-surface_offset=Vector2(-80,-100)
+surface_offset=Vector2(-70,-100)
 use_surface=true
 
 [node name="StartLanding02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Floating24")
-surface_offset=Vector2(30,-100)
+surface_offset=Vector2(70,-155)
 use_surface=true
 
 [node name="FirstLedge01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Static08")
-surface_offset=Vector2(-75,-100)
+surface_offset=Vector2(-70,-155)
 use_surface=true
 
 [node name="FirstLedge02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Static08")
-surface_offset=Vector2(40,-100)
+surface_offset=Vector2(70,-100)
 use_surface=true
 
 [node name="FirstTransfer01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Fork/Targets/Target01")
-surface_offset=Vector2(-60,-100)
+surface_offset=Vector2(-60,-95)
 use_surface=false
 
 [node name="FirstTransfer02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Fork/Targets/Target01")
-surface_offset=Vector2(-125,-155)
+surface_offset=Vector2(-185,-180)
 use_surface=false
 
 [node name="UpperLanding01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Static07")
-surface_offset=Vector2(-60,-105)
+surface_offset=Vector2(-70,-100)
 use_surface=true
 
 [node name="UpperLanding02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Static07")
-surface_offset=Vector2(45,-105)
+surface_offset=Vector2(70,-155)
 use_surface=true
 
 [node name="TransferExit01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Fork/Targets/Target02")
-surface_offset=Vector2(-65,-115)
+surface_offset=Vector2(-90,-140)
 use_surface=false
 
 [node name="TransferExit02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Fork/Targets/Target02")
-surface_offset=Vector2(-120,-115)
+surface_offset=Vector2(-240,-200)
 use_surface=false
 
 [node name="MiddleLanding01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Static06")
-surface_offset=Vector2(-60,-100)
+surface_offset=Vector2(-70,-100)
 use_surface=true
 
 [node name="MiddleLanding02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Static06")
-surface_offset=Vector2(45,-100)
+surface_offset=Vector2(70,-155)
 use_surface=true
 
 [node name="MiddleJump01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Breakable16")
-surface_offset=Vector2(-40,-100)
+surface_offset=Vector2(-70,-155)
 use_surface=true
 
 [node name="MiddleJump02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Breakable16")
-surface_offset=Vector2(50,-100)
+surface_offset=Vector2(70,-100)
 use_surface=true
 
 [node name="MovingApproach01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Moving22")
-surface_offset=Vector2(-45,-100)
+surface_offset=Vector2(-70,-100)
 use_surface=true
 
 [node name="MovingApproach02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Moving22")
-surface_offset=Vector2(45,-100)
+surface_offset=Vector2(70,-155)
 use_surface=true
 
 [node name="SecondTransfer01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Static05")
-surface_offset=Vector2(-50,-100)
+surface_offset=Vector2(-70,-155)
 use_surface=true
 
 [node name="SecondTransfer02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Static05")
-surface_offset=Vector2(50,-100)
+surface_offset=Vector2(70,-100)
 use_surface=true
 
 [node name="MovingRise01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Moving21")
-surface_offset=Vector2(-40,-100)
+surface_offset=Vector2(-70,-100)
 use_surface=true
 
 [node name="MovingRise02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Moving21")
-surface_offset=Vector2(45,-100)
+surface_offset=Vector2(70,-155)
 use_surface=true
 
 [node name="MovingHigh01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Moving20")
-surface_offset=Vector2(-45,-100)
+surface_offset=Vector2(-70,-100)
 use_surface=true
 
 [node name="MovingHigh02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Moving20")
-surface_offset=Vector2(45,-100)
+surface_offset=Vector2(70,-155)
 use_surface=true
 
 [node name="Checkpoint01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Static04")
-surface_offset=Vector2(-85,-100)
+surface_offset=Vector2(-150,-210)
 use_surface=true
 
 [node name="Checkpoint02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Static04")
-surface_offset=Vector2(0,-100)
+surface_offset=Vector2(-30,-155)
 use_surface=true
 
 [node name="Checkpoint03" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Static04")
-surface_offset=Vector2(85,-100)
+surface_offset=Vector2(90,-100)
 use_surface=true
 
 [node name="LastMoving01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Moving19")
-surface_offset=Vector2(-45,-100)
+surface_offset=Vector2(-70,-100)
 use_surface=true
 
 [node name="LastMoving02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Moving19")
-surface_offset=Vector2(45,-100)
+surface_offset=Vector2(70,-155)
 use_surface=true
 
 [node name="LastLedge01" type="Node2D" parent="."]
@@ -176,11 +176,11 @@ use_surface=true
 [node name="ExitJump01" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Breakable09")
-surface_offset=Vector2(-40,-100)
+surface_offset=Vector2(-70,-155)
 use_surface=true
 
 [node name="ExitJump02" type="Node2D" parent="."]
 script=ExtResource("orange")
 anchor_path=NodePath("../../Platforms/Breakable09")
-surface_offset=Vector2(40,-100)
+surface_offset=Vector2(70,-100)
 use_surface=true

@@ -21,7 +21,7 @@ func run():
     for orange in trail.get_children():
         check(orange.global_position.is_finite(),"Orange has a valid existing map anchor: "+str(orange.name))
         var shape=CircleShape2D.new()
-        shape.radius=20
+        shape.radius=35
         var query=PhysicsShapeQueryParameters2D.new()
         query.shape=shape
         query.transform=Transform2D(0,orange.global_position)

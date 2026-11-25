@@ -234,6 +234,7 @@ func _end_launch() -> void:
     demon.get_node("Movement").landed.emit(650.0)
 
 func reset() -> void:
+    $Parry.reset()
     interaction_reset.emit()
     if motion != null:
         motion.kill()

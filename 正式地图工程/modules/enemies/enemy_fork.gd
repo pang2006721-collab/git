@@ -5,6 +5,7 @@ extends Node2D
 @export var lifetime: float = 4.0
 var velocity: Vector2
 var encounter: Node
+var deflected: bool = false
 var _age: float = 0.0
 var _stuck: bool = false
 var _pierced_player: bool = false
@@ -17,10 +18,17 @@ func launch(aim: Vector2) -> void:
 func _physics_process(delta: float) -> void:
     _age+=delta
     if _age>lifetime:queue_free();return
+    if deflected:
+        global_position+=velocity*delta+Vector2(0,gravity*delta*delta*.5)
+        velocity.y+=gravity*delta
+        rotation+=TAU*4.0*delta
+        return
     if _stuck:return
     var previous:=global_position
     var next:=previous+velocity*delta+Vector2(0,gravity*delta*delta*.5)
     velocity.y+=gravity*delta
+    var parry: Node=encounter.level.get_node_or_null("Fork/Parry")
+    if parry!=null and parry.try_deflect(self,previous,next): return
     var player:CharacterBody2D=encounter.level.player
     var query:=PhysicsRayQueryParameters2D.create(previous,next,9|player.collision_layer)
     if _pierced_player: query.exclude=[player.get_rid()]
@@ -37,3 +45,16 @@ func _physics_process(delta: float) -> void:
         global_position=hit.position
         _stuck=true
         lifetime=_age+.55
+
+func deflect(direction: Vector2) -> void:
+    if deflected:return
+    deflected=true
+    _pierced_player=true
+    velocity=direction*maxf(velocity.length()*1.15,750.0)
+    gravity=900.0
+    _age=0.0
+    lifetime=1.6
+    if has_node("Art"):
+        var art: Sprite2D=$Art
+        art.scale=Vector2(.75,1.25)
+        create_tween().tween_property(art,"scale",Vector2.ONE,.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)

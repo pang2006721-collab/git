@@ -3,6 +3,7 @@ extends Node2D
 const SURFACE = preload("res://modules/environment/hell_surface.gd")
 signal exchanged(body: Node2D)
 signal interaction_reset
+signal travelled(from: Vector2, to: Vector2)
 @export_range(0.0,1.0) var enemy_hit_chance: float = 0.8
 var _enemy_attack_target: Node2D
 var _combat_rng := RandomNumberGenerator.new()
@@ -189,11 +190,13 @@ func _lock_control() -> void:
     demon.velocity = Vector2.ZERO
 
 func _exchange() -> void:
+    var previous: Vector2=demon.global_position
     demon.global_position = lodged.get_node("SwapPoint").global_position
     fork.hide()
     lodged.bounce_on_teleport()
     _set_held(true)
     demon.reset_physics_interpolation()
+    travelled.emit(previous,demon.global_position)
     exchanged.emit(demon)
 
 func _release_ball() -> void:
@@ -213,7 +216,9 @@ func _sample_launch(u: float) -> void:
     var finish: Vector2 = SURFACE.landing_on(_destination)
     var height := maxf(180.0,(_launch_start.y-finish.y)*0.4)
     var point := _launch_start.lerp(finish,u)-Vector2(0,4.0*height*u*(1.0-u))
+    var previous: Vector2=demon.global_position
     var collision := demon.move_and_collide(point-demon.global_position)
+    travelled.emit(previous,demon.global_position)
     if collision != null:
         motion.kill()
         _end_launch()

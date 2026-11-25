@@ -6,16 +6,30 @@ var collected_count: int = 0
 var collected_ids: Dictionary = {}
 var _previous: Vector2 = Vector2.INF
 @onready var level: Node2D=get_parent()
+func _ready() -> void:
+    level.get_node("Fork").travelled.connect(_on_fork_travelled)
+func _can_collect() -> bool:
+    return not level.dead and not level.exit_in_progress and level.visible and level.get_node("WallEntry").completed and level.player==level.demon and level.demon.get_node("Host").claimed
+func _center_offset() -> Vector2:
+    var collision: Node2D=level.demon.get_node_or_null("Collision")
+    return collision.global_position-level.demon.global_position if collision!=null else Vector2(0,-60)
+func _on_fork_travelled(from: Vector2,to: Vector2) -> void:
+    if not _can_collect():return
+    var offset: Vector2=_center_offset()
+    _collect_along(from+offset,to+offset)
+    _previous=to+offset
 func _physics_process(_delta: float) -> void:
-    if level.dead or level.exit_in_progress or not level.visible or not level.get_node("WallEntry").completed or level.player!=level.demon or not level.demon.get_node("Host").claimed:
+    if not _can_collect():
         _previous=Vector2.INF
         return
-    var body: CharacterBody2D=level.player
-    var collision: Node2D=body.get_node_or_null("Collision")
-    var center: Vector2=collision.global_position if collision!=null else body.global_position+Vector2(0,-60)
-    var body_radius: float=collision.shape.radius*absf(body.global_scale.x) if collision is CollisionShape2D and collision.shape is CapsuleShape2D else 25.0
+    var center: Vector2=level.demon.global_position+_center_offset()
     var before: Vector2=_previous if _previous.is_finite() and _previous.distance_to(center)<300 else center
     _previous=center
+    _collect_along(before,center)
+func _collect_along(before: Vector2,center: Vector2) -> void:
+    var body: CharacterBody2D=level.demon
+    var collision: Node2D=body.get_node_or_null("Collision")
+    var body_radius: float=collision.shape.radius*absf(body.global_scale.x) if collision is CollisionShape2D and collision.shape is CapsuleShape2D else 25.0
     for orange in get_children():
         if orange.collected: continue
         var closest: Vector2=Geometry2D.get_closest_point_to_segment(orange.global_position,before,center)

@@ -55,7 +55,20 @@ func run():
     check(not orange.visible and orange.global_position.is_equal_approx(target),"Orange finishes inside player body")
     game.restart()
     check(orange.collected and trail.collected_count==1,"Death retry preserves collected oranges and total")
-    var other=trail.get_child(1)
+    game.player=game.demon
+    game.demon.get_node("Host").take_control()
+    var fork=game.get_node("Fork")
+    var target_ball=game.get_node("Fork/Targets/Target01")
+    game.demon.position=Vector2(1182,51809)
+    fork.lodged=target_ball
+    fork._exchange()
+    for id in ["FirstJumpGuide01","FirstJumpGuide02","FirstJumpGuide03"]:
+        check(trail.get_node(id).collected,"Actual opening teleport absorbs orange along travelled path: "+id)
+    check(not trail.get_node("UpperMiddleRow01").collected,"Teleport does not sweep unrelated distant oranges")
+    var after_teleport:int=trail.collected_count
+    trail._physics_process(0)
+    check(trail.collected_count==after_teleport,"Arrival cannot double count the path pickup")
+    var other=trail.get_node("UpperMiddleRow01")
     game.dead=true
     game.player=game.demon
     game.demon.get_node("Host").take_control()

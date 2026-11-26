@@ -35,12 +35,12 @@ func run():
 	body.global_position = Vector2(960, 25000)
 	body.velocity = Vector2(0, 100)
 	monitor._physics_process(.01)
-	body.position.y += 499
+	body.position.y += 999
 	monitor._physics_process(.01)
-	check(not game.dead, "499 pixels is safe")
+	check(not game.dead, "999 pixels is safe")
 	body.position.y += 1
 	monitor._physics_process(.01)
-	check(not game.dead, "Exactly 500 pixels is safe")
+	check(not game.dead, "Exactly 1000 pixels is safe")
 	# Catching a vine clears the earlier free fall even while it swings downward.
 	climber.vine = layout.vines[0]
 	body.position.y += 300
@@ -67,12 +67,12 @@ func run():
 	defeat.reset()
 	check(not monitor._tracking, "Retry reset clears drop history")
 	monitor._physics_process(.01)
-	body.position.y += 501
+	body.position.y += 1001
 	game.camera.set_process(false)
 	game.camera.global_position = body.global_position
 	game.camera.make_current()
 	monitor._physics_process(.01)
-	check(not game.dead, "Crossing 500 pixels in midair does not kill")
+	check(not game.dead, "Crossing 1000 pixels in midair does not kill")
 	# 使用真实地面碰撞验证落地判定，而非伪造 is_on_floor。
 	var floor_body := StaticBody2D.new()
 	floor_body.collision_layer = 16
@@ -91,7 +91,7 @@ func run():
 		if game.dead: break
 		await physics_frame
 	check(body.is_on_floor(), "Actual collision reaches the ground")
-	check(game.dead and game.death_reason == &"fall", "Landing after a drop above 500 pixels kills the squirrel")
+	check(game.dead and game.death_reason == &"fall", "Landing after a drop above 1000 pixels kills the squirrel")
 	check(defeat.falling and defeat.corpse.visible, "Original stunned expression starts immediately")
 	check(not body.get_node("Visual/Sprite").visible, "Live pose is hidden")
 	check(defeat.corpse.texture.atlas.resource_path.ends_with("stunned.png"), "Uses supplied squirrel pose")

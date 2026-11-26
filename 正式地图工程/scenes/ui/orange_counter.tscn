@@ -1,0 +1,45 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://modules/ui/orange_counter.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/orange_counter/multiply.png" id="art"]
+
+[sub_resource type="AtlasTexture" id="logo"]
+atlas = ExtResource("art")
+region = Rect2(189, 13, 95, 77)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="multiply"]
+atlas = ExtResource("art")
+region = Rect2(309, 35, 33, 36)
+filter_clip = true
+
+[node name="OrangeCounter" type="CanvasLayer"]
+layer = 20
+script = ExtResource("script")
+
+[node name="Anchor" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -48.0
+offset_top = -64.0
+offset_right = -48.0
+offset_bottom = -64.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="Contents" type="Node2D" parent="Anchor"]
+
+[node name="Logo" type="Sprite2D" parent="Anchor/Contents"]
+texture = SubResource("logo")
+scale = Vector2(0.8, 0.8)
+
+[node name="Multiply" type="Sprite2D" parent="Anchor/Contents"]
+texture = SubResource("multiply")
+scale = Vector2(0.75, 0.75)
+
+[node name="Numbers" type="Node2D" parent="Anchor/Contents"]

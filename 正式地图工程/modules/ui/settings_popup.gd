@@ -9,6 +9,7 @@ var _speaker: TextureRect
 var _language: TextureRect
 var _sfx: HSlider
 var _music: HSlider
+var _close_button: TextureButton
 var _motion: Tween
 var _opened := false
 var _closing := false
@@ -34,6 +35,9 @@ func _ready() -> void:
 	# 面板本身拦住点击，装饰部分不拦住滑杆与语言交互。
 	var panel := _art("panel")
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	var outline := ShaderMaterial.new()
+	outline.shader = preload("res://shaders/settings_panel_outline.gdshader")
+	panel.material = outline
 	_art("decoration")
 	_art("sfx_track")
 	_art("music_track")
@@ -50,6 +54,16 @@ func _ready() -> void:
 	_hit(Rect2(680, 635, 505, 90), 1)
 	_hit(Rect2(1050, 642, 67, 38), -1)
 	_hit(Rect2(1050, 681, 67, 38), 1)
+	_close_button = TextureButton.new()
+	_close_button.name = "Close"
+	_close_button.texture_normal = preload("res://assets/art/ui/settings/close.svg")
+	_close_button.position = Vector2(1254, 215)
+	_close_button.size = Vector2(60, 60)
+	_close_button.ignore_texture_size = true
+	_close_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	_close_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_close_button.pressed.connect(close)
+	_content.add_child(_close_button)
 	GameSettings.changed.connect(_refresh)
 	_root.resized.connect(_layout)
 	_layout()

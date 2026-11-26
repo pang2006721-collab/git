@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## 拾取时在屏幕上方正中临时弹出本局总数，再向上弹走；不常驻画面。
 @export_node_path("Node2D") var collection_path: NodePath=^"../HellOranges"
-@export var digit_height: float=96.0
+@export var digit_height: float=144.0
 @export var top_margin: float=48.0
 @export var pop_seconds: float=.2
 @export var hold_seconds: float=.55
@@ -9,9 +9,10 @@ extends CanvasLayer
 @export var exit_rise: float=105.0
 @export_range(0.0,1.0) var motion_amount: float=1.0
 const DIGIT_REGIONS: Array[Rect2]=[
-    Rect2(406,34,38,47),Rect2(370,29,29,51),Rect2(401,34,38,41),
-    Rect2(450,24,31,57),Rect2(402,29,46,58),Rect2(406,26,43,52),
-    Rect2(402,33,38,52),Rect2(414,28,38,59),Rect2(406,26,47,58),Rect2(447,28,41,59)]
+    Rect2(315,218,68,88),Rect2(406,219,40,88),Rect2(308,218,86,83),
+    Rect2(385,211,65,99),Rect2(301,216,85,91),Rect2(397,217,67,96),
+    Rect2(394,208,70,102),Rect2(384,214,77,95),Rect2(393,210,68,98),Rect2(391,210,67,104)]
+
 enum Phase { HIDDEN, POP, HOLD, EXIT }
 var phase: Phase=Phase.HIDDEN
 var displayed_count: int=0
@@ -20,15 +21,18 @@ var _elapsed: float=0.0
 var _rise: float=0.0
 var _width: float=0.0
 var _digits: Array[AtlasTexture]=[]
+var _ink_material: ShaderMaterial
 @onready var collection: Node2D=get_node(collection_path)
 @onready var level: Node2D=collection.get_parent()
 @onready var anchor: Node2D=$Anchor
 @onready var numbers: Node2D=$Anchor/Numbers
 func _ready() -> void:
     process_mode=Node.PROCESS_MODE_ALWAYS
+    _ink_material=ShaderMaterial.new()
+    _ink_material.shader=preload("res://shaders/orange_white_digit.gdshader")
     for digit in 10:
         var atlas=AtlasTexture.new()
-        atlas.atlas=load("res://assets/art/ui/orange_counter/%d.png"%digit)
+        atlas.atlas=load("res://assets/art/ui/orange_counter_v2/%d.png"%(digit+10))
         atlas.region=DIGIT_REGIONS[digit]
         atlas.filter_clip=true
         _digits.append(atlas)
@@ -74,6 +78,7 @@ func _render_digits() -> void:
     for index in text.length():
         var sprite=Sprite2D.new()
         sprite.texture=_digits[int(text[index])]
+        sprite.material=_ink_material
         sprite.scale=Vector2.ONE*digit_height/DIGIT_REGIONS[int(text[index])].size.y
         sprite.position=Vector2(x+widths[index]*.5,0)
         numbers.add_child(sprite)

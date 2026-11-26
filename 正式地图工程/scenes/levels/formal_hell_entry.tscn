@@ -80,6 +80,15 @@
 
 [ext_resource type="Script" path="res://modules/camera/hell_route_reveal.gd" id="route_reveal"]
 
+[ext_resource type="Shader" path="res://shaders/hell_left_rock_join.gdshader" id="wall_rock_join"]
+
+[sub_resource type="ShaderMaterial" id="wall_rock_join_material"]
+shader = ExtResource("wall_rock_join")
+shader_parameter/rock_art = ExtResource("layer_rock2")
+shader_parameter/wall_origin = Vector2(2, 49109)
+shader_parameter/rock_center = Vector2(368.5, 50072.506)
+shader_parameter/rock_scale = 0.66848814
+
 [sub_resource type="ShaderMaterial" id="wall_outline_material"]
 shader = ExtResource("wall_outline_restore")
 shader_parameter/original_art = ExtResource("wall_outline_original")
@@ -1387,6 +1396,7 @@ region_enabled = true
 region_rect = Rect2(0, 1, 1920, 2048)
 
 [node name="Tile24" type="Sprite2D" parent="WorldLayers/Walls/Left" unique_id=433171092]
+material = SubResource("wall_rock_join_material")
 position = Vector2(2, 49110)
 texture = ExtResource("wall_left_24")
 centered = false

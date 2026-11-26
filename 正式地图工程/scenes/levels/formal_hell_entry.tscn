@@ -75,6 +75,13 @@
 
 [ext_resource type="Script" path="res://modules/camera/hell_lava_reveal.gd" id="lava_reveal"]
 
+[ext_resource type="Shader" path="res://shaders/hell_start_wall_outline.gdshader" id="wall_outline_restore"]
+[ext_resource type="Texture2D" path="res://assets/art/reference_map/25.png" id="wall_outline_original"]
+
+[sub_resource type="ShaderMaterial" id="wall_outline_material"]
+shader = ExtResource("wall_outline_restore")
+shader_parameter/original_art = ExtResource("wall_outline_original")
+
 [sub_resource type="ShaderMaterial" id="targetmaterial1"]
 shader = ExtResource("target_shader")
 shader_parameter/visibility_mask = ExtResource("targetmask1")
@@ -1385,6 +1392,7 @@ region_enabled = true
 region_rect = Rect2(0, 1, 1920, 2048)
 
 [node name="Tile25" type="Sprite2D" parent="WorldLayers/Walls/Left" unique_id=344910907]
+material = SubResource("wall_outline_material")
 position = Vector2(3, 51155)
 texture = ExtResource("wall_left_25")
 centered = false

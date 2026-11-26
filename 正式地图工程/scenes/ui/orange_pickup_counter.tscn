@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://modules/ui/orange_pickup_counter.gd" id="script"]
+
+[node name="OrangePickupCounter" type="CanvasLayer"]
+layer = 20
+visible = false
+script = ExtResource("script")
+
+[node name="Anchor" type="Node2D" parent="."]
+
+[node name="Numbers" type="Node2D" parent="Anchor"]

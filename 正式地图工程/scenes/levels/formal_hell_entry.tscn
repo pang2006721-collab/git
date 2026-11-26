@@ -84,7 +84,7 @@
 
 [ext_resource type="Shader" path="res://shaders/hell_tall_wall_join.gdshader" id="tall_wall_join"]
 
-[ext_resource type="PackedScene" path="res://scenes/ui/orange_counter.tscn" id="orange_counter"]
+[ext_resource type="PackedScene" path="res://scenes/ui/orange_pickup_counter.tscn" id="orange_counter"]
 
 [sub_resource type="ShaderMaterial" id="tall_wall_join_material"]
 shader = ExtResource("tall_wall_join")
@@ -1542,4 +1542,4 @@ script = ExtResource("lava_reveal")
 [node name="RouteReveal" type="Node" parent="."]
 script = ExtResource("route_reveal")
 
-[node name="OrangeCounter" parent="." instance=ExtResource("orange_counter")]
+[node name="OrangePickupCounter" parent="." instance=ExtResource("orange_counter")]

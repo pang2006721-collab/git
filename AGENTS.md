@@ -154,3 +154,6 @@
 
 
 - 音乐无声排查：本机user://settings.cfg中SFX及music均为0，恢复为0.8后实际WASAPI音乐总线采样峰值0.118、33792帧，播放正常。GameSettings增加可替换save_path，settings_popup/localized_menu_buttons/settings_audio测试使用独立测试配置文件，防止交互验证写入真实游玩音量。默认仍使用settings.cfg，玩家主动静音继续保留。原生声音采样与设置交互检查通过，真实配置测试后保持0.8。用户本轮明确授权当前feature合并main并推送后同步本地/Godot。
+
+
+- 全屏花屏最终排查：同一main工程及缓存，AMD Radeon 780M原生opengl3出现整屏彩色噪点，切换Godot内置ANGLE/Direct3D11后首页/设置/地狱/海底/丛林入口/天堂画面均正常；此前对get_image及缓存的判断不足以说明全局原因。正式project.godot固定rendering/gl_compatibility/driver.windows="opengl3_angle"，仅Windows采用ANGLE，其余平台仍原设置。桌面Godot编辑快捷方式同加--rendering-driver opengl3_angle。无命令行驱动覆盖时，settings_popup与natural_heaven_ending原生运行日志确认实际选用ANGLE且通过；从新ANGLE编辑器F5实跑并观察窗口首页正常。避免继续启动多个旧OpenGL编辑器；修改渲染驱动后旧编辑器需要重启。

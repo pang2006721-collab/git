@@ -51,6 +51,7 @@ common/physics_ticks_per_second=120
 
 [rendering]
 
+gl_compatibility/driver.windows="opengl3_angle"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.19, 0.065, 0.07, 1)

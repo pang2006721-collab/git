@@ -13,6 +13,9 @@ var clip: Control
 var ripple: Sprite2D
 var _jump_held: bool = false
 var _ripple_scales: Array[Vector2] = []
+var _base_scale := Vector2.ONE*1.4
+var _shape_y: float = 1.12
+var _shape_speed: float = 0.0
 
 func configure(soul: Node2D, ring: Sprite2D, layer: CanvasLayer, front: CanvasLayer, start: Vector2, speed: Vector2, size: Vector2, surface: float) -> void:
     body = soul
@@ -30,6 +33,7 @@ func configure(soul: Node2D, ring: Sprite2D, layer: CanvasLayer, front: CanvasLa
     halo.reparent(clip,false)
     body.position = start
     body.scale = size
+    _base_scale = size
     var atlas := AtlasTexture.new()
     atlas.atlas = preload("res://assets/art/heaven/cloud_ripple_v001.png")
     atlas.region = Rect2(465,510,149,32)
@@ -60,12 +64,18 @@ func advance(delta: float, direction: Vector2, award_finished: bool) -> void:
     if phase == Phase.AWARD:
         velocity.x = lerpf(velocity.x,direction.x*420.0,1.0-exp(-10.0*delta))
         var jump: bool = direction.y < -.1
-        if not award_finished and jump and not _jump_held and position.y >= floor_y-.5: velocity.y = -620
+        if not award_finished and jump and not _jump_held and position.y >= floor_y-.5:
+            velocity.y = -620
+            _shape_y = 1.14
+            _shape_speed = 0
         _jump_held = jump
         velocity.y += 1800*delta
         position += velocity*delta
         position.x = clampf(position.x,90,1830)
         if position.y >= floor_y:
+            if velocity.y > 220:
+                _shape_y = .82
+                _shape_speed = 0
             position.y = floor_y
             velocity.y = 0
             if award_finished:
@@ -80,6 +90,13 @@ func advance(delta: float, direction: Vector2, award_finished: bool) -> void:
         position.y += velocity.y*delta
         # 褶皱先打开，身体与光环从同一条云面被逐渐遮住，不用透明度淡走。
         if dive_age >= .76: phase = Phase.COMPLETE
+    var remaining: float = minf(delta,.1)
+    while remaining > 0:
+        var step: float = minf(remaining,1.0/240.0)
+        _shape_speed += ((1.0-_shape_y)*210.0-_shape_speed*14.0)*step
+        _shape_y += _shape_speed*step
+        remaining -= step
+    body.scale = _base_scale*Vector2(1.0/_shape_y,_shape_y)
     body.position = position
     body.rotation = lerpf(body.rotation,velocity.x*.00008,1.0-exp(-10*delta))
     _sample_ripple(ripple_age)

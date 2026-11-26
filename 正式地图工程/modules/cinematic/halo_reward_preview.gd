@@ -65,11 +65,11 @@ func make_halo() -> Sprite2D:
     add_child(halo)
     return halo
 # 所有位置由同一条连续轨迹驱动，避免分段重设速度和叠加 Tween 抢属性。
-const GOD_PATH=[Vector3(0,960,262),Vector3(.65,960,262),Vector3(.98,960,280),Vector3(1.14,960,285),Vector3(1.48,960,128),Vector3(1.72,960,146),Vector3(1.98,960,145),Vector3(2.16,960,153),Vector3(2.30,1120,124),Vector3(2.46,1150,145),Vector3(2.72,1130,145),Vector3(3.0,1130,145),Vector3(3.20,1150,118),Vector3(3.34,1130,126),Vector3(3.68,980,240),Vector3(3.8,960,282),Vector3(3.92,957,244),Vector3(4.1,963,266),Vector3(4.4,960,262),Vector3(4.6,960,262),Vector3(10,960,262)]
-const SOUL_PATH=[Vector3(2.16,960,153),Vector3(2.24,830,110),Vector3(2.46,700,155),Vector3(2.72,730,165),Vector3(3,730,165),Vector3(4.4,730,165),Vector3(4.62,772,142),Vector3(4.82,700,200),Vector3(5.12,534,370),Vector3(5.35,510,565)]
+const GOD_PATH=[Vector3(0,960,262),Vector3(.65,960,262),Vector3(.98,960,280),Vector3(1.14,960,285),Vector3(1.48,960,174),Vector3(1.72,960,190),Vector3(1.98,960,190),Vector3(2.16,960,198),Vector3(2.30,960,269),Vector3(2.46,960,275),Vector3(2.72,960,270),Vector3(3.0,960,270),Vector3(3.20,960,244),Vector3(3.34,960,253),Vector3(3.68,960,274),Vector3(3.8,960,282),Vector3(3.92,957,244),Vector3(4.1,963,266),Vector3(4.4,960,262),Vector3(4.6,960,262),Vector3(10,960,262)]
+const SOUL_PATH=[Vector3(2.16,960,198),Vector3(2.24,960,145),Vector3(2.46,960,160),Vector3(2.72,960,155),Vector3(3,960,155),Vector3(4.4,960,155),Vector3(4.62,990,135),Vector3(4.82,815,230),Vector3(5.12,565,400),Vector3(5.35,510,565)]
 const GOD_DEFORM=[Vector2(0,1),Vector2(.65,1),Vector2(.98,1.12),Vector2(1.14,1.25),Vector2(1.40,.82),Vector2(1.72,1.05),Vector2(1.98,1),Vector2(2.16,1.34),Vector2(2.30,.90),Vector2(2.46,1.06),Vector2(2.72,1),Vector2(3,1),Vector2(3.2,.85),Vector2(3.4,1),Vector2(3.8,1.30),Vector2(3.92,.87),Vector2(4.1,1.07),Vector2(4.4,1),Vector2(4.6,1),Vector2(10,1)]
-const SOUL_SIZE=[Vector2(2.16,.03),Vector2(2.25,1.32),Vector2(2.43,.93),Vector2(2.72,1),Vector2(3,1),Vector2(4.4,1),Vector2(4.62,.95),Vector2(4.9,.87),Vector2(5.35,.68),Vector2(10,.68)]
-const SOUL_DEFORM=[Vector2(2.16,1.4),Vector2(2.25,.86),Vector2(2.43,1.1),Vector2(2.72,1),Vector2(3,1),Vector2(4.4,1),Vector2(4.62,1.2),Vector2(4.85,.83),Vector2(5.18,.9),Vector2(5.35,1.28),Vector2(5.48,.86),Vector2(5.66,1.06),Vector2(5.92,1),Vector2(6.15,1),Vector2(10,1)]
+const SOUL_SIZE=[Vector2(2.16,.03),Vector2(2.25,1.24),Vector2(2.43,.93),Vector2(2.72,1),Vector2(3,1),Vector2(4.4,1),Vector2(4.62,.95),Vector2(4.9,.87),Vector2(5.35,.68),Vector2(10,.68)]
+const SOUL_DEFORM=[Vector2(2.16,1.4),Vector2(2.25,1.10),Vector2(2.43,1.1),Vector2(2.72,1),Vector2(3,1),Vector2(4.4,1),Vector2(4.62,1.2),Vector2(4.85,.83),Vector2(5.18,.9),Vector2(5.35,1.28),Vector2(5.48,.86),Vector2(5.66,1.06),Vector2(5.92,1),Vector2(6.15,1),Vector2(10,1)]
 const BODY_SQUASH=[Vector2(0,1),Vector2(5.1,1),Vector2(5.3,.9),Vector2(5.36,.82),Vector2(5.49,1.15),Vector2(5.68,.95),Vector2(5.98,1),Vector2(6.2,1),Vector2(10,1)]
 const BODY_HOP=[Vector2(0,0),Vector2(5.30,0),Vector2(5.35,0),Vector2(5.49,-26),Vector2(5.65,-10),Vector2(5.95,0),Vector2(6.2,0),Vector2(10,0)]
 const RING_RECOIL=[Vector2(5.35,16),Vector2(5.48,-11),Vector2(5.64,4),Vector2(5.92,0),Vector2(6.15,0),Vector2(10,0)]
@@ -155,20 +155,23 @@ func sample(t:float) -> void:
         elif t>=4.35 and t<5.75:looking_at=soul_halo.position
         elif t>=5.75:looking_at=SOUL_FEET+Vector2(0,-130)
         blink=maxf(blink_at(t,.66),blink_at(t,3.82,.08))
-        accents.marks=[{"position":Vector2(960,145),"age":t-2.16,"strength":1.0},{"position":GOD_HOME,"age":t-3.8,"strength":.55},{"position":soul_halo.position,"age":t-5.35,"strength":.7}]
+        accents.marks=[{"position":Vector2(960,198),"age":t-2.16,"strength":1.0},{"position":GOD_HOME,"age":t-3.8,"strength":.55},{"position":soul_halo.position,"age":t-5.35,"strength":.7}]
     if external_soul:
-        soul.position=live_position
-        soul.scale=live_scale
+        var base_size:float=sqrt(absf(live_scale.x*live_scale.y))
+        var reaction:float=track1(BODY_SQUASH,t) if oranges_total>=100 else 1.0
+        var shape_y:float=clampf(live_scale.y/base_size*reaction,.75,1.25)
+        soul.position=live_position+Vector2(0,track1(BODY_HOP,t)*base_size/1.8) if oranges_total>=100 else live_position
+        soul.scale=Vector2(1.0/shape_y,shape_y)*base_size
         soul.rotation=live_rotation
         god_halo.position+=initial_god_halo_offset*(1.0-eased(0,.65,t))
-        var head:Vector2=live_position+Vector2(0,-90*live_scale.y-28)
+        var head:Vector2=soul.position+Vector2(0,-90*soul.scale.y-28)
         if t>=2.16:
             if t<5.35:
                 soul_halo.position+=external_offset+(head-SOUL_HOME-external_offset)*eased(4.62,5.35,t)
-                soul_halo.scale*=lerpf(1.0,live_scale.y/1.8,eased(4.62,5.35,t))
+                soul_halo.scale*=lerpf(1.0,base_size/1.8,eased(4.62,5.35,t))
             else:
-                soul_halo.position=head+Vector2(0,track1(RING_RECOIL,t)*live_scale.y/1.8)
-                soul_halo.scale*=live_scale.y/1.8
+                soul_halo.position=head+Vector2(0,track1(RING_RECOIL,t)*base_size/1.8)
+                soul_halo.scale*=base_size/1.8
         if t<.65 or t>=5.75: looking_at=live_position+Vector2(0,-90*live_scale.y*.7)-external_offset
         elif t>=4.35: looking_at=soul_halo.position-external_offset
         if accents.marks.size()>=3: accents.marks[2].position=soul_halo.position-external_offset

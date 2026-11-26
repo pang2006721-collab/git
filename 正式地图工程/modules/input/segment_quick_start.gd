@@ -8,6 +8,7 @@ var _pending: int = 0
 var _loading: bool = false
 var _ending_generation: int = 0
 var _ending_history: Dictionary = {}
+var _prepared_ending: PackedScene
 
 func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
@@ -27,6 +28,7 @@ func _input(event: InputEvent) -> void:
 func start_segment(index: int) -> void:
     if index not in [1,2,3,4,5,6,7]: return
     _ending_generation += 1
+    _prepared_ending = null
     if index == 7:
         _ending_history = {}
         var scene := get_tree().current_scene
@@ -65,9 +67,8 @@ func _apply() -> void:
     var entry := get_tree().current_scene.get_node("SegmentStart")
     if index == 7:
         var cloud := get_tree().current_scene.get_node("OceanLink/FishStage/JungleLayout/SkyCloudExit")
-        var status: int = ResourceLoader.load_threaded_get_status(ENDING_SCENE)
-        if status not in [ResourceLoader.THREAD_LOAD_IN_PROGRESS,ResourceLoader.THREAD_LOAD_LOADED]:
-            ResourceLoader.load_threaded_request(ENDING_SCENE)
+        # 在穿云开始前由主线程准备小型封赏素材，避免后台首次上传透明光环纹理后丢失。
+        _prepared_ending = load(ENDING_SCENE)
         cloud.arrived.connect(_after_preview_cloud.bind(_ending_generation),CONNECT_ONE_SHOT)
     entry.start_segment(index)
     segment_started.emit(index)
@@ -76,19 +77,17 @@ func _after_preview_cloud(generation: int) -> void:
     _finish_cloud_handoff.call_deferred(generation)
 
 func _finish_cloud_handoff(generation: int) -> void:
-    # 在穿云期间准备资源，灵魂出来后原画面和控制照常运行；这里没有淡黑或定格。
-    while ResourceLoader.load_threaded_get_status(ENDING_SCENE) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
-        await get_tree().process_frame
-        if generation != _ending_generation: return
+    # 资源已在穿云开始前准备好；弹出后保留原画面与控制，没有淡黑或定格。
     if generation != _ending_generation: return
-    if ResourceLoader.load_threaded_get_status(ENDING_SCENE) != ResourceLoader.THREAD_LOAD_LOADED:
+    if _prepared_ending == null:
         push_error("结尾试玩场景加载失败")
         return
     var level := get_tree().current_scene
     var body: CharacterBody2D = level.get_node("Soul")
     var layout: Node2D = level.get_node("OceanLink/FishStage/JungleLayout")
     var view: Transform2D = get_viewport().canvas_transform
-    var packed := ResourceLoader.load_threaded_get(ENDING_SCENE) as PackedScene
+    var packed := _prepared_ending
+    _prepared_ending = null
     var ending := packed.instantiate()
     # 两张原画精确相差487像素。保持屏幕构图、同一只幽灵的位置和弹出速度。
     ending.opening_offset = (view*layout.global_transform)*Vector2(0,487)

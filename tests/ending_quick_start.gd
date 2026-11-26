@@ -44,6 +44,8 @@ func run():
     if is_ending():
         check(root.canvas_transform.is_equal_approx(Transform2D.IDENTITY),"Ending does not inherit the sky camera's old offset")
         check(current_scene.oranges_total == 100 and current_scene.opening.oranges_total == 100,"Ending shortcut always grants the 100-orange halo preview")
+        if DisplayServer.get_name() != "headless":
+            check(current_scene.opening.god_halo.texture.get_image().get_used_rect().has_area(),"Quick-start halo contains visible pixels after the cloud handoff")
         check(current_scene.data.deaths[&"hell"] == 3,"Existing run's death history survives the shortcut")
         current_scene.opening.sample(6.5)
         check(current_scene.opening.soul_halo.visible,"The ghost receives its halo")

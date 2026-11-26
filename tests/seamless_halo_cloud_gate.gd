@@ -53,5 +53,24 @@ func run():
     check(scene._review_started and not scene.gate.ripple.visible,"Retrospective begins only after the fold closes")
     check(scene.opening.soul.get_parent() == scene.ghost_layer,"Free flight resumes beneath the cloud after diving")
     scene.free()
+    # 按真实帧推进，验证可操作模式没有再次吃掉戴环回弹，也没有把物理位置推走。
+    var bounce = load("res://scenes/previews/settlement_descent.tscn").instantiate()
+    bounce.interactive = false
+    root.add_child(bounce)
+    bounce.set_process(false)
+    var minimum: float = INF
+    var maximum: float = 0
+    for i in 480:
+        bounce._process(1.0/60)
+        var t: float = bounce.elapsed
+        if t >= 5.25 and t <= 5.42: minimum = minf(minimum,bounce.opening.soul.scale.y)
+        if t >= 5.43 and t <= 5.75: maximum = maxf(maximum,bounce.opening.soul.scale.y)
+        if t >= 5.1 and t <= 6.3:
+            var body: Node2D = bounce.opening.soul
+            check(absf(body.scale.x*body.scale.y-1.96)<.001,"Duang preserves the character's drawn body area")
+            check(absf(bounce.gate.position.y-bounce.gate.floor_y)<.001,"Award bounce is visual and does not move the player's collision position")
+    check(minimum<1.4*.90 and maximum>1.4*1.08,"Controllable ghost visibly squashes then stretches when receiving the halo")
+    check(bounce.opening.soul.scale.distance_to(Vector2.ONE*1.4)<.005,"Duang settles back to the player's original size")
+    bounce.free()
     print("SEAMLESS_HALO_GATE_FAILURES=",failures.size())
     quit(0 if failures.is_empty() else 1)

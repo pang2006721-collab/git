@@ -6,7 +6,7 @@ signal control_ready
 @export var spawn_path: NodePath = ^"../WallSpawn"
 @export var landing_path: NodePath = ^"../LandingPoint"
 @export var duration: float = 0.6
-@export var cave_edge_offset: float = 35.0
+@export var cave_edge_offset: float = 40.0
 @export var ground_shape_path: NodePath = ^"../Ground/Collision"
 var _start_position: Vector2
 var _landing_position: Vector2

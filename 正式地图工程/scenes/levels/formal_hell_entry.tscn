@@ -179,7 +179,7 @@ position = Vector2(469, 51896)
 polygon = PackedVector2Array(-330, -100, 330, -100, 330, 100, -330, 100)
 
 [node name="WallSpawn" type="Marker2D" parent="." unique_id=1504876538]
-position = Vector2(135, 51796)
+position = Vector2(100, 51796)
 
 [node name="LandingPoint" type="Marker2D" parent="." unique_id=59530825]
 position = Vector2(240, 51796)

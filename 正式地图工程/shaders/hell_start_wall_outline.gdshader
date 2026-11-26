@@ -10,4 +10,15 @@ void fragment(){
             COLOR=vec4(original.rgb,1.0);
         }
     }
+    // 洞口提取时黑边外残留的窄红条不应盖住正在探出的幽灵。
+    if(pixel.x>=100.0 && pixel.x<=225.0 && pixel.y>=400.0 && pixel.y<=650.0
+        && max(COLOR.r,max(COLOR.g,COLOR.b))>=.18){
+        for(int d=1;d<=16;d++){
+            vec4 left=texture(TEXTURE,(pixel-vec2(float(d),0.0))*TEXTURE_PIXEL_SIZE);
+            if(left.a>.9 && max(left.r,max(left.g,left.b))<.18){
+                COLOR.a=0.0;
+                break;
+            }
+        }
+    }
 }

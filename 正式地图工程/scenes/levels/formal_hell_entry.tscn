@@ -1377,6 +1377,7 @@ texture = ExtResource("support_horizontal")
 
 [node name="OceanWalls" type="Sprite2D" parent="WorldLayers" unique_id=1550099428]
 z_index = 17
+z_as_relative = false
 position = Vector2(0, 29847)
 texture = ExtResource("ocean_side_walls")
 centered = false

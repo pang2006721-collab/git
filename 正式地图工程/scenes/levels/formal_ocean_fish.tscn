@@ -53,6 +53,7 @@ script = ExtResource("assembly")
 [node name="Fish" parent="." instance=ExtResource("fish")]
 position = Vector2(1288,38848)
 z_index = 15
+collision_mask = 144
 
 [node name="Visual" parent="Fish" index="3"]
 selected_right_texture = ExtResource("selected_right")

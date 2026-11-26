@@ -23,7 +23,7 @@ func _ready() -> void:
 
 func _align_volcano_anchors_to_map() -> void:
     # 这三处坐标来自原地图；OceanLink 的编辑器位移只影响其余分段布局。
-    for path in ["Exit","OceanMouth","OriginalSeabed"]:
+    for path in ["Exit","OceanMouth","OriginalSeabed","FishBottomBoundary"]:
         var node: Node2D=get_node(path)
         var authored: Transform2D=node.transform
         node.top_level=true

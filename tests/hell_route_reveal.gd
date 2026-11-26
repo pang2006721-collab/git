@@ -33,6 +33,22 @@ func run():
     var view:Rect2=Rect2(game.camera.global_position-size*.5,size)
     check(view.grow(-50).has_point(game.demon.global_position) and view.grow(-50).has_point(route.target.global_position) and view.grow(-50).has_point(route._landing),"Player, ball and next landing fit the widened view together")
     check(game.demon.get_node("Input").enabled,"Guidance does not disable player controls")
+    var exchange_zoom:Vector2=game.camera.zoom
+    var exchange_center:Vector2=game.camera.global_position
+    game.demon.global_position=route.target.get_node("SwapPoint").global_position
+    game.get_node("CameraAttention")._on_exchanged(game.demon)
+    route._on_exchanged(game.demon)
+    check(route.active and route._returning,"Exchange hands the route camera to a smooth return")
+    check(game.camera.zoom==exchange_zoom and game.camera.global_position==exchange_center,"Exchange frame preserves the displayed zoom and center")
+    var last_center:Vector2=game.camera.global_position
+    var last_zoom:float=game.camera.zoom.x
+    for frame in 60:
+        route._process(1.0/60.0)
+        game.camera._process(1.0/60.0)
+        check(absf(game.camera.zoom.x-last_zoom)<.02,"Return has no single-frame zoom jump")
+        check(game.camera.global_position.distance_to(last_center)<45,"Return follows the teleport without a single-frame framing jump")
+        last_center=game.camera.global_position
+        last_zoom=game.camera.zoom.x
     route._process(3)
     check(not route.active and game.camera.zoom==zoom and game.get_node("CameraAttention").enabled,"Normal framing and attention return after preview")
     route._process(.1)

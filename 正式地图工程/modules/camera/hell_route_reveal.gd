@@ -3,6 +3,7 @@ extends Node
 const SURFACE=preload("res://modules/environment/hell_surface.gd")
 @export_node_path("Node2D") var reveal_target_path: NodePath=^"../Fork/Targets/Target03"
 @export var notice_seconds: float=2.4
+@export var return_seconds: float=.85
 @export var approach_height: float=900.0
 @export var approach_width: float=1100.0
 var active: bool=false
@@ -12,6 +13,10 @@ var _elapsed: float=0.0
 var _rest_zoom: Vector2
 var _attention_enabled: bool=true
 var _landing: Vector2
+var _returning: bool=false
+var _return_elapsed: float=0.0
+var _return_zoom: Vector2
+var _return_center: Vector2
 @onready var level: Node2D=get_parent()
 @onready var camera: Camera2D=level.get_node("Camera")
 @onready var attention: Node=level.get_node("CameraAttention")
@@ -67,21 +72,49 @@ func _process(delta: float) -> void:
         _rest_zoom=camera.zoom
         _attention_enabled=attention.enabled
         attention.enabled=false
+    if _returning:
+        _process_return(delta)
+        return
     _elapsed+=delta
-    var weight: float=smoothstep(0,.4,_elapsed)*(1.0-smoothstep(notice_seconds-.5,notice_seconds,_elapsed))
+    var return_at: float=maxf(.4,notice_seconds-return_seconds)
+    if _elapsed>=return_at:
+        _begin_return()
+        _process_return(_elapsed-return_at)
+        return
+    var weight: float=smoothstep(0,.4,_elapsed)
     camera.zoom=_rest_zoom.lerp(Vector2.ONE*_wide_zoom(),weight)
     var bounds:=Rect2(level.demon.global_position,Vector2.ZERO).expand(target.global_position).expand(_landing)
+    var normal: Vector2=_normal_center()
+    camera.framing_bias=(bounds.get_center()-normal)*weight
+    camera.precise_framing=true
+func _normal_center() -> Vector2:
     var normal: Vector2=level.demon.global_position+camera.framing_offset
     normal.x+=clampf(level.demon.velocity.x/520.0,-1,1)*camera.horizontal_look_ahead
     normal.y-=clampf(-level.demon.velocity.y/1200.0,0,1)*camera.upward_look_ahead
-    camera.framing_bias=(bounds.get_center()-normal)*weight
+    return normal
+func _begin_return(restart: bool=false) -> void:
+    if _returning and not restart:return
+    _returning=true
+    _return_elapsed=0.0
+    _return_zoom=camera.zoom
+    _return_center=camera.global_position
+    # 从当前画面交接，覆盖普通传送的短促跟随，不在交换帧重置缩放。
+    camera.blend_to_target(level.demon,return_seconds)
+func _process_return(delta: float) -> void:
+    _return_elapsed+=delta
+    var u: float=clampf(_return_elapsed/maxf(return_seconds,.01),0.0,1.0)
+    var eased: float=u*u*u*(u*(u*6.0-15.0)+10.0)
+    camera.zoom=_return_zoom.lerp(_rest_zoom,eased)
+    var normal: Vector2=_normal_center()
+    camera.framing_bias=_return_center.lerp(normal,eased)-normal
     camera.precise_framing=true
-    if _elapsed>=notice_seconds:reset()
+    if u>=1.0:reset()
 func _on_exchanged(_body: Node2D) -> void:
-    reset()
+    if active:_begin_return(true)
 func reset(clear_seen: bool=false) -> void:
     if active:
         active=false
+        _returning=false
         camera.zoom=_rest_zoom
         camera.framing_bias=Vector2.ZERO
         camera.precise_framing=false

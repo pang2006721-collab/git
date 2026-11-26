@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://modules/ui/orange_counter.gd" id="script"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/orange_counter/multiply.png" id="art"]
@@ -12,6 +12,17 @@ filter_clip = true
 atlas = ExtResource("art")
 region = Rect2(309, 35, 33, 36)
 filter_clip = true
+
+[sub_resource type="StyleBoxFlat" id="counter_background"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_left = 18
+corner_radius_bottom_right = 18
+anti_aliasing = true
+shadow_color = Color(0, 0, 0, 0.12)
+shadow_size = 3
+shadow_offset = Vector2(0, 3)
 
 [node name="OrangeCounter" type="CanvasLayer"]
 layer = 20
@@ -34,6 +45,14 @@ grow_vertical = 0
 mouse_filter = 2
 
 [node name="Contents" type="Node2D" parent="Anchor"]
+
+[node name="Background" type="Panel" parent="Anchor/Contents"]
+offset_left = -16.0
+offset_top = -12.0
+offset_right = 288.0
+offset_bottom = 76.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("counter_background")
 
 [node name="Logo" type="Sprite2D" parent="Anchor/Contents"]
 texture = SubResource("logo")

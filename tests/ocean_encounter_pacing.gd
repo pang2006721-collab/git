@@ -25,6 +25,8 @@ func run() -> void:
     stage.get_node("JellyfishReveal").set_process(false)
     for lane in stage.get_node("PinkSharks").get_children():lane.set_physics_process(false)
     var shark=stage.get_node("Shark")
+    # 此测试只检查时机；眩晕时真实命中死亡由 fish_stun_shark_hit 覆盖。
+    shark.player_hit.disconnect(stage._on_shark_hit)
     var pink=stage.get_node("PinkSharks")
     var octopus=stage.get_node("Octopus")
     var ink=stage.get_node("InkOverlay")
@@ -55,10 +57,10 @@ func run() -> void:
     var stun=fish.get_node("Stun")
     check(stun.apply(Vector2.RIGHT),"Fixture receives actual tentacle stun")
     pacing.update(0,true,33000)
-    check(not shark.enabled and shark.state==shark.State.LOCKING and shark.visible,"Stun preserves incoming attack animation without further damage")
+    check(shark.enabled and shark.state==shark.State.LOCKING and shark.visible,"Stun preserves incoming shark damage")
     await create_timer(.95).timeout
     pacing.update(.95,true,33000)
-    check(stun.stun_remaining<=0 and pacing.rest_remaining>0,"Recovery retains time to swim away")
+    check(stun.stun_remaining<=0 and pacing.stun_rest_remaining>0,"Recovery retains protection against other encounters")
     check(not pacing.damage_allowed(),"Recovery blocks a second punishment")
     stage._on_ink_sprayed()
     check(not ink.visible,"Recovery also prevents a second ink punishment")

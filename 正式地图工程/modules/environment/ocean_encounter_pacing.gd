@@ -8,6 +8,7 @@ extends Node
 @export var checkpoint_safe_radius: float=360.0
 @export var showcase_seconds: float=2.0
 var rest_remaining: float=0.0
+var stun_rest_remaining: float=0.0
 var showcase_remaining: float=0.0
 var side_tentacle_allowed: bool=false
 @onready var stage: Node2D=get_parent()
@@ -26,25 +27,25 @@ func _ready() -> void:
     var lanes:=pink.get_children()
     for i in mini(lanes.size(),pink_heights.size()):
         lanes[i].global_position.y=level.to_global(Vector2(0,pink_heights[i])).y
-    fish.get_node("Stun").stunned.connect(func(): request_rest(fish.get_node("Stun").stun_seconds+recovery_rest_seconds))
-    fish.get_node("Stun").recovered.connect(func(): request_rest(recovery_rest_seconds))
+    fish.get_node("Stun").stunned.connect(func(): stun_rest_remaining=maxf(stun_rest_remaining,fish.get_node("Stun").stun_seconds+recovery_rest_seconds))
+    fish.get_node("Stun").recovered.connect(func(): stun_rest_remaining=maxf(stun_rest_remaining,recovery_rest_seconds))
     boss.appeared.connect(func(): showcase_remaining=showcase_seconds)
     checkpoint.activated.connect(func(): request_rest(checkpoint_rest_seconds))
 
 func request_rest(seconds: float) -> void:
     rest_remaining=maxf(rest_remaining,seconds)
 
-func _protected() -> bool:
+func _protected(include_stun: bool=true) -> bool:
     var stun:=fish.get_node("Stun")
     var safe_checkpoint: bool=checkpoint.active and fish.global_position.distance_to(checkpoint.global_position)<checkpoint_safe_radius
-    return rest_remaining>0 or showcase_remaining>0 or stun.stun_remaining>0 or stun.dizzy_remaining>0 or checkpoint.grace_remaining>0 or safe_checkpoint
+    return rest_remaining>0 or showcase_remaining>0 or (include_stun and (stun_rest_remaining>0 or stun.stun_remaining>0 or stun.dizzy_remaining>0)) or checkpoint.grace_remaining>0 or safe_checkpoint
 
-func damage_allowed() -> bool:
+func damage_allowed(ignore_stun: bool=false) -> bool:
     if stage.get_node("ShoreExit").state!=stage.get_node("ShoreExit").State.SWIMMING: return false
-    return stage.active and stage.host.claimed and level.player==fish and not level.dead and not level.exit_in_progress and not _protected() and not ink.visible
+    return stage.active and stage.host.claimed and level.player==fish and not level.dead and not level.exit_in_progress and not _protected(not ignore_stun) and not ink.visible
 
 func can_start_final() -> bool:
-    return damage_allowed()
+    return damage_allowed(true)
 
 func prepare_final() -> void:
     shark.cancel_pending_attack()
@@ -59,6 +60,7 @@ func prepare_final() -> void:
 func update(delta: float,can_attack: bool,y: float) -> void:
     if level.dead: return
     rest_remaining=maxf(0,rest_remaining-delta)
+    stun_rest_remaining=maxf(0,stun_rest_remaining-delta)
     showcase_remaining=maxf(0,showcase_remaining-delta)
     var final_phase: bool=final.triggered
     var blocked: bool=_protected()
@@ -80,10 +82,11 @@ func update(delta: float,can_attack: bool,y: float) -> void:
     octopus.enabled=can_attack and middle and not final_phase
     octopus.spawn_allowed=not blocked and screen_clear and not octopus.visitors.any(func(visitor): return visitor.state!=visitor.State.WAITING)
     var octopus_busy: bool=octopus.visitors.any(func(visitor): return visitor.state!=visitor.State.WAITING)
-    var shark_allowed: bool=can_attack and late and not final_phase and not blocked and screen_clear and not octopus_busy
+    var shark_blocked: bool=_protected(false)
+    var shark_allowed: bool=can_attack and late and not final_phase and not shark_blocked and screen_clear and not octopus_busy
     if shark_allowed:
         shark.enabled=true
-    elif shark.state!=shark.State.WAITING and (blocked or not screen_clear):
+    elif shark.state!=shark.State.WAITING and (shark_blocked or not screen_clear):
         shark.finish_current_attack()
     else:
         shark.enabled=false
@@ -98,6 +101,7 @@ func update(delta: float,can_attack: bool,y: float) -> void:
     if not can_attack: ink.reset()
 
 func reset() -> void:
+    stun_rest_remaining=0
     rest_remaining=0
     showcase_remaining=0
     side_tentacle_allowed=false

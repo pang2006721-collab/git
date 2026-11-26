@@ -47,13 +47,13 @@ func _on_stranded_fish_died() -> void:
     if level.player==fish: level.die(&"stranded")
 
 func _on_shark_hit(direction: Vector2) -> void:
-    if not $Pacing.damage_allowed(): return
+    if not $Pacing.damage_allowed(true): return
     if fish.position.y<=$ShoreExit.surface_y+shark_surface_safe_depth: return
     $SharkKnockback.impact_direction = direction
     level.die(&"shark")
 
 func _on_final_shark_hit(direction: Vector2) -> void:
-    if not $Pacing.damage_allowed(): return
+    if not $Pacing.damage_allowed(true): return
     $SharkKnockback.impact_direction = direction
     level.die(&"shark")
 

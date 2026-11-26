@@ -4,6 +4,7 @@ const PICKUP = preload("res://modules/collectibles/orange_pickup.gd")
 const ART = preload("res://assets/art/collectibles/orange.png")
 @export var ring_centers: Array[Vector2] = [Vector2(1130,38150),Vector2(780,37000),Vector2(1150,35850),Vector2(780,34700),Vector2(1140,33550),Vector2(800,32400),Vector2(1100,31250)]
 @export var ring_radius: float = 95.0
+@export var fish_attraction_bonus: float = 30.0
 @export_range(3,12) var oranges_per_ring: int = 6
 var _previous: Vector2 = Vector2.INF
 @onready var level: Node2D = get_parent()
@@ -36,5 +37,5 @@ func _physics_process(_delta: float) -> void:
     for orange in get_children():
         if orange.collected: continue
         var closest: Vector2 = Geometry2D.get_closest_point_to_segment(orange.global_position,before,center)
-        if closest.distance_to(orange.global_position) <= orange.pickup_radius+radius:
+        if closest.distance_to(orange.global_position) <= orange.pickup_radius+radius+fish_attraction_bonus:
             ledger.collect_for_player(orange,fish)

@@ -91,6 +91,8 @@
 
 [ext_resource type="Script" path="res://modules/cinematic/run_retrospective.gd" id="run_retrospective"]
 
+[ext_resource type="Script" path="res://modules/collectibles/ocean_orange_rings.gd" id="ocean_orange_rings"]
+
 [sub_resource type="ShaderMaterial" id="tall_wall_join_material"]
 shader = ExtResource("tall_wall_join")
 
@@ -1556,3 +1558,6 @@ script = ExtResource("ocean_sound_binding")
 
 [node name="RunRetrospective" type="Node" parent="."]
 script = ExtResource("run_retrospective")
+
+[node name="OceanOranges" type="Node2D" parent="."]
+script = ExtResource("ocean_orange_rings")

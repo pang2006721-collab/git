@@ -46,8 +46,10 @@ func _collect_along(before: Vector2,center: Vector2) -> void:
         if closest.distance_to(orange.global_position)>orange.pickup_radius+body_radius: continue
         _collect_orange(orange)
 func _collect_orange(orange: Node2D) -> void:
+    collect_for_player(orange,level.demon)
+func collect_for_player(orange: Node2D,body: CharacterBody2D) -> void:
     if orange.collected or collected_ids.has(orange.name):return
-    orange.collect(level.demon)
+    orange.collect(body)
     collected_ids[orange.name]=true
     collected_count=collected_ids.size()
     orange_collected.emit(collected_count,orange.name)

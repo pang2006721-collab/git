@@ -39,6 +39,7 @@ func _ready() -> void:
     flight.setup(int(get_instance_id()),entry_side)
     var material:=ShaderMaterial.new()
     material.shader=preload("res://shaders/demon_held_fork.gdshader")
+    material.set_shader_parameter("enemy_art",true)
     art.material=material
     _cooldown=1.0+fmod(float(get_instance_id()),.9)
     _pose()

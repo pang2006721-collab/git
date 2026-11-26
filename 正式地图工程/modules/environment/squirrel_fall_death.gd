@@ -1,5 +1,5 @@
 extends Node
-## 从最近一次起跳/松藤后的最高点量自由下落距离；抓藤和安全着地重新计数。
+## 自由下落只记录落差，真正落地时才判定摔死；空中抓藤可自救。
 @export var fatal_drop_pixels: float = 500.0
 var _tracking: bool = false
 var _apex_y: float = 0.0
@@ -22,11 +22,9 @@ func _physics_process(_delta: float) -> void:
 			reset()
 			return
 	var height: float = body.global_position.y
-	# 先检查本帧落差，再处理落地，避免跨过阈值时恰好着地而漏判。
-	if _tracking and height - _apex_y > fatal_drop_pixels:
-		level.die(&"fall")
-		return
 	if body.is_on_floor():
+		if _tracking and height - _apex_y > fatal_drop_pixels:
+			level.die(&"fall")
 		reset()
 		return
 	if not _tracking or body.velocity.y < 0.0:

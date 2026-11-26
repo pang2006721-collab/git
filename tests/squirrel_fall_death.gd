@@ -27,6 +27,7 @@ func run():
 	var defeat = body.get_node("Defeat")
 	host.take_control()
 	game.player = body
+	body.disable_mode = CollisionObject2D.DISABLE_MODE_KEEP_ACTIVE
 	game.process_mode = Node.PROCESS_MODE_DISABLED
 	for n in ["Checkpoint", "OceanCheckpoint", "JungleCheckpoint"]: game.get_node(n).grace_remaining = 0
 	climber.detach(false)
@@ -71,7 +72,26 @@ func run():
 	game.camera.global_position = body.global_position
 	game.camera.make_current()
 	monitor._physics_process(.01)
-	check(game.dead and game.death_reason == &"fall", "A free fall above 500 pixels kills the squirrel")
+	check(not game.dead, "Crossing 500 pixels in midair does not kill")
+	# 使用真实地面碰撞验证落地判定，而非伪造 is_on_floor。
+	var floor_body := StaticBody2D.new()
+	floor_body.collision_layer = 16
+	var shape := CollisionShape2D.new()
+	var rectangle := RectangleShape2D.new()
+	rectangle.size = Vector2(400, 20)
+	shape.shape = rectangle
+	floor_body.add_child(shape)
+	root.add_child(floor_body)
+	floor_body.global_position = body.global_position + Vector2(0, 30)
+	await physics_frame
+	for tick in 20:
+		body.velocity = Vector2(0, 1200)
+		body.move_and_slide()
+		monitor._physics_process(1.0 / 120.0)
+		if game.dead: break
+		await physics_frame
+	check(body.is_on_floor(), "Actual collision reaches the ground")
+	check(game.dead and game.death_reason == &"fall", "Landing after a drop above 500 pixels kills the squirrel")
 	check(defeat.falling and defeat.corpse.visible, "Original stunned expression starts immediately")
 	check(not body.get_node("Visual/Sprite").visible, "Live pose is hidden")
 	check(defeat.corpse.texture.atlas.resource_path.ends_with("stunned.png"), "Uses supplied squirrel pose")

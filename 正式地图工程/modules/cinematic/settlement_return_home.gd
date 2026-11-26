@@ -3,6 +3,7 @@ extends CanvasLayer
 signal completed
 const MENU = "res://scenes/ui/main_menu.tscn"
 const LOADING = preload("res://scenes/ui/loading_character_overlay.tscn")
+@export var overlay_layer: int = 80
 @export var fade_to_black_seconds: float = .7
 @export var minimum_black_seconds: float = 2.4
 @export var reveal_seconds: float = 1.4
@@ -13,7 +14,7 @@ var menu_ready: bool = false
 var _fade: Tween
 
 func _ready() -> void:
-    layer = 80
+    layer = overlay_layer
     process_mode = Node.PROCESS_MODE_ALWAYS
     var layout := Control.new()
     layout.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -23,7 +24,7 @@ func _ready() -> void:
     black.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     layout.add_child(black)
     beans = LOADING.instantiate()
-    beans.layer = 81
+    beans.layer = layer + 1
     beans.dim_strength = 0.0
     add_child(beans)
 

@@ -147,8 +147,12 @@ func _home() -> void:
 		return
 	impact_shake.stop()
 	state = State.HOME
-	await overlay.dismiss()
-	get_tree().change_scene_to_file("res://scenes/ui/main_menu.tscn")
+	var transition = preload("res://modules/cinematic/settlement_return_home.gd").new()
+	transition.name = "DeathHomeTransition"
+	# 复用结尾过渡；黑幕必须盖住层级100的死亡弹窗，并跨场景继续播放。
+	transition.overlay_layer = overlay.layer + 10
+	get_tree().root.add_child(transition)
+	transition.start()
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and (event.physical_keycode in [KEY_1,KEY_2,KEY_3,KEY_4,KEY_5,KEY_6] or event.keycode in [KEY_1,KEY_2,KEY_3,KEY_4,KEY_5,KEY_6]):

@@ -89,6 +89,8 @@
 [ext_resource type="Script" path="res://modules/audio/hell_gameplay_sounds.gd" id="sound_binding"]
 [ext_resource type="Script" path="res://modules/audio/ocean_gameplay_sounds.gd" id="ocean_sound_binding"]
 
+[ext_resource type="Script" path="res://modules/cinematic/run_retrospective.gd" id="run_retrospective"]
+
 [sub_resource type="ShaderMaterial" id="tall_wall_join_material"]
 shader = ExtResource("tall_wall_join")
 
@@ -746,7 +748,7 @@ texture = ExtResource("56_bclby")
 offset = Vector2(6.53342, -7.003569)
 
 [node name="Collision" type="CollisionPolygon2D" parent="Platforms/Breakable18" unique_id=353370706]
-polygon = PackedVector2Array(-122, 55, -115, 92, -103, 121, -97, 127, -85, 129, -61, 151, -37, 164, -13, 166, -3, 171, 6, 169, 20, 161, 31, 161, 49, 155, 64, 153, 78, 146, 87, 134, 99, 132, 103, 128, 111, 110, 114, 91, 121, 83, 131, 61, 131, 56, 127, 49, 106, 38, 88, 32, 63, 36, 41, 36, 25, 32, 9, 35, -10, 35, -21, 32, -45, 33, -55, 28, -107, 34, -119, 43)
+polygon = PackedVector2Array(-122, 55, -115, 92, -103, 121, -97, 127, -85, 129, -61, 151, -37, 164, -13, 166, -3, 171, 6, 169, 20, 161, 31, 161, 49, 155, 64, 153, 78, 146, 87, 134, 99, 132, 103, 128, 111, 110, 114, 91, 121, 83, 131, 61, 131, 56, 127, 49, 106, 36, -107, 36, -119, 43)
 
 [node name="Moving19" type="AnimatableBody2D" parent="Platforms" unique_id=13792501]
 z_index = 11
@@ -1551,3 +1553,6 @@ script = ExtResource("sound_binding")
 
 [node name="OceanSounds" type="Node" parent="."]
 script = ExtResource("ocean_sound_binding")
+
+[node name="RunRetrospective" type="Node" parent="."]
+script = ExtResource("run_retrospective")

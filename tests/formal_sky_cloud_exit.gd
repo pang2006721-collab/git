@@ -31,6 +31,8 @@ func run() -> void:
     var layout=stage.get_node("JungleLayout")
     var bird=layout.get_node("Bird")
     var exit=layout.get_node("SkyCloudExit")
+    # 本测试只隔离检查原钻云组件；正式整段接续另由natural_heaven_ending覆盖。
+    exit.ending_handoff.enabled=false
     var eagle=layout.get_node("SkyEagle")
     var arrival_snapshot:Dictionary={}
     exit.arrived.connect(func():

@@ -33,10 +33,10 @@ func run():
     shark._begin_lock()
     check(shark.visible and shark.state==shark.State.LOCKING,"Shark is visibly locking before tentacle impact")
     game.die(&"jellyfish_net")
-    check(not shark.visible and shark.state==shark.State.WAITING and not shark.enabled,"Tentacle death immediately removes a locking shark")
+    check(shark.visible and shark.state==shark.State.LOCKING and not shark.enabled and shark._finishing,"Death stops new attacks while preserving the committed shark, matching normal play")
     shark._process(.1)
     shark._physics_process(.1)
-    check(not shark.visible,"Death freeze cannot restore the lock visual")
+    check(shark.visible and shark._finishing,"Existing shark continues its attack during death freeze")
     started = 0
     root.push_input(key,true)
     for i in 500:

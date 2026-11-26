@@ -29,6 +29,7 @@ var gaze: Sprite2D
 var _wall_collisions: Array[CollisionShape2D]=[]
 var _floor: StaticBody2D
 var _floor_collision: CollisionPolygon2D
+var ending_handoff: Node
 @onready var layout: Node2D=get_parent()
 @onready var stage: Node2D=get_node("../..")
 @onready var level: Node2D=get_node("../../../..")
@@ -49,6 +50,10 @@ func _ready() -> void:
     travel.duration=travel_seconds
     add_child(travel)
     travel.finished.connect(_arrive)
+    ending_handoff = preload("res://modules/cinematic/heaven_ending_handoff.gd").new()
+    ending_handoff.name = "EndingHandoff"
+    add_child(ending_handoff)
+    ending_handoff.configure(self,level,layout)
 
 func height_at(kind: String,x: float) -> float:
     var points: Array=_profiles[kind]
@@ -191,6 +196,7 @@ func _arrive() -> void:
     arrived.emit()
 
 func reset() -> void:
+    ending_handoff.cancel()
     if state!=State.WAITING:
         travel.cancel()
         camera.zoom=_zoom

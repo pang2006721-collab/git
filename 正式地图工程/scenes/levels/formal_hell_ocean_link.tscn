@@ -44,4 +44,10 @@ collision_layer = 128
 collision_mask = 0
 
 [node name="Collision" type="CollisionPolygon2D" parent="FishBottomBoundary"]
-polygon = PackedVector2Array(-256,39138,2176,39138,2176,39778,-256,39778)
+polygon = PackedVector2Array(-256,39090,2176,39090,2176,39778,-256,39778)
+
+[node name="Left" type="CollisionPolygon2D" parent="FishBottomBoundary"]
+polygon = PackedVector2Array(-256,29847,250,29847,250,39778,-256,39778)
+
+[node name="Right" type="CollisionPolygon2D" parent="FishBottomBoundary"]
+polygon = PackedVector2Array(1690,29847,2176,29847,2176,39778,1690,39778)

@@ -35,24 +35,34 @@ func run():
     check(boundary.global_transform==game.global_transform,"Floor aligns with original map despite OceanLink offset")
     check(fish.collision_mask&128!=0 and game.demon.collision_mask&128==0,"Boundary affects fish without blocking demon eruption")
     await physics_frame
-    for x in [40,240,960,1720,1880]:
+    for x in [285,400,960,1540,1650]:
         fish.global_position=game.to_global(Vector2(x,38800))
         var hit=fish.move_and_collide(Vector2(0,1000))
         check(hit!=null,"Real downward swim meets floor at x="+str(x))
-        check(game.to_local(fish.global_position).y<39138,"Fish cannot swim through seabed")
+        check(game.to_local(fish.global_position).y<39090,"Fish cannot swim through seabed")
         var before: Vector2=fish.global_position
         fish.move_and_collide(Vector2(0,1000))
-        check(game.to_local(fish.global_position).y<39138,"Continuing downward cannot cross floor")
+        check(game.to_local(fish.global_position).y<39090,"Continuing downward cannot cross floor")
         fish.global_position=game.to_global(Vector2(x,38900))
         var blink_hit=fish.get_node("Teleport")._blink_motion(Vector2(0,800),true)
         check(blink_hit!=null,"Shift blink sweep also respects the bottom")
+    for height in [30500,33000,38000,39000]:
+        for direction in [-1,1]:
+            fish.global_position=game.to_global(Vector2(960,height))
+            var side_hit=fish.move_and_collide(Vector2(direction*2000,0))
+            check(side_hit!=null,"Side wall blocks swimming at height="+str(height))
+            var x: float=game.to_local(fish.global_position).x
+            check(x>=270 and x<=1670,"Swimming is confined inside black wall outlines")
+            fish.global_position=game.to_global(Vector2(960,height))
+            var side_blink=fish.get_node("Teleport")._blink_motion(Vector2(direction*2000,0),true)
+            check(side_blink!=null,"Blink cannot cross side wall")
     var walls=game.get_node("WorldLayers/OceanWalls")
     check(not walls.z_as_relative and walls.z_index>fish.z_index,"Wall foreground has absolute depth above fish")
     if DisplayServer.get_name()!="headless":
-        for height in [33000,38800]:
+        for height in [33000,38800,39050]:
             game.camera.adopt_view(game.to_global(Vector2(960,height)),Vector2.ONE)
             game.camera.make_current()
-            fish.global_position=game.to_global(Vector2(100,height))
+            fish.global_position=game.to_global(Vector2(1780,height))
             fish.hide()
             await create_timer(1.5).timeout
             var background: Image=await capture()

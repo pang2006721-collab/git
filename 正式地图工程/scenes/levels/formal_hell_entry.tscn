@@ -97,6 +97,8 @@
 
 [ext_resource type="Script" path="res://modules/collectibles/sky_orange_rings.gd" id="sky_orange_rings"]
 
+[ext_resource type="Script" path="res://modules/environment/ocean_wall_bottom_join.gd" id="ocean_bottom_join"]
+
 [sub_resource type="ShaderMaterial" id="tall_wall_join_material"]
 shader = ExtResource("tall_wall_join")
 
@@ -1572,3 +1574,6 @@ script = ExtResource("jungle_orange_arcs")
 
 [node name="SkyOranges" type="Node2D" parent="."]
 script = ExtResource("sky_orange_rings")
+
+[node name="OceanWallBottomJoin" type="Node2D" parent="WorldLayers"]
+script = ExtResource("ocean_bottom_join")

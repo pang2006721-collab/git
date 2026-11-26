@@ -2,6 +2,7 @@ extends Node2D
 ## 在上游和下游交错布置固定障碍，保留两侧绕行通道。
 signal row_started(height: float)
 signal player_hit(direction: Vector2)
+signal strike_started
 const WARNING = preload("res://modules/visual/tentacle_warning.gd")
 const TENDRIL = preload("res://modules/visual/jellyfish_net_tendril.gd")
 @export var enabled: bool = false
@@ -77,6 +78,9 @@ func _physics_process(delta: float) -> void:
                 else:
                     tendril.cancel()
             tendril.sample(row.age)
+            if tendril.dangerous and not tendril.get_meta(&"strike_reported",false):
+                tendril.set_meta(&"strike_reported",true)
+                strike_started.emit()
             var warning: Node2D = tendril.get_node("Warning")
             warning.sample(t-.18)
             if tendril.cancelled: warning.hide()

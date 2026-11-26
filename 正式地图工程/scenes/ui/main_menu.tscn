@@ -26,6 +26,7 @@
 [ext_resource type="Script" path="res://modules/cinematic/opening_chase_director.gd" id="chase_director"]
 [ext_resource type="Script" path="res://modules/camera/cinematic_prezoom.gd" id="prezoom"]
 [ext_resource type="PackedScene" path="res://scenes/cinematics/pillar_game_handoff.tscn" id="handoff"]
+[ext_resource type="Script" path="res://modules/audio/opening_chase_sounds.gd" id="sound_binding"]
 [sub_resource type="AtlasTexture" id="LogoArt"]
 atlas=ExtResource("logo")
 region=Rect2(72, 40, 872, 633)
@@ -176,3 +177,6 @@ script=ExtResource("chase_director")
 script=ExtResource("prezoom")
 
 [node name="GameHandoff" parent="." instance=ExtResource("handoff")]
+
+[node name="OpeningSounds" type="Node" parent="."]
+script = ExtResource("sound_binding")

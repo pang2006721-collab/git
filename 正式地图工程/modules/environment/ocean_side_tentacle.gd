@@ -2,6 +2,7 @@ extends Node2D
 ## 同一侧连续停留才触发；计时、预备和拍击均不追踪已经离开的鱼。
 signal attack_started(side: int)
 signal fish_hit
+signal strike_started
 const SHEET = preload("res://assets/art/ocean/tentacle/slap_sheet.png")
 const ANCHORS = "res://assets/art/ocean/tentacle/anchors.json"
 const WHITE_KEY = preload("res://shaders/tentacle_white_key.gdshader")
@@ -26,6 +27,7 @@ var corpse: Sprite2D
 var _clock: float = 0.0
 var _cooldown: float = 0.0
 var _hit: bool = false
+var _strike_reported: bool = false
 var _anchor := Vector2.ZERO
 var _rig: Node2D
 var _flex: Node2D
@@ -116,6 +118,7 @@ func _side_at_fish() -> int:
 
 func _begin_attack() -> void:
     attacking = true
+    _strike_reported = false
     _hit = false
     _clock = 0.0
     linger_elapsed = 0.0
@@ -143,6 +146,9 @@ func _sample_attack() -> void:
     var strike_start := emerge_seconds+raise_seconds
     var retract_start := strike_start+strike_seconds
     var finish := retract_start+retract_seconds
+    if not _strike_reported and _clock>=strike_start and _clock<retract_start:
+        _strike_reported = true
+        strike_started.emit()
     var retreat := 0.0
     var hidden_distance: float = _flex.reach*artwork_scale+60.0
     if _clock < emerge_seconds:

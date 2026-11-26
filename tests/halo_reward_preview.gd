@@ -10,9 +10,9 @@ func run():
     preview.sample(.5)
     check(preview.god_halo.visible and not preview.soul_halo.visible,"Starts with one floating halo")
     preview.sample(1.8)
-    check(preview.god_halo.position.y<200,"God's halo rises before splitting")
-    preview.sample(2.8)
-    check(preview.soul_halo.visible and preview.god_halo.position.y-preview.soul_halo.position.y>100 and absf(preview.soul_halo.position.x-preview.god_halo.position.x)<1,"Halos split vertically, with the lower one returning to God")
+    check(preview.god_halo.position.distance_to(preview.GOD_HOME)<6,"God keeps wearing the original halo")
+    preview.sample(2.25)
+    check(preview.soul_halo.visible and preview.soul_halo.position.y<preview.god_halo.position.y-50,"A small halo buds upward from the original")
     preview.sample(4.8)
     check(preview.god_halo.position.distance_to(preview.GOD_HOME)<12,"One halo settles back on God")
     preview.sample(6.8)
@@ -33,7 +33,8 @@ func run():
             if previous_visible and preview.soul_halo.visible:
                 max_step=maxf(max_step,preview.soul_halo.position.distance_to(previous_soul))
         check(absf(preview.soul.scale.x*preview.soul.scale.y-3.24)<.001,"Ghost squash/stretch conserves its drawn body area")
-        if t>=5.35:
+        check(preview.god_halo.position.distance_to(preview.GOD_HOME)<6,"Original halo never flies off or needs to be worn again")
+        if t>=3.8:
             var head_y:float=preview.soul.position.y-90.0*preview.soul.scale.y
             var halo_bottom:float=preview.soul_halo.position.y+43.0*preview.soul_halo.scale.y
             max_head_overlap=maxf(max_head_overlap,halo_bottom-head_y)
@@ -43,7 +44,7 @@ func run():
     check(max_step<55,"60 FPS playback has fast motion without a position reset or teleport")
     check(max_head_overlap<5,"Impact halo catches the head rather than passing through the ghost")
     preview.sample(2.25)
-    check(preview.soul_halo.scale.x*preview.soul_halo.scale.y>1.5,"New halo visibly overshoots on its duang entrance")
+    check(preview.soul_halo.scale.x*preview.soul_halo.scale.y<.75,"Offshoot stays visibly smaller than God's original halo")
     preview.sample(8.0)
     check(preview.soul.scale==Vector2.ONE*1.8,"Secondary reaction fully returns to its rest pose")
     preview.oranges_total=99

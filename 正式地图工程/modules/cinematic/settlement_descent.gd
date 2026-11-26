@@ -162,11 +162,11 @@ func _process(delta: float) -> void:
     var previous: float = elapsed
     elapsed += delta
     if not _review_started:
-        gate.advance(delta,_read_direction(),elapsed >= 8.4)
+        gate.advance(delta,_read_direction(),elapsed >= opening.duration)
         opening.external_offset = opening_offset
-        opening.sample(minf(elapsed,8.4))
-        if elapsed < 8.4:
-            for impact in [2.16,3.8,5.35]:
+        opening.sample(minf(elapsed,opening.duration))
+        if elapsed < opening.duration:
+            for impact in [2.16,3.8]:
                 if previous < impact and elapsed >= impact: Sfx.play(&"bounce")
         _render_scene(minf(elapsed,8.4))
         if gate.phase == gate.Phase.COMPLETE: _begin_review()

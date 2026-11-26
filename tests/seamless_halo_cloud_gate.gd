@@ -32,7 +32,7 @@ func run():
     scene._process(1.0/60)
     key(KEY_W,false)
     check(scene.gate.velocity.y < -500,"Jump remains available during the award")
-    scene.elapsed = 5.33
+    scene.elapsed = 3.78
     scene.gate.position = Vector2(1100,scene.gate.floor_y)
     scene.gate.velocity = Vector2.ZERO
     key(KEY_A,true)
@@ -40,7 +40,7 @@ func run():
     key(KEY_A,false)
     var head: Vector2 = scene.opening.soul.position+Vector2(0,-90*scene.opening.soul.scale.y-28)
     check(scene.opening.soul_halo.position.distance_to(head) < 25,"Award halo lands on the moving player, not a fixed old position")
-    scene.elapsed = 8.39
+    scene.elapsed = scene.opening.duration-.01
     scene.gate.position.y = scene.gate.floor_y
     scene.gate.velocity.y = 0
     scene._process(.02)
@@ -60,12 +60,12 @@ func run():
     bounce.set_process(false)
     var minimum: float = INF
     var maximum: float = 0
-    for i in 480:
+    for i in 330:
         bounce._process(1.0/60)
         var t: float = bounce.elapsed
-        if t >= 5.25 and t <= 5.42: minimum = minf(minimum,bounce.opening.soul.scale.y)
-        if t >= 5.43 and t <= 5.75: maximum = maxf(maximum,bounce.opening.soul.scale.y)
-        if t >= 5.1 and t <= 6.3:
+        if t >= 3.7 and t <= 3.87: minimum = minf(minimum,bounce.opening.soul.scale.y)
+        if t >= 3.88 and t <= 4.2: maximum = maxf(maximum,bounce.opening.soul.scale.y)
+        if t >= 3.55 and t <= 4.75:
             var body: Node2D = bounce.opening.soul
             check(absf(body.scale.x*body.scale.y-1.96)<.001,"Duang preserves the character's drawn body area")
             check(absf(bounce.gate.position.y-bounce.gate.floor_y)<.001,"Award bounce is visual and does not move the player's collision position")

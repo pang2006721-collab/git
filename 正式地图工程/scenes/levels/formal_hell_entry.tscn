@@ -1506,7 +1506,7 @@ position = Vector2(1190, 44675.5)
 
 [node name="CheckpointStep" type="AnimatableBody2D" parent="Platforms"]
 z_index = 11
-position = Vector2(700, 44830)
+position = Vector2(830, 44830)
 collision_layer = 8
 collision_mask = 0
 script = ExtResource("52_rs4er")

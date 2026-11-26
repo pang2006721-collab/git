@@ -82,7 +82,7 @@ func run() -> void:
         check(not game.dead,"Brief return grace prevents immediate death")
         await create_timer(1.3).timeout
     await shot("respawn")
-    # 重生点左侧短跳到较低平台，落地后确实能锁定左边团团。
+    # 从重生平台直接向左走落到较低平台，再沿平台走近即可锁定团团，全程不按跳跃。
     game.get_node("RisingLava").reset()
     var step=game.get_node("Platforms/CheckpointStep")
     var reader=demon.get_node("Input")
@@ -92,17 +92,20 @@ func run() -> void:
     await create_timer(.15).timeout
     reader.external_control=true
     reader.move_axis=-1.0
-    reader.jump_pressed=true
-    reader.jump_held=true
+    reader.jump_pressed=false
+    reader.jump_held=false
     await physics_frame
     await physics_frame
     reader.jump_pressed=false
     reader.jump_held=false
-    check(await until(func(): return demon.global_position.x<760 or game.dead,2),"Short jump reaches lower-left platform")
+    check(await until(func(): return demon.global_position.x<910 or game.dead,2),"Walking left reaches the lower platform without jumping")
     reader.move_axis=0.0
-    check(await until(func(): return demon.is_on_floor() or game.dead,2),"Short jump lands safely")
+    check(await until(func(): return demon.is_on_floor() or game.dead,2),"Walking off checkpoint lands safely on the lower platform")
     check(not game.dead,"Approach avoids overhead spikes")
     check(absf(demon.global_position.y-game.SURFACE.landing_on(step).y)<10,"Player lands on new stepping platform")
+    reader.move_axis=-1.0
+    check(await until(func(): return demon.global_position.x<770 or game.dead,1),"Walk along the lower platform toward the left ball")
+    reader.move_axis=0.0
     check(await until(func(): return game.get_node("Fork").selected==game.get_node("Fork/Targets/Target04"),1),"Left ball can be locked from stepping platform")
     game.camera.adopt_view(Vector2(850,44580),Vector2.ONE*.95)
     await shot("left-step")

@@ -78,6 +78,8 @@
 [ext_resource type="Shader" path="res://shaders/hell_start_wall_outline.gdshader" id="wall_outline_restore"]
 [ext_resource type="Texture2D" path="res://assets/art/reference_map/25.png" id="wall_outline_original"]
 
+[ext_resource type="Script" path="res://modules/camera/hell_route_reveal.gd" id="route_reveal"]
+
 [sub_resource type="ShaderMaterial" id="wall_outline_material"]
 shader = ExtResource("wall_outline_restore")
 shader_parameter/original_art = ExtResource("wall_outline_original")
@@ -1504,3 +1506,6 @@ script = ExtResource("fork_parry")
 
 [node name="LavaRiseReveal" type="Node" parent="."]
 script = ExtResource("lava_reveal")
+
+[node name="RouteReveal" type="Node" parent="."]
+script = ExtResource("route_reveal")

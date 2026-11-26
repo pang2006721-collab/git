@@ -17,6 +17,8 @@ func _ready() -> void:
     level.died.connect(reset)
 func _start() -> void:
     if active:return
+    var route: Node=level.get_node_or_null("RouteReveal")
+    if route!=null:route.reset()
     active=true
     _elapsed=0.0
     _rest_zoom=camera.zoom

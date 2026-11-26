@@ -10,6 +10,11 @@ const SCROLL = [Vector2(0,0), Vector2(8.4,0), Vector2(9.2,150), Vector2(11.8,485
 @export var auto_play: bool = true
 @export var interactive: bool = true
 @export var oranges_total: int = 100
+@export var opening_offset := Vector2.ZERO
+@export var arrival_position := Vector2(510,923)
+@export var arrival_velocity := Vector2(0,-620)
+@export var arrival_scale := Vector2(1.4,1.4)
+@export var initial_god_halo_offset := Vector2.ZERO
 @export var review_end_seconds: float = 50.0
 @export var duration: float = 60.0
 var elapsed: float = 0.0
@@ -26,6 +31,9 @@ var flight: Node
 var cloud_layer: CanvasLayer
 var cloud_front: Node2D
 var _return_started: bool = false
+var gate: Node
+var _review_started: bool = false
+var _review_time: float = 0.0
 
 func _ready() -> void:
     world = Node2D.new()
@@ -74,8 +82,15 @@ func _ready() -> void:
     flight = preload("res://modules/movement/settlement_ghost_flight.gd").new()
     add_child(flight)
     flight.exited.connect(_on_ghost_exited)
+    gate = preload("res://modules/cinematic/settlement_cloud_gate.gd").new()
+    add_child(gate)
+    gate.configure(opening.soul,opening.soul_halo,ghost_layer,cloud_layer,arrival_position,arrival_velocity,arrival_scale,923.0+opening_offset.y)
+    opening.external_soul = true
+    opening.external_offset = opening_offset
+    opening.initial_god_halo_offset = initial_god_halo_offset
     set_history(data)
-    sample(0)
+    opening.sample(0)
+    _render_scene(0)
 
 func _sprite(texture: Texture2D, region: Rect2, at: Vector2, parent: Node) -> Sprite2D:
     var sprite := Sprite2D.new()
@@ -127,33 +142,49 @@ func scroll_at(t: float) -> float:
     return SCROLL[-1].y
 
 func _process(delta: float) -> void:
-    if auto_play:
-        var previous: float = elapsed
-        elapsed = minf(duration, elapsed + delta)
+    if not auto_play:
+        if _review_started: move_ghost(delta)
+        return
+    var previous: float = elapsed
+    elapsed += delta
+    if not _review_started:
+        gate.advance(delta,_read_direction(),elapsed >= 8.4)
+        opening.external_offset = opening_offset
+        opening.sample(minf(elapsed,8.4))
         if elapsed < 8.4:
-            for impact in [2.16, 3.8, 5.35]:
+            for impact in [2.16,3.8,5.35]:
                 if previous < impact and elapsed >= impact: Sfx.play(&"bounce")
-        sample(elapsed)
-    if elapsed >= 8.4:
-        if elapsed >= review_end_seconds and not flight.leaving: flight.leave_upward()
+        _render_scene(minf(elapsed,8.4))
+        if gate.phase == gate.Phase.COMPLETE: _begin_review()
+    else:
+        _review_time += delta
+        var timeline: float = 8.4+_review_time
+        if timeline >= review_end_seconds and not flight.leaving: flight.leave_upward()
         move_ghost(delta)
+        _render_scene(timeline)
 
+func _begin_review() -> void:
+    if _review_started: return
+    _review_started = true
+    gate.release_to_flight(ghost_layer)
+    flight.configure(opening.soul,opening.soul_halo,opening.face)
+    ghost_layer.hide()
+
+# 离线采样保留既有结算时间轴，实际播放先完成封赏和钻云，再启动这条回顾时间轴。
 func sample(t: float) -> void:
-    var scroll: float = scroll_at(t)
-    world.position.y = -scroll
-    cloud_front.position.y = -scroll
-    cloud_layer.visible = t >= 8.4
     if t < 8.4:
         opening.sample(t)
     else:
-        if opening.soul.get_parent() != ghost_layer:
-            opening.sample(8.4)
-            opening.soul.reparent(ghost_layer)
-            opening.soul_halo.reparent(ghost_layer)
-            opening.soul.position = Vector2(510,720)
-            opening.soul_halo.position = Vector2(510,520)
-            flight.configure(opening.soul,opening.soul_halo,opening.face)
-        # 奖励完成后不再由动画重置幽灵位置，键盘控制保持独立。
+        _begin_review()
+    _render_scene(t)
+
+func _render_scene(t: float) -> void:
+    var scroll: float = scroll_at(t)
+    world.position = opening_offset-Vector2(0,scroll)
+    cloud_front.position = world.position
+    cloud_layer.visible = true
+    cloud_front.visible = _review_started
+    ghost_layer.visible = not _review_started or scroll >= 1000
     for i in 4:
         var cue: float = [22.0,29.0,36.0,43.0][i]
         var age: float = t-cue
@@ -174,12 +205,15 @@ func sample(t: float) -> void:
         screens[i].visible = true
         _frame_indices[i] = index
 
-func move_ghost(delta: float) -> void:
+func _read_direction() -> Vector2:
     var direction := Vector2.ZERO
     if interactive:
         direction.x = float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT))-float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT))
-        direction.y = float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN))-float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP))
-    flight.advance(delta,direction)
+        direction.y = float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN))-float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP) or Input.is_physical_key_pressed(KEY_SPACE))
+    return direction
+
+func move_ghost(delta: float) -> void:
+    flight.advance(delta,_read_direction())
 
 func _build_cloud_front() -> void:
     cloud_layer = CanvasLayer.new()

@@ -8,8 +8,6 @@ var _pending: int = 0
 var _loading: bool = false
 var _ending_generation: int = 0
 var _ending_history: Dictionary = {}
-var _ending_fade: CanvasLayer
-var _ending_tween: Tween
 
 func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
@@ -29,7 +27,6 @@ func _input(event: InputEvent) -> void:
 func start_segment(index: int) -> void:
     if index not in [1,2,3,4,5,6,7]: return
     _ending_generation += 1
-    _cancel_ending_fade()
     if index == 7:
         _ending_history = {}
         var scene := get_tree().current_scene
@@ -68,59 +65,46 @@ func _apply() -> void:
     var entry := get_tree().current_scene.get_node("SegmentStart")
     if index == 7:
         var cloud := get_tree().current_scene.get_node("OceanLink/FishStage/JungleLayout/SkyCloudExit")
+        var status: int = ResourceLoader.load_threaded_get_status(ENDING_SCENE)
+        if status not in [ResourceLoader.THREAD_LOAD_IN_PROGRESS,ResourceLoader.THREAD_LOAD_LOADED]:
+            ResourceLoader.load_threaded_request(ENDING_SCENE)
         cloud.arrived.connect(_after_preview_cloud.bind(_ending_generation),CONNECT_ONE_SHOT)
     entry.start_segment(index)
     segment_started.emit(index)
 
-func _cancel_ending_fade() -> void:
-    if is_instance_valid(_ending_tween): _ending_tween.kill()
-    if is_instance_valid(_ending_fade): _ending_fade.queue_free()
-    _ending_fade = null
-
 func _after_preview_cloud(generation: int) -> void:
-    # 保留原来的幽灵弹出，再用短淡出衔接光环镜头，隐藏两种构图之间的切换。
-    await get_tree().create_timer(.85,true,false,true).timeout
-    if generation != _ending_generation: return
-    _ending_fade = CanvasLayer.new()
-    _ending_fade.layer = 120
-    add_child(_ending_fade)
-    var black := ColorRect.new()
-    black.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-    black.color = Color(0,0,0,0)
-    _ending_fade.add_child(black)
-    _ending_tween = create_tween().set_ignore_time_scale(true)
-    _ending_tween.tween_property(black,"color:a",1.0,.22)
-    await get_tree().create_timer(.24,true,false,true).timeout
-    if generation != _ending_generation: return
-    get_tree().unload_current_scene()
-    await get_tree().process_frame
-    await get_tree().process_frame
-    if generation != _ending_generation: return
-    get_viewport().canvas_transform = Transform2D.IDENTITY
-    if ResourceLoader.load_threaded_request(ENDING_SCENE) != OK:
-        _cancel_ending_fade()
-        push_error("无法载入结尾试玩场景")
-        return
+    _finish_cloud_handoff.call_deferred(generation)
+
+func _finish_cloud_handoff(generation: int) -> void:
+    # 在穿云期间准备资源，灵魂出来后原画面和控制照常运行；这里没有淡黑或定格。
     while ResourceLoader.load_threaded_get_status(ENDING_SCENE) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
         await get_tree().process_frame
         if generation != _ending_generation: return
+    if generation != _ending_generation: return
     if ResourceLoader.load_threaded_get_status(ENDING_SCENE) != ResourceLoader.THREAD_LOAD_LOADED:
-        _cancel_ending_fade()
         push_error("结尾试玩场景加载失败")
         return
+    var level := get_tree().current_scene
+    var body: CharacterBody2D = level.get_node("Soul")
+    var layout: Node2D = level.get_node("OceanLink/FishStage/JungleLayout")
+    var view: Transform2D = get_viewport().canvas_transform
     var packed := ResourceLoader.load_threaded_get(ENDING_SCENE) as PackedScene
-    if get_tree().change_scene_to_packed(packed) != OK:
-        _cancel_ending_fade()
-        return
-    await get_tree().scene_changed
-    if generation != _ending_generation: return
-    var ending := get_tree().current_scene
+    var ending := packed.instantiate()
+    # 两张原画精确相差487像素。保持屏幕构图、同一只幽灵的位置和弹出速度。
+    ending.opening_offset = (view*layout.global_transform)*Vector2(0,487)
+    ending.arrival_position = view*body.global_position
+    ending.arrival_velocity = view.basis_xform(body.velocity)
+    ending.arrival_scale = body.scale*view.get_scale()
+    ending.initial_god_halo_offset = Vector2(0,40)
     ending.oranges_total = ENDING_ORANGES
-    ending.opening.oranges_total = ENDING_ORANGES
     if not _ending_history.is_empty(): ending.set_history(_ending_history)
     _ending_history = {}
+    level.camera.enabled = false
+    level.camera.set_process(false)
+    # 同一帧内卸载、组装、交还控制，不绘制空场景或遮幕；释放旧地图后才分配结算大图。
+    get_tree().unload_current_scene()
+    get_viewport().canvas_transform = Transform2D.IDENTITY
+    get_tree().root.add_child(ending)
+    get_tree().current_scene = ending
+    get_tree().scene_changed.emit()
     Bgm.play_track(Bgm.Track.HEAVEN)
-    _ending_tween = create_tween().set_ignore_time_scale(true)
-    _ending_tween.tween_property(black,"color:a",0.0,.35)
-    await get_tree().create_timer(.37,true,false,true).timeout
-    if generation == _ending_generation: _cancel_ending_fade()

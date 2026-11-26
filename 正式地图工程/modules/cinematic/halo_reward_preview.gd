@@ -13,6 +13,9 @@ var face:Node2D
 var gaze:ShaderMaterial
 var halo_texture:Texture2D
 var accents:Node2D
+var external_soul:bool=false
+var external_offset:=Vector2.ZERO
+var initial_god_halo_offset:=Vector2.ZERO
 const GOD_HOME=Vector2(960,262)
 const SOUL_FEET=Vector2(510,720)
 const SOUL_HOME=Vector2(510,520)
@@ -104,6 +107,9 @@ func _process(delta:float) -> void:
             if previous<impact and elapsed>=impact:Sfx.play(&"bounce")
     sample(elapsed)
 func sample(t:float) -> void:
+    var live_position:Vector2=soul.position
+    var live_scale:Vector2=soul.scale
+    var live_rotation:float=soul.rotation
     god_halo.visible=true
     god_halo.position=GOD_HOME+Vector2(0,sin(t*2.2)*4)
     god_halo.scale=Vector2.ONE
@@ -150,6 +156,22 @@ func sample(t:float) -> void:
         elif t>=5.75:looking_at=SOUL_FEET+Vector2(0,-130)
         blink=maxf(blink_at(t,.66),blink_at(t,3.82,.08))
         accents.marks=[{"position":Vector2(960,145),"age":t-2.16,"strength":1.0},{"position":GOD_HOME,"age":t-3.8,"strength":.55},{"position":soul_halo.position,"age":t-5.35,"strength":.7}]
+    if external_soul:
+        soul.position=live_position
+        soul.scale=live_scale
+        soul.rotation=live_rotation
+        god_halo.position+=initial_god_halo_offset*(1.0-eased(0,.65,t))
+        var head:Vector2=live_position+Vector2(0,-90*live_scale.y-28)
+        if t>=2.16:
+            if t<5.35:
+                soul_halo.position+=external_offset+(head-SOUL_HOME-external_offset)*eased(4.62,5.35,t)
+                soul_halo.scale*=lerpf(1.0,live_scale.y/1.8,eased(4.62,5.35,t))
+            else:
+                soul_halo.position=head+Vector2(0,track1(RING_RECOIL,t)*live_scale.y/1.8)
+                soul_halo.scale*=live_scale.y/1.8
+        if t<.65 or t>=5.75: looking_at=live_position+Vector2(0,-90*live_scale.y*.7)-external_offset
+        elif t>=4.35: looking_at=soul_halo.position-external_offset
+        if accents.marks.size()>=3: accents.marks[2].position=soul_halo.position-external_offset
     var direction:Vector2=((looking_at-Vector2(960,480))/Vector2(420,300)).limit_length(1.0)
     gaze.set_shader_parameter("gaze_pixels",direction*Vector2(12,8))
     gaze.set_shader_parameter("blink",blink)

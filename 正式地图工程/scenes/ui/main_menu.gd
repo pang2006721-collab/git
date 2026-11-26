@@ -40,6 +40,7 @@ func _start_game() -> void:
 	if _starting or _settings_popup.is_open():
 		return
 	_starting = true
+	$GameHandoff.warmup()
 	$Start/Pulse.pulse()
 	$Start.disabled = true
 	$Settings.disabled = true

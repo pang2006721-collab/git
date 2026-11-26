@@ -11,6 +11,8 @@ var current_stage: StringName = &"hell"
 var frozen: bool = false
 var _clock: float = 0.0
 var _capturing: bool = false
+var _capture_view: SubViewport
+var _capture_art: TextureRect
 @onready var level: Node = get_parent()
 
 func _ready() -> void:
@@ -37,11 +39,24 @@ func _process(delta: float) -> void:
 
 func _capture(stage: StringName) -> void:
     _capturing = true
+    if not is_instance_valid(_capture_view):
+        _capture_view = SubViewport.new()
+        _capture_view.name = "ReplayDownsample"
+        _capture_view.size = capture_size
+        _capture_view.disable_3d = true
+        _capture_view.render_target_update_mode = SubViewport.UPDATE_DISABLED
+        add_child(_capture_view)
+        _capture_art = TextureRect.new()
+        _capture_art.texture = get_viewport().get_texture()
+        _capture_art.size = Vector2(capture_size)
+        _capture_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+        _capture_art.stretch_mode = TextureRect.STRETCH_SCALE
+        _capture_view.add_child(_capture_art)
+    _capture_view.render_target_update_mode = SubViewport.UPDATE_ONCE
     await RenderingServer.frame_post_draw
     if not frozen and level.is_visible_in_tree() and not level.dead and not level.exit_in_progress and stage == current_stage:
-        var image: Image = get_viewport().get_texture().get_image()
+        var image: Image = _capture_view.get_texture().get_image()
         if not image.is_empty():
-            image.resize(capture_size.x, capture_size.y, Image.INTERPOLATE_BILINEAR)
             append_frame(stage, image.save_jpg_to_buffer(.76))
     _capturing = false
 

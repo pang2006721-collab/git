@@ -157,3 +157,6 @@
 
 
 - 全屏花屏最终排查：同一main工程及缓存，AMD Radeon 780M原生opengl3出现整屏彩色噪点，切换Godot内置ANGLE/Direct3D11后首页/设置/地狱/海底/丛林入口/天堂画面均正常；此前对get_image及缓存的判断不足以说明全局原因。正式project.godot固定rendering/gl_compatibility/driver.windows="opengl3_angle"，仅Windows采用ANGLE，其余平台仍原设置。桌面Godot编辑快捷方式同加--rendering-driver opengl3_angle。无命令行驱动覆盖时，settings_popup与natural_heaven_ending原生运行日志确认实际选用ANGLE且通过；从新ANGLE编辑器F5实跑并观察窗口首页正常。避免继续启动多个旧OpenGL编辑器；修改渲染驱动后旧编辑器需要重启。
+
+
+- 性能修正：保留ANGLE避免花屏；GameHandoff不再export PackedScene让首页提前加载全关，改场景路径并在按开始时后台warmup，原下降/追逐交接点prepare仍兼容直接调用。首页贴图占用本机短测2113MB→346～348MB。RunRetrospective仍8fps真实回放，改640×360 SubViewport先GPU缩小再读回，保留JPEG/6秒/首失败/统计；同进程旧新录制p95 24.94→16.14ms（最大帧仍波动），不把单次FPS提升承诺为全关卡绝对值。retrospective_capture原生红绿屏、尺寸、持续/死亡/冻结检查通过，settlement_descent与正常开场相机交接无窗口通过。性能证据及局限见docs/rendering_performance.md。

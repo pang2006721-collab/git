@@ -3,7 +3,7 @@ const SURFACE = preload("res://modules/environment/hell_surface.gd")
 ## 动画通道与正式地图贴边组成同一个世界；唯一显示相机直接平移进入关卡。
 signal pan_started
 signal finished
-@export var gameplay_scene: PackedScene
+@export_file("*.tscn") var gameplay_scene_path: String = "res://scenes/levels/formal_hell_entry.tscn"
 @export var map_path: NodePath = ^"../DescentWorld/ArrivalMap"
 @export var old_camera_path: NodePath = ^"../DescentCamera"
 @export var chase_camera_path: NodePath = ^"../ChaseCamera"
@@ -12,6 +12,7 @@ signal finished
 var join_x: float = 0.0
 @export var connected_floor_y: float = 1100.0
 @export var gameplay_entry_path: NodePath = ^"LandingPoint"
+var _scene_requested := false
 var gameplay: Node2D
 var playing: bool = false
 var elapsed: float = 0.0
@@ -27,10 +28,16 @@ var _pan_elapsed: float = 0.0
 func _ready() -> void:
 	process_priority = 110
 
+func warmup() -> void:
+	# 玩家按开始后才预载，利用原有下降/加载动画期间准备，不在首页常驻整关。
+	if _scene_requested or is_instance_valid(gameplay): return
+	_scene_requested = ResourceLoader.load_threaded_request(gameplay_scene_path, "PackedScene") == OK
+
 func prepare() -> void:
 	if is_instance_valid(gameplay):
 		return
 	var map: Node2D = get_node(map_path)
+	var gameplay_scene: PackedScene = ResourceLoader.load_threaded_get(gameplay_scene_path) if _scene_requested else load(gameplay_scene_path)
 	gameplay = gameplay_scene.instantiate()
 	gameplay.name = "Gameplay"
 	gameplay.z_index = -60

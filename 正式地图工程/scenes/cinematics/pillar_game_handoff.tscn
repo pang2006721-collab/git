@@ -1,6 +1,5 @@
 [gd_scene format=3]
 [ext_resource type="Script" path="res://modules/cinematic/pillar_game_handoff.gd" id="handoff"]
-[ext_resource type="PackedScene" path="res://scenes/levels/formal_hell_entry.tscn" id="gameplay"]
 [node name="GameHandoff" type="Node"]
 script=ExtResource("handoff")
-gameplay_scene=ExtResource("gameplay")
+gameplay_scene_path="res://scenes/levels/formal_hell_entry.tscn"

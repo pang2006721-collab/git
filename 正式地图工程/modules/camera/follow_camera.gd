@@ -10,6 +10,10 @@ extends Camera2D
 @export var follow_speed: float = 6.0
 @export var horizontal_look_ahead: float = 95.0
 @export var upward_look_ahead: float = 65.0
+@export var downward_look_ahead: float = 0.0
+@export var downward_full_speed: float = 900.0
+## 可选：仅向此角色提供下落前瞻，切换附身对象时不串到其他角色。
+var downward_look_target: Node2D
 @export_group("Landing impulse / 落地反馈")
 @export_range(0.0, 30.0) var max_impulse_pixels: float = 18.0
 @export var impulse_decay: float = 3.8
@@ -56,6 +60,8 @@ func _process(delta: float) -> void:
 		var velocity: Vector2 = (target as CharacterBody2D).velocity
 		desired.x += clampf(velocity.x / 520.0, -1.0, 1.0) * horizontal_look_ahead
 		desired.y -= clampf(-velocity.y / 1200.0, 0.0, 1.0) * upward_look_ahead
+		if downward_look_target == null or downward_look_target == target:
+			desired.y += smoothstep(80.0, maxf(downward_full_speed, 81.0), velocity.y) * downward_look_ahead
 	if _retarget_elapsed < _retarget_seconds:
 		_retarget_elapsed = minf(_retarget_elapsed + delta, _retarget_seconds)
 		var u := _retarget_elapsed / _retarget_seconds

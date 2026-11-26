@@ -10,6 +10,7 @@ func run():
 	root.content_scale_size = Vector2i(1920,1080)
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
 	var settings = root.get_node("GameSettings")
+	settings.save_path = "user://settings-test.cfg"
 	var original: int = settings.language_index
 	var menu = load("res://scenes/ui/main_menu.tscn").instantiate()
 	root.add_child(menu)

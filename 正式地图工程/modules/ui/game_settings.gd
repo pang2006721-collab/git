@@ -2,6 +2,7 @@ extends Node
 ## 只保存设置值，音量通过独立总线作用于全部场景。
 signal changed
 const SAVE_PATH = "user://settings.cfg"
+var save_path: String = SAVE_PATH
 const LANGUAGES = ["en", "zh", "ko", "es"]
 var sfx_volume: float = 1.0
 var music_volume: float = 1.0
@@ -10,7 +11,7 @@ var language_index: int = 0
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var config := ConfigFile.new()
-	if config.load(SAVE_PATH) == OK:
+	if config.load(save_path) == OK:
 		sfx_volume = clampf(float(config.get_value("audio", "sfx", 1.0)), 0.0, 1.0)
 		music_volume = clampf(float(config.get_value("audio", "music", 1.0)), 0.0, 1.0)
 		language_index = clampi(int(config.get_value("language", "index", 0)), 0, 3)
@@ -34,7 +35,7 @@ func _store() -> void:
 	config.set_value("audio", "sfx", sfx_volume)
 	config.set_value("audio", "music", music_volume)
 	config.set_value("language", "index", language_index)
-	config.save(SAVE_PATH)
+	config.save(save_path)
 	changed.emit()
 
 func _apply() -> void:

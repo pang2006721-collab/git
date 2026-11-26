@@ -151,3 +151,6 @@
 
 
 - 首页换字时同步duang：localized_menu_buttons只在语言实际改变时替换并对两个文字子节点施加20%保面积弹簧回弹；首次加载保持静态，同语言通知/音量变化不重复触发，快速切换可收稳回原比例。原生四语言与文字回弹/不误触发/复位检查通过。
+
+
+- 音乐无声排查：本机user://settings.cfg中SFX及music均为0，恢复为0.8后实际WASAPI音乐总线采样峰值0.118、33792帧，播放正常。GameSettings增加可替换save_path，settings_popup/localized_menu_buttons/settings_audio测试使用独立测试配置文件，防止交互验证写入真实游玩音量。默认仍使用settings.cfg，玩家主动静音继续保留。原生声音采样与设置交互检查通过，真实配置测试后保持0.8。用户本轮明确授权当前feature合并main并推送后同步本地/Godot。

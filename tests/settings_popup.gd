@@ -88,7 +88,7 @@ func run() -> void:
 	settings.set_sfx(0.5)
 	settings.set_music(0.25)
 	var config := ConfigFile.new()
-	check(config.load(settings.SAVE_PATH) == OK and is_equal_approx(config.get_value("audio", "sfx"), 0.5), "saved preferences")
+	check(config.load(settings.save_path) == OK and is_equal_approx(config.get_value("audio", "sfx"), 0.5), "saved preferences")
 	if DisplayServer.get_name() != "headless":
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("C:/Users/14930/Documents/Codex/2026-11-18/m/settings-popup-native.png")

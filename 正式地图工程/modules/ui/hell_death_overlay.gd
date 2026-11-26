@@ -7,6 +7,13 @@ enum State { HIDDEN, ENTERING, OPEN, LEAVING }
 @export_range(0.0, 0.9) var darkness: float = 0.68
 @export var pop_seconds: float = 0.42
 @export var button_stagger: float = 0.14
+const STAGE_CARDS := {
+	&"ocean": {"path": "res://assets/art/ui/death/ocean_end.png", "position": Vector2(696, 232)},
+	&"jungle": {"path": "res://assets/art/ui/death/jungle_end.png", "position": Vector2(748, 210)},
+	&"sky": {"path": "res://assets/art/ui/death/sky_end.png", "position": Vector2(727, 267)},
+}
+var death_stage: StringName = &"hell"
+var _hell_texture: Texture2D
 var state: State = State.HIDDEN
 var _motion: Tween
 var _hover: Dictionary = {}
@@ -22,6 +29,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 100
 	visible = false
+	_hell_texture = card.texture
 	_retry_rest_y = retry.position.y
 	_home_rest_y = home.position.y
 	get_viewport().size_changed.connect(_layout)
@@ -41,9 +49,23 @@ func _layout() -> void:
 	stage.scale = Vector2.ONE * fit
 	stage.position = (viewport_size - Vector2(1920, 1080) * fit) * 0.5
 
-func show_death() -> void:
+func _set_stage_card(stage_name: StringName) -> void:
+	death_stage = stage_name if STAGE_CARDS.has(stage_name) else &"hell"
+	if death_stage == &"hell":
+		card.texture = _hell_texture
+		card.position = Vector2(627, 184)
+	else:
+		var art: Dictionary = STAGE_CARDS[death_stage]
+		card.texture = load(art.path)
+		card.position = art.position
+	# 每张原画使用 PSD 中的实际尺寸与位置，不拉伸成恶魔的长宽比。
+	card.size = card.texture.get_size()
+	card.pivot_offset = card.size * 0.5
+
+func show_death(stage_name: StringName = &"hell") -> void:
 	if state != State.HIDDEN:
 		return
+	_set_stage_card(stage_name)
 	state = State.ENTERING
 	visible = true
 	dim.color.a = 0.0

@@ -11,6 +11,7 @@ var impact_shake: Node
 var death_animation: Node2D
 var bird_death: Node2D
 var overlay: CanvasLayer
+var _death_stage: StringName = &"hell"
 var _saved_mode: int
 var _saved_output_mode: int
 var _saved_streamer_mode: int
@@ -43,8 +44,18 @@ func _ready() -> void:
 func _on_death() -> void:
 	if state != State.PLAYING:
 		return
+	_death_stage = _stage_at_death()
 	state = State.DEAD
 	_freeze.call_deferred()
+
+func _stage_at_death() -> StringName:
+	var record: Node = level.get_node("RunRetrospective")
+	var result: StringName = record.stage_for_player(level.player)
+	# 刚进入海底、尚未附身小鱼时也属于海底死亡。
+	var ocean: Node = level.get_node("OceanLink")
+	if result == &"hell" and ocean.stage == ocean.Stage.OCEAN:
+		return &"ocean"
+	return result
 
 func _freeze() -> void:
 	_saved_mode = level.process_mode
@@ -71,7 +82,7 @@ func _freeze() -> void:
 		if squirrel_defeat.falling: await squirrel_defeat.finished
 	elif level.player == level.demon:
 		await death_animation.play(level.demon, camera, level.get_node("Fork").held)
-	overlay.show_death()
+	overlay.show_death(_death_stage)
 
 func _retry() -> void:
 	if state != State.DEAD:

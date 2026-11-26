@@ -24,9 +24,10 @@ func run():
     game.process_mode=Node.PROCESS_MODE_DISABLED
     game.get_node("TextureStreamer").process_mode=Node.PROCESS_MODE_ALWAYS
     game.get_node("CameraOutput").process_mode=Node.PROCESS_MODE_ALWAYS
-    check(trail.get_child_count()==30,"Exactly 30 jungle oranges")
+    check(trail.get_child_count()==24,"Exactly 24 jungle oranges")
     var data: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/art/jungle/formal/orange_arcs.json"))
-    check(data.groups.size()==8,"All eight vine transfers receive short trails")
+    check(data.groups.size()==6,"Upper six vine transfers retain short trails")
+    check(trail.get_children().all(func(o):return o.position.y<28500),"Bottom two orange groups are removed")
     for a in trail.get_children():
         for b in trail.get_children():
             if a==b:continue
@@ -52,11 +53,11 @@ func run():
             pos+=velocity/120.0
             body.global_position=game.to_global(pos)
             trail._physics_process(1.0/120)
-    check(ledger.collected_count==30,"Measured reachable flight paths collect every orange")
+    check(ledger.collected_count==24,"Measured reachable flight paths collect every orange")
     check(trail.get_children().all(func(o):return o.collected and o._collector==body),"All pickups absorb into squirrel")
     trail._physics_process(.01)
-    check(ledger.collected_count==30,"Repeated overlap cannot duplicate shared total")
+    check(ledger.collected_count==24,"Repeated overlap cannot duplicate shared total")
     body.get_node("Defeat").reset()
-    check(ledger.collected_count==30 and trail.get_child(0).collected,"Squirrel reset preserves collected progress")
+    check(ledger.collected_count==24 and trail.get_child(0).collected,"Squirrel reset preserves collected progress")
     print("JUNGLE_ORANGE_ARCS failures=",failures)
     quit(1 if failures else 0)

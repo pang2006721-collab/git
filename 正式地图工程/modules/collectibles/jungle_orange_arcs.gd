@@ -1,5 +1,5 @@
 extends Node2D
-## 八段真实换藤飞行轨迹上的30颗橘子；跟随原角色身体路线，重试保留收集进度。
+## 上方六段换藤飞行轨迹上的24颗橘子；跟随原角色身体路线，重试保留收集进度。
 const PICKUP = preload("res://modules/collectibles/orange_pickup.gd")
 const ART = preload("res://assets/art/collectibles/orange.png")
 var _previous: Vector2 = Vector2.INF

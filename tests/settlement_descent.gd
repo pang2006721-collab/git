@@ -59,6 +59,9 @@ func run():
     preview.set_history(snap)
     preview.sample(22)
     check(preview.screens[0].visible and preview.screens[0].texture != null, "Recorded JPEGs play inside the frame")
+    var replay_size: Vector2 = Vector2(preview.screens[0].texture.get_size())*preview.screens[0].scale
+    check(replay_size.is_equal_approx(preview.WINDOWS[0].size),"16:9 recordings fill the replay opening without side gaps")
+    check(is_equal_approx(preview.screens[0].scale.x,preview.screens[0].scale.y),"Replay characters and scenery keep their original proportions")
     check(not preview.screens[1].visible, "Missing recordings are never replaced with invented replays")
     print("SETTLEMENT_FAILURES=",failures.size(), " MAX_SCROLL_STEP=",max_step)
     preview.free()

@@ -2,7 +2,12 @@ extends Node2D
 ## 独立结尾预览。保留用户长图内全部原文，数字覆盖原横线，等待真实记录注入。
 const HALO = preload("res://scenes/previews/halo_reward_preview.tscn")
 const STAGES = [&"hell", &"ocean", &"jungle", &"sky"]
-const WINDOWS = [Rect2(500, 6936, 976, 453), Rect2(504, 7931, 976, 453), Rect2(507, 8943, 976, 453), Rect2(515, 9982, 976, 453)]
+const FRAME_INSET = (976.0-453.0*16.0/9.0)*.5
+# 原内窗有少量压到白线，留出2像素间隙；录像始终保持16:9。
+const REPLAY_WIDTH = 453.0*16.0/9.0-8.0
+const REPLAY_HEIGHT = REPLAY_WIDTH*9.0/16.0
+const WINDOWS = [Rect2(504+FRAME_INSET, 6938.25, REPLAY_WIDTH, REPLAY_HEIGHT), Rect2(508+FRAME_INSET, 7933.25, REPLAY_WIDTH, REPLAY_HEIGHT), Rect2(511+FRAME_INSET, 8945.25, REPLAY_WIDTH, REPLAY_HEIGHT), Rect2(519+FRAME_INSET, 9984.25, REPLAY_WIDTH, REPLAY_HEIGHT)]
+const FRAME_BOUNDS = [Vector4(450,6800,1540,7440),Vector4(454,7795,1544,8440),Vector4(457,8807,1547,9450),Vector4(465,9846,1555,10490)]
 const NUMBER_CENTERS = [Vector2(1427, 7538), Vector2(1433, 8543), Vector2(1424, 9554), Vector2(1412, 10594)]
 const DIGIT_RECTS = [Rect2(1241,4579,47,78), Rect2(389,4771,28,59), Rect2(535,4862,78,86), Rect2(554,4624,47,93), Rect2(877,4877,69,87), Rect2(1451,4889,52,80), Rect2(1134,4879,60,94), Rect2(740,4625,64,78), Rect2(994,4613,47,89), Rect2(1431,4616,64,98)]
 # y 是镜头滚动距离：云层快速掠过，文字与每个回放附近放慢；连续轨迹不改缩放。
@@ -47,6 +52,15 @@ func _ready() -> void:
             var material := ShaderMaterial.new()
             material.shader = preload("res://shaders/settlement_opening_background.gdshader")
             material.set_shader_parameter("opening_room",preload("res://assets/art/heaven/ending/god_room.png"))
+            tile.material = material
+        elif i >= 3:
+            var material := ShaderMaterial.new()
+            material.shader = preload("res://shaders/settlement_replay_frame.gdshader")
+            material.set_shader_parameter("poster",tile.texture)
+            material.set_shader_parameter("clean_poster",load("res://assets/art/reference_map/%02d.png" % i))
+            material.set_shader_parameter("band_top",i*2048.0)
+            material.set_shader_parameter("inset_pixels",FRAME_INSET)
+            material.set_shader_parameter("frame_bounds",PackedVector4Array(FRAME_BOUNDS))
             tile.material = material
         world.add_child(tile)
     # 两张文字分开按原图取出，不把散落的白色笔触算进结算标题。

@@ -34,6 +34,11 @@ func _ready() -> void:
         tile.texture = load("res://assets/art/heaven/settlement/descent_%02d.png" % i)
         tile.centered = false
         tile.position.y = i * 2048
+        if i == 0:
+            var material := ShaderMaterial.new()
+            material.shader = preload("res://shaders/settlement_opening_background.gdshader")
+            material.set_shader_parameter("opening_room",preload("res://assets/art/heaven/ending/god_room.png"))
+            tile.material = material
         world.add_child(tile)
     # 两张文字分开按原图取出，不把散落的白色笔触算进结算标题。
     var text: Texture2D = load("res://assets/art/heaven/settlement/恭喜文字.png")
@@ -198,6 +203,7 @@ func _build_cloud_front() -> void:
         material.shader = preload("res://shaders/settlement_cloud_occlusion.gdshader")
         material.set_shader_parameter("cloud_edge",profile_texture)
         material.set_shader_parameter("source_y",i*2048.0)
+        material.set_shader_parameter("align_opening",i == 0)
         cloud.material = material
         cloud_front.add_child(cloud)
 

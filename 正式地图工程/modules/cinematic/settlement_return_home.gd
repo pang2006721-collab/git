@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## 留在场景树根部跨场景存活；复用原有五角色加载动画，主页准备好后才揭开黑幕。
 signal completed
-const MENU = preload("res://scenes/ui/main_menu.tscn")
+const MENU = "res://scenes/ui/main_menu.tscn"
 const LOADING = preload("res://scenes/ui/loading_character_overlay.tscn")
 @export var fade_to_black_seconds: float = .7
 @export var minimum_black_seconds: float = 2.4
@@ -34,9 +34,21 @@ func start() -> void:
     _fade.tween_property(black,"color:a",1.0,fade_to_black_seconds).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
     await _fade.finished
     beans.begin_loading()
-    # 主页贴图在主线程预载；不在兼容渲染器的后台加载线程中首次创建整套 GPU 资源。
+    # 先释放结算的大图/录像，再加载主页引用的完整地图，避免两套纹理同时常驻。
+    get_tree().unload_current_scene()
+    await get_tree().process_frame
+    await get_tree().process_frame
+    if ResourceLoader.load_threaded_request(MENU) != OK:
+        _recover()
+        return
     await get_tree().create_timer(minimum_black_seconds).timeout
-    if get_tree().change_scene_to_packed(MENU) != OK:
+    while ResourceLoader.load_threaded_get_status(MENU) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+        await get_tree().process_frame
+    if ResourceLoader.load_threaded_get_status(MENU) != ResourceLoader.THREAD_LOAD_LOADED:
+        _recover()
+        return
+    var scene := ResourceLoader.load_threaded_get(MENU) as PackedScene
+    if get_tree().change_scene_to_packed(scene) != OK:
         _recover()
         return
     await get_tree().scene_changed

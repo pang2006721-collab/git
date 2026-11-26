@@ -2,11 +2,32 @@ extends CanvasLayer
 ## PSD原图分层摆放，透明交互层不替换手绘美术。
 signal closed
 const FOLDER = "res://assets/art/ui/settings/"
+const ART = {
+	"panel": preload("res://assets/art/ui/settings/panel.png"),
+	"decoration": preload("res://assets/art/ui/settings/decoration.png"),
+	"sfx_track": preload("res://assets/art/ui/settings/sfx_track.png"),
+	"music_track": preload("res://assets/art/ui/settings/music_track.png"),
+	"music_icon": preload("res://assets/art/ui/settings/music_icon.png"),
+	"speaker_low": preload("res://assets/art/ui/settings/speaker_low.png"),
+	"speaker_medium": preload("res://assets/art/ui/settings/speaker_medium.png"),
+	"speaker_high": preload("res://assets/art/ui/settings/speaker_high.png"),
+	"english": preload("res://assets/art/ui/settings/english.png"),
+	"chinese": preload("res://assets/art/ui/settings/chinese.png"),
+	"korean": preload("res://assets/art/ui/settings/korean.png"),
+	"spanish": preload("res://assets/art/ui/settings/spanish.png"),
+	"arrows": preload("res://assets/art/ui/settings/arrows.png"),
+	"sfx_knob": preload("res://assets/art/ui/settings/sfx_knob.png"),
+	"music_knob": preload("res://assets/art/ui/settings/music_knob.png"),
+}
 const LANG_ART = ["english", "chinese", "korean", "spanish"]
 var _root: Control
 var _content: Control
 var _speaker: TextureRect
 var _language: TextureRect
+var _arrows: TextureRect
+var _music_icon: TextureRect
+var _feedback: Node
+var _knobs: Dictionary = {}
 var _sfx: HSlider
 var _music: HSlider
 var _close_button: TextureButton
@@ -41,15 +62,22 @@ func _ready() -> void:
 	_art("decoration")
 	_art("sfx_track")
 	_art("music_track")
-	_art("music_icon")
+	_music_icon = _art("music_icon")
 	_speaker = _art("speaker_high")
 	_language = _art(LANG_ART[GameSettings.language_index])
-	_art("arrows")
+	_arrows = _art("arrows")
+	_feedback = preload("res://modules/ui/settings_interaction_bounce.gd").new()
+	add_child(_feedback)
 	_sfx = _slider(Vector2(815, 334), "sfx_knob", GameSettings.sfx_volume)
 	_music = _slider(Vector2(814, 491), "music_knob", GameSettings.music_volume)
 	_sfx.value_changed.connect(GameSettings.set_sfx)
 	_music.value_changed.connect(GameSettings.set_music)
-	_sfx.drag_ended.connect(func(_changed: bool): Sfx.play(&"ui"))
+	_sfx.value_changed.connect(_slider_feedback.bind(_sfx, _speaker))
+	_music.value_changed.connect(_slider_feedback.bind(_music, _music_icon))
+	_sfx.drag_started.connect(_slider_pressed.bind(_sfx, _speaker))
+	_music.drag_started.connect(_slider_pressed.bind(_music, _music_icon))
+	_sfx.drag_ended.connect(_slider_released.bind(_sfx, _speaker))
+	_music.drag_ended.connect(_slider_released.bind(_music, _music_icon))
 	# 整栏默认向下翻；两个箭头单独覆盖对应点击区域。
 	_hit(Rect2(680, 635, 505, 90), 1)
 	_hit(Rect2(1050, 642, 67, 38), -1)
@@ -72,7 +100,7 @@ func _ready() -> void:
 
 func _art(key: String) -> TextureRect:
 	var art := TextureRect.new()
-	art.texture = load(FOLDER + key + ".png")
+	art.texture = ART[key]
 	var box: Array = _bounds[key]
 	art.position = Vector2(box[0], box[1])
 	art.size = Vector2(box[2] - box[0], box[3] - box[1])
@@ -92,10 +120,19 @@ func _slider(at: Vector2, knob: String, value: float) -> HSlider:
 	var empty := StyleBoxEmpty.new()
 	for key in ["slider", "grabber_area", "grabber_area_highlight"]:
 		slider.add_theme_stylebox_override(key, empty)
-	var texture := load(FOLDER + knob + ".png") as Texture2D
+	var texture := ART[knob] as Texture2D
+	# 保留原34像素抓取尺寸，透明原生小球，单独美术小球做回弹。
+	var invisible := preload("res://assets/art/ui/settings/slider_hitbox.svg")
 	for key in ["grabber", "grabber_highlight", "grabber_disabled"]:
-		slider.add_theme_icon_override(key, texture)
+		slider.add_theme_icon_override(key, invisible)
 	_content.add_child(slider)
+	var art := TextureRect.new()
+	art.texture = texture
+	art.size = Vector2(34, 34)
+	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content.add_child(art)
+	_knobs[slider] = art
+	_position_knob(slider)
 	return slider
 
 func _hit(rect: Rect2, direction: int) -> void:
@@ -106,21 +143,48 @@ func _hit(rect: Rect2, direction: int) -> void:
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	for key in ["normal", "hover", "pressed", "focus", "disabled"]:
 		button.add_theme_stylebox_override(key, StyleBoxEmpty.new())
-	button.pressed.connect(GameSettings.cycle_language.bind(direction))
+	button.pressed.connect(_cycle_language.bind(direction))
 	_content.add_child(button)
+
+func _position_knob(slider: HSlider) -> void:
+	var knob: TextureRect = _knobs[slider]
+	knob.position = slider.position + Vector2(slider.value * (slider.size.x - 34.0), (slider.size.y - 34.0) * 0.5)
+
+func _slider_pressed(slider: HSlider, icon: TextureRect) -> void:
+	_feedback.pulse(_knobs[slider], 0.18)
+	_feedback.pulse(icon, 0.12)
+
+func _slider_feedback(_value: float, slider: HSlider, icon: TextureRect) -> void:
+	_position_knob(slider)
+	if not _opened or _closing: return
+	_feedback.pulse(_knobs[slider], 0.16, 0.14)
+	_feedback.pulse(icon, 0.10, 0.14)
+
+func _slider_released(_changed: bool, slider: HSlider, icon: TextureRect) -> void:
+	_feedback.pulse(_knobs[slider], 0.18)
+	_feedback.pulse(icon, 0.12)
+	Sfx.play(&"ui")
+
+func _cycle_language(direction: int) -> void:
+	GameSettings.cycle_language(direction)
+	_feedback.pulse(_language, 0.20)
+	_feedback.pulse(_arrows, 0.12)
 
 func _refresh() -> void:
 	_sfx.set_value_no_signal(GameSettings.sfx_volume)
 	_music.set_value_no_signal(GameSettings.music_volume)
+	_position_knob(_sfx)
+	_position_knob(_music)
 	var speaker_key := "speaker_low" if GameSettings.sfx_volume < 0.34 else ("speaker_medium" if GameSettings.sfx_volume < 0.67 else "speaker_high")
 	_set_art(_speaker, speaker_key)
 	_set_art(_language, LANG_ART[GameSettings.language_index])
 
 func _set_art(art: TextureRect, key: String) -> void:
-	art.texture = load(FOLDER + key + ".png")
+	art.texture = ART[key]
 	var box: Array = _bounds[key]
 	art.position = Vector2(box[0], box[1])
 	art.size = Vector2(box[2] - box[0], box[3] - box[1])
+	art.pivot_offset = art.size * 0.5
 
 func _layout() -> void:
 	var view := _root.size
@@ -132,6 +196,7 @@ func open() -> void:
 	if _opened: return
 	_opened = true
 	_closing = false
+	_feedback.reset()
 	_root.show()
 	_root.modulate.a = 1.0
 	_sfx.set_value_no_signal(GameSettings.sfx_volume)
@@ -154,6 +219,7 @@ func close() -> void:
 	_motion.chain().tween_callback(_finish_close)
 
 func _finish_close() -> void:
+	_feedback.reset()
 	_root.hide()
 	_opened = false
 	_closing = false

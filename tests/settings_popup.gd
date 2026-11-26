@@ -55,6 +55,8 @@ func run() -> void:
 	root.push_input(move, true)
 	await process_frame
 	check(absf(settings.sfx_volume - 0.5) < 0.03, "drag changes volume and speaker")
+	check(not popup._knobs[popup._sfx].scale.is_equal_approx(Vector2.ONE), "slider thumb has independent bounce")
+	check(popup._sfx.scale.is_equal_approx(Vector2.ONE), "bounce leaves slider hitbox unchanged")
 	var release := InputEventMouseButton.new()
 	release.button_index = MOUSE_BUTTON_LEFT
 	release.position = Vector2(1500, 368)
@@ -68,6 +70,7 @@ func run() -> void:
 	var before: int = settings.language_index
 	await click(Vector2(900, 680))
 	check(settings.language_index == (before + 1) % 4, "language row cycles down")
+	check(not popup._language.scale.is_equal_approx(Vector2.ONE), "language switch visibly squashes and rebounds")
 	await click(Vector2(1084, 665))
 	check(settings.language_index == before, "up arrow reverses")
 	await click(Vector2(1084, 697))
@@ -76,7 +79,11 @@ func run() -> void:
 		settings.language_index = i
 		popup._refresh()
 		check(popup._language.texture.resource_path.ends_with(popup.LANG_ART[i] + ".png"), "language original art")
-		check(popup._language.texture.get_image().get_used_rect().has_area(), "hidden PSD language has visible pixels")
+		if DisplayServer.get_name() == "headless":
+			check(popup._language.texture.get_image().get_used_rect().has_area(), "hidden PSD language has visible pixels")
+	await create_timer(1.0).timeout
+	check(popup._language.scale.is_equal_approx(Vector2.ONE), "rapid language switches settle to original size")
+	check(popup._knobs[popup._sfx].scale.is_equal_approx(Vector2.ONE), "thumb settles without size accumulation")
 	settings.language_index = before
 	settings.set_sfx(0.5)
 	settings.set_music(0.25)

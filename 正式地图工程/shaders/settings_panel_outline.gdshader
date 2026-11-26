@@ -27,9 +27,9 @@ void fragment() {
             border = max(border,body_alpha(TEXTURE,UV+offset,TEXTURE_PIXEL_SIZE));
         }
     }
-    float white = smoothstep(0.70,0.92,min(paint.r,min(paint.g,paint.b)));
     float perimeter = 1.0-smoothstep(45.0,48.0,distance_to_edge);
     vec3 brown = texture(TEXTURE,vec2(0.5,40.0/extent.y)).rgb;
-    vec3 ink = mix(paint.rgb,brown,perimeter*white);
+    // 原白底抗锯齿混入了灰白色，外沿统一用原棕色填充，覆盖残留亮点。
+    vec3 ink = mix(paint.rgb,brown,perimeter);
     COLOR = vec4(ink*fill/max(border,0.0001),border);
 }

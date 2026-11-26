@@ -160,3 +160,6 @@
 
 
 - 性能修正：保留ANGLE避免花屏；GameHandoff不再export PackedScene让首页提前加载全关，改场景路径并在按开始时后台warmup，原下降/追逐交接点prepare仍兼容直接调用。首页贴图占用本机短测2113MB→346～348MB。RunRetrospective仍8fps真实回放，改640×360 SubViewport先GPU缩小再读回，保留JPEG/6秒/首失败/统计；同进程旧新录制p95 24.94→16.14ms（最大帧仍波动），不把单次FPS提升承诺为全关卡绝对值。retrospective_capture原生红绿屏、尺寸、持续/死亡/冻结检查通过，settlement_descent与正常开场相机交接无窗口通过。性能证据及局限见docs/rendering_performance.md。
+
+
+- 用户文字＋表情(1)(1).zip的24张原PNG已整理到art_sources/text_expressions：16张多语言提示按四种操作分组，4张松鼠、4张小鸟，保留原图/白底/画布及SHA256索引；不把所有大画布放入正式工程预载。本次只接入小鸟冰雹死亡：assets/art/sky/expressions/bird_dead.png为用户原PNG，Atlas区域(526,2593,83,65)与原小鸟一致。独立bird_hail_death在实际hail死亡后用同朝向替身、白色死亡表情、短压缩再向下加速坠出屏幕，相机与实体碰撞冻结，冰雹继续原轨迹；掉完后才显示既有死亡窗口。重试reset清掉替身并恢复正常图；其他死亡原因/融冰规则不动。真实冰雹碰撞→死亡→下落→窗口→重试及计数/方向/冰雹持续检查原生和无窗口均通过，bird_fire_melt回归通过，60fps原生录制3.7秒检查死亡叉叉眼与下落。未合并main，先供用户看效果。

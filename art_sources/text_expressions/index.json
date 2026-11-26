@@ -1,0 +1,366 @@
+{
+  "source_zip": "文字＋表情(1)(1).zip",
+  "source_sha256": "2f43550e2360233fa104a5c9b889c5474a209aa31b13d6b4ed4efb61eac3532e",
+  "files": [
+    {
+      "file": "多语言操作提示/叉子传送/叉子传送中文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1920,
+        3240
+      ],
+      "sha256": "52575b0a3d2ef52e54b2054bc4a88e479a4c12ec26c1feb2f56a7298e9a94fda",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/叉子传送/叉子传送英文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1920,
+        3240
+      ],
+      "sha256": "df763641179131e5ec15c54bc585b9ffe926c65dc4588ec97808b9c2c0ea10c4",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/叉子传送/叉子传送西班牙文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1920,
+        3240
+      ],
+      "sha256": "434c51c7a7b75d4280b9ee33f1b70befdc31da0da62180d9a69b72c28ae427f0",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/叉子传送/叉子传送韩文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        583,
+        140,
+        904,
+        350
+      ],
+      "sha256": "2f25d1a937ebf93bf04c509401d4e47267cf27d268d5fb5c0304fe7939ec6b58",
+      "integrated": false
+    },
+    {
+      "file": "松鼠动作表情/小松鼠后空翻.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1920,
+        3240
+      ],
+      "sha256": "592ef1fe147667b87092c400dec99a21506e5840e888136a39431da80aa5f2ff",
+      "integrated": false
+    },
+    {
+      "file": "松鼠动作表情/小松鼠晕了.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1920,
+        3240
+      ],
+      "sha256": "d9735a0e85cce843e2ca9230a4ec6dd68deb018a19f026138ea80d4908fe1bc2",
+      "integrated": false
+    },
+    {
+      "file": "松鼠动作表情/小松鼠紧张.png",
+      "size": [
+        3240,
+        1920
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        3240,
+        1920
+      ],
+      "sha256": "ece706e72ba29910f83b38d8838dd367c19324fb12a18aec2a577665bd7e83cf",
+      "integrated": false
+    },
+    {
+      "file": "松鼠动作表情/小松鼠边转边晕.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1920,
+        3240
+      ],
+      "sha256": "19366f2e203bd8abc19a70ba3bb8d0a741e8356d91297bcf7eb654d943ce62b3",
+      "integrated": false
+    },
+    {
+      "file": "小鸟表情/小鸟die了.png",
+      "size": [
+        1080,
+        3240
+      ],
+      "alpha_bounds": [
+        526,
+        2593,
+        609,
+        2658
+      ],
+      "sha256": "c7f9e597fbfead7ba1b23826fe2124c67a9d26cc683ff06fa7412588693c68a3",
+      "integrated": true
+    },
+    {
+      "file": "小鸟表情/小鸟紧张.png",
+      "size": [
+        1080,
+        3240
+      ],
+      "alpha_bounds": [
+        526,
+        2593,
+        609,
+        2658
+      ],
+      "sha256": "da2c7b25bf35b848de0b693b297665db05dc61f61c6fe4a6871a36906e596ce0",
+      "integrated": false
+    },
+    {
+      "file": "小鸟表情/小鸟震惊.png",
+      "size": [
+        1080,
+        3240
+      ],
+      "alpha_bounds": [
+        526,
+        2593,
+        609,
+        2658
+      ],
+      "sha256": "62061f02232048a7e1c446f839d6e3c6fdb20708784ca21e9013e8a9a6b4992c",
+      "integrated": false
+    },
+    {
+      "file": "小鸟表情/小鸟震惊感叹号.png",
+      "size": [
+        1080,
+        3240
+      ],
+      "alpha_bounds": [
+        496,
+        2567,
+        522,
+        2626
+      ],
+      "sha256": "50d81c62198488bd3b315be86ebd876a6bd678254149ba06c3c5b77d80d15ceb",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/扔叉子/扔叉子中文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        95,
+        154,
+        429,
+        352
+      ],
+      "sha256": "2c079f53860ef0552c71586957c822d4652065661e0b523f764d0b130643260f",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/扔叉子/扔叉子英文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        95,
+        154,
+        429,
+        352
+      ],
+      "sha256": "c8095246587e47338d9050959508f1fe4270f9e3cccf4713fcc4bd0ca9d0dc9d",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/扔叉子/扔叉子西班牙文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1920,
+        3240
+      ],
+      "sha256": "9272ac69e81d4e075b1ee112260973a2096030235fd1cb40fce8684eb38d44c6",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/扔叉子/扔叉子韩文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        95,
+        154,
+        429,
+        352
+      ],
+      "sha256": "ba8c370f631262f0178bb89f6eec05c94656208fe4b48bcbf665af32b62e76e6",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/抓取/抓取中文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1920,
+        3240
+      ],
+      "sha256": "a5c1dd743cce51651823b573dff2c27a180ba0cd382fd6abb5af00a65603bbe9",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/抓取/抓取英文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1920,
+        3240
+      ],
+      "sha256": "ab02434fca1f54b46777e0af3c7f7672739f2eab4495ee2d3da266ab0cf431b0",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/抓取/抓取西班牙文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1920,
+        3240
+      ],
+      "sha256": "aadef5d3c039aeab4e4383e7fc686ae0c33efff4977b88e8f8a3525b5f4bbdb5",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/抓取/抓取韩文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1920,
+        3240
+      ],
+      "sha256": "8e10e9bfc9aab29fa90bd64da337a6729f393ee4a79f05e44221a07ed1a2eed4",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/闪避/闪避中文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        604,
+        427,
+        944,
+        661
+      ],
+      "sha256": "9e688fd6b28fdcffd6617409d77adf9c5c4bdf1ab75fb5a765c0496a6e086e66",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/闪避/闪避英文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        604,
+        427,
+        944,
+        661
+      ],
+      "sha256": "12c625af8cb061a66f1fcfeeedc71a8b7ce48eb5ecebdeb393fd3834c0cfceca",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/闪避/闪避西班牙文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        604,
+        427,
+        944,
+        661
+      ],
+      "sha256": "26516e0d161cb4b956a11b2712838d47162172bf94742eed5f5160cdc6cbbdea",
+      "integrated": false
+    },
+    {
+      "file": "多语言操作提示/闪避/闪避韩文.png",
+      "size": [
+        1920,
+        3240
+      ],
+      "alpha_bounds": [
+        604,
+        427,
+        944,
+        661
+      ],
+      "sha256": "741d2f35b1085bf60b91dca2f762c7b1400551fa59e31664c388ba6544daaf7d",
+      "integrated": false
+    }
+  ]
+}

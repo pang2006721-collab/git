@@ -9,6 +9,7 @@ const OVERLAY = preload("res://scenes/ui/hell_death_overlay.tscn")
 var state: State = State.PLAYING
 var impact_shake: Node
 var death_animation: Node2D
+var bird_death: Node2D
 var overlay: CanvasLayer
 var _saved_mode: int
 var _saved_output_mode: int
@@ -29,6 +30,9 @@ func _ready() -> void:
 	death_animation = preload("res://modules/environment/hell_demon_death.gd").new()
 	death_animation.name = "DemonDeath"
 	add_child(death_animation)
+	bird_death = preload("res://modules/environment/bird_hail_death.gd").new()
+	bird_death.name = "BirdHailDeath"
+	add_child(bird_death)
 	overlay = OVERLAY.instantiate()
 	add_child(overlay)
 	level.died.connect(_on_death)
@@ -51,7 +55,9 @@ func _freeze() -> void:
 	output.process_mode = Node.PROCESS_MODE_ALWAYS
 	streamer.process_mode = Node.PROCESS_MODE_ALWAYS
 	impact_shake.play(camera, level.death_reason == &"fall")
-	if level.death_reason == &"stranded":
+	if level.death_reason == &"hail" and level.player == level.get_node("OceanLink/FishStage/JungleLayout/Bird"):
+		await bird_death.play(level.player, camera)
+	elif level.death_reason == &"stranded":
 		await level.get_node("OceanLink/FishStage/ShoreExit").play_death()
 	elif level.death_reason == &"drown":
 		await level.get_node("OceanLink/Breath").play_death()
@@ -76,6 +82,7 @@ func _retry() -> void:
 	var from_zoom: Vector2 = camera.zoom
 	impact_shake.stop()
 	death_animation.reset()
+	bird_death.reset()
 	var checkpoint: Node2D = level.get_active_checkpoint()
 	var use_checkpoint: bool = checkpoint != null
 	level.restart()

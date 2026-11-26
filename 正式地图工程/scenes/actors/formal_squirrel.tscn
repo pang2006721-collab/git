@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://modules/movement/vine_climber.gd" id="climber"]
 [ext_resource type="Script" path="res://modules/visual/squirrel_defeat.gd" id="defeat"]
 [ext_resource type="Script" path="res://modules/visual/squirrel_air_spin.gd" id="air_spin"]
+[ext_resource type="Script" path="res://modules/environment/squirrel_fall_death.gd" id="fall_death"]
 [sub_resource type="CapsuleShape2D" id="Body"]
 radius = 32.0
 height = 100.0
@@ -83,3 +84,6 @@ script = ExtResource("defeat")
 
 [node name="AirSpin" type="Node2D" parent="."]
 script = ExtResource("air_spin")
+
+[node name="FallDeath" type="Node" parent="."]
+script = ExtResource("fall_death")

@@ -56,6 +56,8 @@ func _process(delta: float) -> void:
         corpse.hide()
         finished.emit()
 func reset() -> void:
+    var fall_death: Node=body.get_node_or_null("FallDeath")
+    if fall_death!=null: fall_death.reset()
     falling=false
     if is_instance_valid(corpse): corpse.hide()
     body.get_node("Visual/Sprite").show()

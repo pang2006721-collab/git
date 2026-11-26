@@ -1,6 +1,11 @@
 extends Node2D
+const SETTINGS_POPUP = preload("res://modules/ui/settings_popup.gd")
+var _settings_popup: CanvasLayer
 var _starting := false
 func _ready() -> void:
+	_settings_popup = SETTINGS_POPUP.new()
+	add_child(_settings_popup)
+	_settings_popup.closed.connect(_settings_closed)
 	Bgm.play_track(Bgm.Track.MENU)
 	$ArrivalMotion.arrived.connect(func(): Bgm.play_track(Bgm.Track.HELL))
 	$Start.pressed.connect(_start_game)
@@ -19,8 +24,16 @@ func _ready() -> void:
 	$OpeningChase.finished.connect($DescentWorld/ArrivalMap/ExitArrows.start)
 func _settings_pressed() -> void:
 	$Settings/Pulse.pulse()
+	if $Bird/MouseDrag.dragging:
+		$Bird/MouseDrag.end_drag()
+	$Bird/MouseDrag.set_process_input(false)
+	_settings_popup.open()
+
+func _settings_closed() -> void:
+	if not _starting:
+		$Bird/MouseDrag.set_process_input(true)
 func _start_game() -> void:
-	if _starting:
+	if _starting or _settings_popup.is_open():
 		return
 	_starting = true
 	$Start/Pulse.pulse()

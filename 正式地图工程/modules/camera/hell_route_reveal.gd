@@ -1,6 +1,7 @@
 extends Node
 ## 接近团团时一次性扩大视野，同时展示主角、团团和传送后的落脚点。
 const SURFACE=preload("res://modules/environment/hell_surface.gd")
+@export_node_path("Node2D") var reveal_target_path: NodePath=^"../Fork/Targets/Target03"
 @export var notice_seconds: float=2.4
 @export var approach_height: float=900.0
 @export var approach_width: float=1100.0
@@ -44,9 +45,11 @@ func _process(delta: float) -> void:
         reset()
         return
     if not active:
+        if level.get_node("PossessionCamera").active:return
         if fork.flying or fork.swapping or fork.launching:return
         var nearest: float=INF
         for ball in level.get_node("Fork/Targets").get_children():
+            if ball!=get_node_or_null(reveal_target_path):continue
             if _seen.has(ball.name):continue
             var gap: Vector2=level.demon.global_position-ball.global_position
             if gap.y<180 or gap.y>approach_height or absf(gap.x)>approach_width:continue

@@ -220,6 +220,7 @@ texture = ExtResource("zzz_art")
 [node name="PossessionCamera" type="Node" parent="." unique_id=2013514400]
 script = ExtResource("shot")
 camera_path = NodePath("../Camera")
+close_up_zoom = 1.0
 
 [node name="Possession" type="Node" parent="." unique_id=1414302345]
 script = ExtResource("possession")

@@ -100,7 +100,9 @@ func run() -> void:
 	await create_timer(0.4).timeout
 	check(is_equal_approx(popup._sfx.value, 0.5) and is_equal_approx(popup._music.value, 0.25), "reopening retains values")
 	await click(Vector2(1284,245))
-	await create_timer(0.2).timeout
+	check(not popup._close_art.scale.is_equal_approx(Vector2.ONE), "close cross visibly bounces before dismissing")
+	check(popup._close_button.scale.is_equal_approx(Vector2.ONE), "close bounce leaves hitbox fixed")
+	await create_timer(0.35).timeout
 	check(not popup.is_open(), "top right cross closes settings")
 	check(scene.get_node("Bird/MouseDrag").is_processing_input(), "cross restores menu input")
 	scene._settings_pressed()

@@ -31,6 +31,8 @@ var _knobs: Dictionary = {}
 var _sfx: HSlider
 var _music: HSlider
 var _close_button: TextureButton
+var _close_art: TextureRect
+var _close_press_pending := false
 var _motion: Tween
 var _opened := false
 var _closing := false
@@ -84,14 +86,22 @@ func _ready() -> void:
 	_hit(Rect2(1050, 681, 67, 38), 1)
 	_close_button = TextureButton.new()
 	_close_button.name = "Close"
-	_close_button.texture_normal = preload("res://assets/art/ui/settings/close.svg")
+	_close_button.texture_normal = preload("res://assets/art/ui/settings/slider_hitbox.svg")
 	_close_button.position = Vector2(1254, 215)
 	_close_button.size = Vector2(60, 60)
 	_close_button.ignore_texture_size = true
 	_close_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	_close_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	_close_button.pressed.connect(close)
+	_close_button.pressed.connect(_close_pressed)
+	_close_button.mouse_entered.connect(_pulse_close)
 	_content.add_child(_close_button)
+	_close_art = TextureRect.new()
+	_close_art.texture = preload("res://assets/art/ui/settings/close.svg")
+	_close_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_close_art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_close_art.size = Vector2(60,60)
+	_close_art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_close_button.add_child(_close_art)
 	GameSettings.changed.connect(_refresh)
 	_root.resized.connect(_layout)
 	_layout()
@@ -197,6 +207,7 @@ func open() -> void:
 	_opened = true
 	_closing = false
 	_feedback.reset()
+	_close_press_pending = false
 	_root.show()
 	_root.modulate.a = 1.0
 	_sfx.set_value_no_signal(GameSettings.sfx_volume)
@@ -208,6 +219,20 @@ func open() -> void:
 	if _motion: _motion.kill()
 	_motion = create_tween()
 	_motion.tween_property(_content, "scale", target, 0.34).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	var cross_arrival := create_tween()
+	cross_arrival.tween_interval(0.20)
+	cross_arrival.tween_callback(_pulse_close)
+
+func _pulse_close() -> void:
+	if _opened and not _closing: _feedback.pulse(_close_art, 0.18)
+
+func _close_pressed() -> void:
+	if not _opened or _closing or _close_press_pending: return
+	_close_press_pending = true
+	_feedback.pulse(_close_art, 0.24)
+	var delay := create_tween()
+	delay.tween_interval(0.11)
+	delay.tween_callback(close)
 
 func close() -> void:
 	if not _opened or _closing: return

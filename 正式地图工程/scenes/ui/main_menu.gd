@@ -1,8 +1,12 @@
 extends Node2D
 const SETTINGS_POPUP = preload("res://modules/ui/settings_popup.gd")
 var _settings_popup: CanvasLayer
+var _localized_buttons: Node
 var _starting := false
 func _ready() -> void:
+	_localized_buttons = preload("res://modules/ui/localized_menu_buttons.gd").new()
+	add_child(_localized_buttons)
+	_localized_buttons.configure($Start, $Settings)
 	_settings_popup = SETTINGS_POPUP.new()
 	add_child(_settings_popup)
 	_settings_popup.closed.connect(_settings_closed)

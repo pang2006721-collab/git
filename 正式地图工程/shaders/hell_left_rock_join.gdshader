@@ -1,7 +1,7 @@
 shader_type canvas_item;
 // 清掉贴墙岩块内部旧墙描边与分层时留下的窄填色条。
 uniform sampler2D rock_art : source_color, filter_linear, repeat_disable;
-uniform vec2 wall_origin=vec2(2.0,49109.0);
+uniform vec2 wall_origin=vec2(-1.0,49109.0);
 uniform vec2 rock_center=vec2(368.5,50072.50597);
 uniform float rock_scale=.66848814;
 void fragment(){

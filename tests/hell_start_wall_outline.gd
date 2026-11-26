@@ -8,7 +8,7 @@ func run():
     root.add_child(game)
     var walls=game.get_node("WorldLayers/Walls")
     var tile=walls.get_node("Left/Tile25")
-    check(walls.position==Vector2.ZERO and walls.get_node("Left").position==Vector2.ZERO,"Whole wall keeps its original registration")
+    check(walls.position==Vector2.ZERO and walls.get_node("Left").position==Vector2(-3,0),"Left wall uses the corrected registration without moving the shared wall root")
     check(tile.position==Vector2(3,51155),"Bottom tile retains its original position and collision alignment")
     check(tile.material!=null and tile.material.shader.resource_path=="res://shaders/hell_start_wall_outline.gdshader","Only affected start-wall tile uses local outline repair")
     var original:Texture2D=tile.material.get_shader_parameter("original_art")

@@ -85,7 +85,7 @@
 [sub_resource type="ShaderMaterial" id="wall_rock_join_material"]
 shader = ExtResource("wall_rock_join")
 shader_parameter/rock_art = ExtResource("layer_rock2")
-shader_parameter/wall_origin = Vector2(2, 49109)
+shader_parameter/wall_origin = Vector2(-1, 49109)
 shader_parameter/rock_center = Vector2(368.5, 50072.506)
 shader_parameter/rock_scale = 0.66848814
 
@@ -1367,6 +1367,7 @@ centered = false
 z_index = 18
 
 [node name="Left" type="Node2D" parent="WorldLayers/Walls" unique_id=2144131267]
+position = Vector2(-3, 0)
 
 [node name="Tile20" type="Sprite2D" parent="WorldLayers/Walls/Left" unique_id=1600777465]
 position = Vector2(0, 40960)

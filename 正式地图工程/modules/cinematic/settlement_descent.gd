@@ -9,6 +9,7 @@ const DIGIT_RECTS = [Rect2(1241,4579,47,78), Rect2(389,4771,28,59), Rect2(535,48
 const SCROLL = [Vector2(0,0), Vector2(8.4,0), Vector2(9.2,150), Vector2(11.8,4850), Vector2(14.5,5100), Vector2(17.2,5480), Vector2(20.2,5740), Vector2(22.0,6700), Vector2(27.0,6750), Vector2(29.0,7695), Vector2(34.0,7745), Vector2(36.0,8707), Vector2(41.0,8757), Vector2(43.0,9746), Vector2(48.0,9796), Vector2(50.0,9990)]
 @export var auto_play: bool = true
 @export var interactive: bool = true
+@export var oranges_total: int = 100
 @export var review_end_seconds: float = 50.0
 @export var duration: float = 60.0
 var elapsed: float = 0.0
@@ -64,6 +65,7 @@ func _ready() -> void:
         numbers.append(number)
     opening = HALO.instantiate()
     opening.auto_play = false
+    opening.oranges_total = oranges_total
     world.add_child(opening)
     ghost_layer = CanvasLayer.new()
     ghost_layer.layer = 1

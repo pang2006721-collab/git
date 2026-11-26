@@ -36,6 +36,18 @@ func start_segment(index: int) -> void:
         camera.make_current()
         Bgm.play_track(Bgm.Track.HELL)
 
+    elif index == 7:
+        _start_upper_sky()
+        var layout := level.get_node("OceanLink/FishStage/JungleLayout")
+        var cloud := layout.get_node("SkyCloudExit")
+        var bird := layout.get_node("Bird")
+        bird.position = Vector2(960,cloud.height_at("sky",960)+15)
+        bird.velocity = Vector2.ZERO
+        bird.reset_physics_interpolation()
+        camera.set_follow_target(bird,true)
+        level.get_node("RunRetrospective").recording_enabled = false
+        cloud._enter()
+
     elif index == 6:
         _start_upper_sky()
 

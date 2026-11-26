@@ -9,7 +9,8 @@ const DIGIT_RECTS = [Rect2(1241,4579,47,78), Rect2(389,4771,28,59), Rect2(535,48
 const SCROLL = [Vector2(0,0), Vector2(8.4,0), Vector2(9.2,150), Vector2(11.8,4850), Vector2(14.5,5100), Vector2(17.2,5480), Vector2(20.2,5740), Vector2(22.0,6700), Vector2(27.0,6750), Vector2(29.0,7695), Vector2(34.0,7745), Vector2(36.0,8707), Vector2(41.0,8757), Vector2(43.0,9746), Vector2(48.0,9796), Vector2(50.0,9990)]
 @export var auto_play: bool = true
 @export var interactive: bool = true
-@export var duration: float = 50.0
+@export var review_end_seconds: float = 50.0
+@export var duration: float = 60.0
 var elapsed: float = 0.0
 var data := {"deaths": {&"hell":0, &"ocean":0, &"jungle":0, &"sky":0}, "clips": {}, "fps":8}
 var world: Node2D
@@ -20,11 +21,10 @@ var screens: Array[Sprite2D] = []
 var _decoded: Array[ImageTexture] = []
 var _frame_indices := [-1,-1,-1,-1]
 var _digit_textures: Array[Texture2D] = []
-var _ghost_x: float = 510.0
-var _jump_y: float = 0.0
-var _jump_velocity: float = 0.0
-var _jump_down: bool = false
-var _steered: bool = false
+var flight: Node
+var cloud_layer: CanvasLayer
+var cloud_front: Node2D
+var _return_started: bool = false
 
 func _ready() -> void:
     world = Node2D.new()
@@ -61,8 +61,12 @@ func _ready() -> void:
     opening.auto_play = false
     world.add_child(opening)
     ghost_layer = CanvasLayer.new()
-    ghost_layer.layer = 5
+    ghost_layer.layer = 1
     add_child(ghost_layer)
+    _build_cloud_front()
+    flight = preload("res://modules/movement/settlement_ghost_flight.gd").new()
+    add_child(flight)
+    flight.exited.connect(_on_ghost_exited)
     set_history(data)
     sample(0)
 
@@ -123,11 +127,15 @@ func _process(delta: float) -> void:
             for impact in [2.16, 3.8, 5.35]:
                 if previous < impact and elapsed >= impact: Sfx.play(&"bounce")
         sample(elapsed)
-    if elapsed >= 8.4: move_ghost(delta)
+    if elapsed >= 8.4:
+        if elapsed >= review_end_seconds and not flight.leaving: flight.leave_upward()
+        move_ghost(delta)
 
 func sample(t: float) -> void:
     var scroll: float = scroll_at(t)
     world.position.y = -scroll
+    cloud_front.position.y = -scroll
+    cloud_layer.visible = t >= 8.4
     if t < 8.4:
         opening.sample(t)
     else:
@@ -135,8 +143,9 @@ func sample(t: float) -> void:
             opening.sample(8.4)
             opening.soul.reparent(ghost_layer)
             opening.soul_halo.reparent(ghost_layer)
-            opening.soul.position = Vector2(_ghost_x,720)
-            opening.soul_halo.position = Vector2(_ghost_x,520)
+            opening.soul.position = Vector2(510,720)
+            opening.soul_halo.position = Vector2(510,520)
+            flight.configure(opening.soul,opening.soul_halo,opening.face)
         # 奖励完成后不再由动画重置幽灵位置，键盘控制保持独立。
     for i in 4:
         var cue: float = [22.0,29.0,36.0,43.0][i]
@@ -159,18 +168,43 @@ func sample(t: float) -> void:
         _frame_indices[i] = index
 
 func move_ghost(delta: float) -> void:
-    var axis: float = float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT))-float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT))
-    if not interactive: axis = 0
-    if axis != 0: _steered = true
-    if not _steered and elapsed < 10.0:
-        _ghost_x = lerpf(510.0,220.0,smoothstep(8.4,9.8,elapsed))
-    _ghost_x = clampf(_ghost_x + axis*420.0*delta, 140, 1780)
-    var down: bool = Input.is_physical_key_pressed(KEY_SPACE) or Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)
-    if not interactive: down = false
-    if down and not _jump_down and _jump_y >= 0: _jump_velocity = -620.0
-    _jump_down = down
-    _jump_velocity += 1800.0*delta
-    _jump_y = minf(0, _jump_y+_jump_velocity*delta)
-    if _jump_y == 0: _jump_velocity = 0
-    opening.soul.position = Vector2(_ghost_x,720+_jump_y)
-    opening.soul_halo.position = opening.soul.position + Vector2(0,-200+sin(elapsed*2.2)*3)
+    var direction := Vector2.ZERO
+    if interactive:
+        direction.x = float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT))-float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT))
+        direction.y = float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN))-float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP))
+    flight.advance(delta,direction)
+
+func _build_cloud_front() -> void:
+    cloud_layer = CanvasLayer.new()
+    cloud_layer.layer = 2
+    add_child(cloud_layer)
+    cloud_front = Node2D.new()
+    cloud_layer.add_child(cloud_front)
+    var edge: Array = JSON.parse_string(FileAccess.get_file_as_string("res://assets/art/heaven/settlement/cloud_edge.json"))
+    var profile := Image.create(1920,1,false,Image.FORMAT_RF)
+    for x in 1920: profile.set_pixel(x,0,Color(float(edge[x])/6144.0,0,0))
+    var profile_texture := ImageTexture.create_from_image(profile)
+    for i in 3:
+        var cloud := Sprite2D.new()
+        cloud.texture = load("res://assets/art/heaven/settlement/descent_%02d.png" % i)
+        cloud.centered = false
+        cloud.position.y = i*2048
+        if i == 0:
+            cloud.region_enabled = true
+            cloud.region_rect = Rect2(0,1080,1920,968)
+            cloud.position.y = 1080
+            cloud.region_filter_clip_enabled = true
+        var material := ShaderMaterial.new()
+        material.shader = preload("res://shaders/settlement_cloud_occlusion.gdshader")
+        material.set_shader_parameter("cloud_edge",profile_texture)
+        material.set_shader_parameter("source_y",i*2048.0)
+        cloud.material = material
+        cloud_front.add_child(cloud)
+
+func _on_ghost_exited() -> void:
+    if _return_started: return
+    _return_started = true
+    var transition = preload("res://modules/cinematic/settlement_return_home.gd").new()
+    # 独立于结算场景存活，确保换主页时黑幕与右下角五角色不会闪断。
+    get_tree().root.add_child(transition)
+    transition.start.call_deferred()

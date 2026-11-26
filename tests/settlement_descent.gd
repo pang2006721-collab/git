@@ -47,9 +47,10 @@ func run():
     preview.sample(22)
     check(preview.opening.soul.get_parent() == preview.ghost_layer, "Ghost control separates from scrolling scenery")
     var before: float = preview.opening.soul.position.y
-    preview._jump_y = -60
+    preview.flight.velocity = Vector2(0,-400)
     preview.move_ghost(.01)
     check(preview.opening.soul.position.y < before, "Ghost remains movable during settlement")
+    check(preview.ghost_layer.layer < preview.cloud_layer.layer, "Clouds are drawn above the ghost")
     for i in 4:
         check(preview.numbers[i].get_child_count() == 1, "One numeric overlay per original underline")
     var image := Image.create(16,9,false,Image.FORMAT_RGB8)

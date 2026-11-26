@@ -93,6 +93,8 @@
 
 [ext_resource type="Script" path="res://modules/collectibles/ocean_orange_rings.gd" id="ocean_orange_rings"]
 
+[ext_resource type="Script" path="res://modules/collectibles/jungle_orange_arcs.gd" id="jungle_orange_arcs"]
+
 [sub_resource type="ShaderMaterial" id="tall_wall_join_material"]
 shader = ExtResource("tall_wall_join")
 
@@ -1561,3 +1563,6 @@ script = ExtResource("run_retrospective")
 
 [node name="OceanOranges" type="Node2D" parent="."]
 script = ExtResource("ocean_orange_rings")
+
+[node name="JungleOranges" type="Node2D" parent="."]
+script = ExtResource("jungle_orange_arcs")

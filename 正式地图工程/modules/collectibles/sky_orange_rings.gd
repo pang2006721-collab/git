@@ -1,9 +1,9 @@
 extends Node2D
-## 天空三圈，每圈六颗；同相位轻漂，第一圈放在老鹰首次登场高度之前。
+## 天空三圈，每圈六颗；同相位轻漂，第一圈位于起飞后上方，给附身和起飞留出空间。
 const PICKUP = preload("res://modules/collectibles/orange_pickup.gd")
 const ART = preload("res://assets/art/collectibles/orange.png")
 @export var ring_centers: Array[Vector2] = [Vector2(1040,0),Vector2(820,11000),Vector2(1100,5700)]
-@export var first_ring_above_spawn: float = 200.0
+@export var first_ring_above_spawn: float = 650.0
 @export var ring_radius: float = 95.0
 @export var bird_attraction_bonus: float = 30.0
 @export_range(3,12) var oranges_per_ring: int = 6

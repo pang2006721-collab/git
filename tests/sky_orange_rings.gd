@@ -26,7 +26,7 @@ func run():
     game.get_node("CameraOutput").process_mode=Node.PROCESS_MODE_ALWAYS
     eagle.reset()
     check(rings.get_child_count()==18 and rings.ring_centers.size()==3,"Three rings have exactly eighteen oranges")
-    check(bird_stage._spawn.y-(rings.ring_centers[0].y-rings.ring_radius+0)<eagle.reveal_ascent,"First ring is before first eagle reveal")
+    check(is_equal_approx(bird_stage._spawn.y-rings.ring_centers[0].y,650.0),"First ring sits 650 pixels above bird spawn")
     check(rings.ring_radius==95,"Uses compact ocean ring size")
     for ring in rings.ring_centers.size():
         for i in 6:

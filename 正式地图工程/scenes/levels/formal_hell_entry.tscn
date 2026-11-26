@@ -95,6 +95,8 @@
 
 [ext_resource type="Script" path="res://modules/collectibles/jungle_orange_arcs.gd" id="jungle_orange_arcs"]
 
+[ext_resource type="Script" path="res://modules/collectibles/sky_orange_rings.gd" id="sky_orange_rings"]
+
 [sub_resource type="ShaderMaterial" id="tall_wall_join_material"]
 shader = ExtResource("tall_wall_join")
 
@@ -1566,3 +1568,6 @@ script = ExtResource("ocean_orange_rings")
 
 [node name="JungleOranges" type="Node2D" parent="."]
 script = ExtResource("jungle_orange_arcs")
+
+[node name="SkyOranges" type="Node2D" parent="."]
+script = ExtResource("sky_orange_rings")

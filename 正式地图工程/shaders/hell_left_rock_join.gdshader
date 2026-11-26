@@ -6,7 +6,7 @@ uniform vec2 rock_center=vec2(368.5,50072.50597);
 uniform float rock_scale=.66848814;
 void fragment(){
     vec2 pixel=UV/TEXTURE_PIXEL_SIZE;
-    if(pixel.y>=770.0 && pixel.y<=1335.0 && pixel.x>=180.0 && pixel.x<=245.0){
+    if(pixel.y>=600.0 && pixel.y<=1335.0 && pixel.x>=180.0 && pixel.x<=245.0){
         // 以同一行主墙黑边左沿和原笔画宽度截掉旧提取框尾巴。
         float edge=245.0;
         for(int x=175;x<225;x++){

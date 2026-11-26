@@ -3,7 +3,7 @@ extends Node2D
 const PICKUP = preload("res://modules/collectibles/orange_pickup.gd")
 const ART = preload("res://assets/art/collectibles/orange.png")
 @export var ring_centers: Array[Vector2] = [Vector2(1130,38150),Vector2(780,37000),Vector2(1150,35850),Vector2(780,34700),Vector2(1140,33550),Vector2(800,32400),Vector2(1100,31250)]
-@export var ring_radius: float = 110.0
+@export var ring_radius: float = 95.0
 @export_range(3,12) var oranges_per_ring: int = 6
 var _previous: Vector2 = Vector2.INF
 @onready var level: Node2D = get_parent()

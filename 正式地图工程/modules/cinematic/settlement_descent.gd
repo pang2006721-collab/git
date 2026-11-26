@@ -1,0 +1,176 @@
+extends Node2D
+## 独立结尾预览。保留用户长图内全部原文，数字覆盖原横线，等待真实记录注入。
+const HALO = preload("res://scenes/previews/halo_reward_preview.tscn")
+const STAGES = [&"hell", &"ocean", &"jungle", &"sky"]
+const WINDOWS = [Rect2(500, 6936, 976, 453), Rect2(504, 7931, 976, 453), Rect2(507, 8943, 976, 453), Rect2(515, 9982, 976, 453)]
+const NUMBER_CENTERS = [Vector2(1427, 7538), Vector2(1433, 8543), Vector2(1424, 9554), Vector2(1412, 10594)]
+const DIGIT_RECTS = [Rect2(1241,4579,47,78), Rect2(389,4771,28,59), Rect2(535,4862,78,86), Rect2(554,4624,47,93), Rect2(877,4877,69,87), Rect2(1451,4889,52,80), Rect2(1134,4879,60,94), Rect2(740,4625,64,78), Rect2(994,4613,47,89), Rect2(1431,4616,64,98)]
+# y 是镜头滚动距离：云层快速掠过，文字与每个回放附近放慢；连续轨迹不改缩放。
+const SCROLL = [Vector2(0,0), Vector2(8.4,0), Vector2(9.2,150), Vector2(11.8,4850), Vector2(14.5,5100), Vector2(17.2,5480), Vector2(20.2,5740), Vector2(22.0,6700), Vector2(27.0,6750), Vector2(29.0,7695), Vector2(34.0,7745), Vector2(36.0,8707), Vector2(41.0,8757), Vector2(43.0,9746), Vector2(48.0,9796), Vector2(50.0,9990)]
+@export var auto_play: bool = true
+@export var interactive: bool = true
+@export var duration: float = 50.0
+var elapsed: float = 0.0
+var data := {"deaths": {&"hell":0, &"ocean":0, &"jungle":0, &"sky":0}, "clips": {}, "fps":8}
+var world: Node2D
+var opening: Node2D
+var ghost_layer: CanvasLayer
+var numbers: Array[Node2D] = []
+var screens: Array[Sprite2D] = []
+var _decoded: Array[ImageTexture] = []
+var _frame_indices := [-1,-1,-1,-1]
+var _digit_textures: Array[Texture2D] = []
+var _ghost_x: float = 510.0
+var _jump_y: float = 0.0
+var _jump_velocity: float = 0.0
+var _jump_down: bool = false
+var _steered: bool = false
+
+func _ready() -> void:
+    world = Node2D.new()
+    add_child(world)
+    for i in 6:
+        var tile := Sprite2D.new()
+        tile.texture = load("res://assets/art/heaven/settlement/descent_%02d.png" % i)
+        tile.centered = false
+        tile.position.y = i * 2048
+        world.add_child(tile)
+    # 两张文字分开按原图取出，不把散落的白色笔触算进结算标题。
+    var text: Texture2D = load("res://assets/art/heaven/settlement/恭喜文字.png")
+    _sprite(text, Rect2(330,150,1340,620), Vector2(330,5380), world)
+    _sprite(text, Rect2(330,1100,1360,310), Vector2(330,6100), world)
+    for i in 10:
+        var atlas := AtlasTexture.new()
+        atlas.atlas = load("res://assets/art/heaven/settlement/%d.png" % i)
+        atlas.region = DIGIT_RECTS[i]
+        atlas.filter_clip = true
+        _digit_textures.append(atlas)
+    for i in 4:
+        var screen := Sprite2D.new()
+        screen.centered = false
+        screen.position = WINDOWS[i].position
+        screen.visible = false
+        world.add_child(screen)
+        screens.append(screen)
+        _decoded.append(ImageTexture.new())
+        var number := Node2D.new()
+        number.position = NUMBER_CENTERS[i]
+        world.add_child(number)
+        numbers.append(number)
+    opening = HALO.instantiate()
+    opening.auto_play = false
+    world.add_child(opening)
+    ghost_layer = CanvasLayer.new()
+    ghost_layer.layer = 5
+    add_child(ghost_layer)
+    set_history(data)
+    sample(0)
+
+func _sprite(texture: Texture2D, region: Rect2, at: Vector2, parent: Node) -> Sprite2D:
+    var sprite := Sprite2D.new()
+    var atlas := AtlasTexture.new()
+    atlas.atlas = texture
+    atlas.region = region
+    atlas.filter_clip = true
+    sprite.texture = atlas
+    sprite.centered = false
+    sprite.position = at
+    parent.add_child(sprite)
+    return sprite
+
+func set_history(history: Dictionary) -> void:
+    data = history
+    if numbers.is_empty(): return
+    for i in 4:
+        var group := numbers[i]
+        for child in group.get_children():
+            group.remove_child(child)
+            child.queue_free()
+        var value := str(maxi(0, int(data.get("deaths", {}).get(STAGES[i], 0))))
+        var width: float = 0.0
+        for digit in value:
+            var sprite := Sprite2D.new()
+            sprite.texture = _digit_textures[int(digit)]
+            sprite.centered = false
+            var s: float = minf(92.0 / sprite.texture.get_height(), 150.0 / maxf(1.0, value.length() * 65.0))
+            sprite.scale = Vector2.ONE * s
+            sprite.position = Vector2(width, -sprite.texture.get_height() * s * .5)
+            width += sprite.texture.get_width() * s + 9.0
+            group.add_child(sprite)
+        for child in group.get_children(): child.position.x -= (width - 9.0) * .5
+        _frame_indices[i] = -1
+
+func scroll_at(t: float) -> float:
+    # 单调三次 Hermite：每个停留段仍向下缓行，接缝位置和速度连续。
+    if t <= SCROLL[0].x: return SCROLL[0].y
+    for i in range(SCROLL.size()-1):
+        var a: Vector2 = SCROLL[i]
+        var b: Vector2 = SCROLL[i+1]
+        if t > b.x: continue
+        var slope: float = (b.y-a.y)/(b.x-a.x)
+        var before: float = 0.0 if i == 0 else (a.y-SCROLL[i-1].y)/(a.x-SCROLL[i-1].x)
+        var after: float = 0.0 if i+2 >= SCROLL.size() else (SCROLL[i+2].y-b.y)/(SCROLL[i+2].x-b.x)
+        var va: float = 0.0 if before*slope <= 0 else 2.0*before*slope/(before+slope)
+        var vb: float = 0.0 if after*slope <= 0 else 2.0*after*slope/(after+slope)
+        return opening.hermite(a.y,b.y,va,vb,b.x-a.x,(t-a.x)/(b.x-a.x))
+    return SCROLL[-1].y
+
+func _process(delta: float) -> void:
+    if auto_play:
+        var previous: float = elapsed
+        elapsed = minf(duration, elapsed + delta)
+        if elapsed < 8.4:
+            for impact in [2.16, 3.8, 5.35]:
+                if previous < impact and elapsed >= impact: Sfx.play(&"bounce")
+        sample(elapsed)
+    if elapsed >= 8.4: move_ghost(delta)
+
+func sample(t: float) -> void:
+    var scroll: float = scroll_at(t)
+    world.position.y = -scroll
+    if t < 8.4:
+        opening.sample(t)
+    else:
+        if opening.soul.get_parent() != ghost_layer:
+            opening.sample(8.4)
+            opening.soul.reparent(ghost_layer)
+            opening.soul_halo.reparent(ghost_layer)
+            opening.soul.position = Vector2(_ghost_x,720)
+            opening.soul_halo.position = Vector2(_ghost_x,520)
+        # 奖励完成后不再由动画重置幽灵位置，键盘控制保持独立。
+    for i in 4:
+        var cue: float = [22.0,29.0,36.0,43.0][i]
+        var age: float = t-cue
+        var pop: float = 1.0
+        if age >= 0 and age < .6: pop += sin(age*22.0)*.25*exp(-age*7.0)
+        numbers[i].scale = Vector2(pop,1.0/pop)
+        var clip: Array = data.get("clips", {}).get(STAGES[i], [])
+        if clip.is_empty() or absf(WINDOWS[i].get_center().y-scroll-540) > 1150: continue
+        var index: int = int(maxf(0,age) * float(data.get("fps",8))) % clip.size()
+        if index == _frame_indices[i]: continue
+        var image := Image.new()
+        if image.load_jpg_from_buffer(clip[index]) != OK: continue
+        _decoded[i].set_image(image)
+        screens[i].texture = _decoded[i]
+        var fit: float = minf(WINDOWS[i].size.x/image.get_width(), WINDOWS[i].size.y/image.get_height())
+        screens[i].scale = Vector2.ONE*fit
+        screens[i].position = WINDOWS[i].get_center()-Vector2(image.get_size())*fit*.5
+        screens[i].visible = true
+        _frame_indices[i] = index
+
+func move_ghost(delta: float) -> void:
+    var axis: float = float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT))-float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT))
+    if not interactive: axis = 0
+    if axis != 0: _steered = true
+    if not _steered and elapsed < 10.0:
+        _ghost_x = lerpf(510.0,220.0,smoothstep(8.4,9.8,elapsed))
+    _ghost_x = clampf(_ghost_x + axis*420.0*delta, 140, 1780)
+    var down: bool = Input.is_physical_key_pressed(KEY_SPACE) or Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)
+    if not interactive: down = false
+    if down and not _jump_down and _jump_y >= 0: _jump_velocity = -620.0
+    _jump_down = down
+    _jump_velocity += 1800.0*delta
+    _jump_y = minf(0, _jump_y+_jump_velocity*delta)
+    if _jump_y == 0: _jump_velocity = 0
+    opening.soul.position = Vector2(_ghost_x,720+_jump_y)
+    opening.soul_halo.position = opening.soul.position + Vector2(0,-200+sin(elapsed*2.2)*3)

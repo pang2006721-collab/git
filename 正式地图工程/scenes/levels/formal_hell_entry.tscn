@@ -73,6 +73,8 @@
 
 [ext_resource type="Script" path="res://modules/combat/fork_parry.gd" id="fork_parry"]
 
+[ext_resource type="Script" path="res://modules/camera/hell_lava_reveal.gd" id="lava_reveal"]
+
 [sub_resource type="ShaderMaterial" id="targetmaterial1"]
 shader = ExtResource("target_shader")
 shader_parameter/visibility_mask = ExtResource("targetmask1")
@@ -1491,3 +1493,6 @@ polygon = PackedVector2Array(-124, -22, 112, -22, 122, 12, 110, 84, 27, 112, -87
 
 [node name="Parry" type="Node" parent="Fork"]
 script = ExtResource("fork_parry")
+
+[node name="LavaRiseReveal" type="Node" parent="."]
+script = ExtResource("lava_reveal")

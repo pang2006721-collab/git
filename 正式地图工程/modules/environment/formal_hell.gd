@@ -90,6 +90,7 @@ func die(reason: StringName = &"impact") -> void:
 	died.emit()
 
 func restart() -> void:
+	$LavaRiseReveal.reset()
 	$RisingLava.reset()
 	$OceanLink.reset()
 	dead = false

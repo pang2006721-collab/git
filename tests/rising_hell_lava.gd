@@ -27,11 +27,24 @@ func run():
     game.demon.position = Vector2(500,51796)
     lava._physics_process(2)
     check(not lava.armed,"Possession on the starting ledge leaves time to learn")
-    game.demon.position = lava._first_platform_top
+    game.demon.position = Vector2(1191,51808)
     var initial: float = lava.initial_surface_y
     lava._physics_process(.1)
-    check(lava.armed and lava.visible and is_zero_approx(lava.grace_remaining),"Reaching the first platform starts lava immediately without a fork exchange")
-    check(absf(lava.surface_y-(initial-6))<.02,"Lava immediately rises at 60 pixels per second")
+    check(not lava.armed,"Reaching first platform alone must not start lava")
+    var normal_zoom:Vector2=game.camera.zoom
+    game.get_node("Fork").exchanged.emit(game.demon)
+    check(lava.armed and lava.visible,"First successful transfer starts lava")
+    lava._physics_process(.1)
+    check(absf(lava.surface_y-(initial-6))<.02,"Lava rises at 60 pixels per second after transfer")
+    var reveal=game.get_node("LavaRiseReveal")
+    reveal.set_process(false)
+    check(reveal.active,"First successful transfer also starts the lava camera notice")
+    game.camera.set_follow_target(game.demon,true)
+    reveal._process(.5)
+    check(game.camera.framing_bias.y>0 and game.camera.zoom.x>=1.0,"Notice looks downward and respects original map width")
+    check(game.demon.get_node("Input").enabled,"Camera notice preserves player control")
+    reveal._process(2.0)
+    check(not reveal.active and game.camera.zoom.is_equal_approx(normal_zoom),"Camera returns to normal framing after the notice")
     game.demon.position.y -= 800
     var height: float = lava.surface_y
     game.camera.global_position += Vector2(300,-2000)
@@ -46,6 +59,7 @@ func run():
     height = lava.surface_y
     game.get_node("Fork").exchanged.emit(game.demon)
     check(is_equal_approx(lava.surface_y,height),"Later exchanges never restart or lower the lava")
+    check(not reveal.active,"Later exchanges do not replay the camera notice")
     game.get_node("OceanLink").stage = 2
     lava._physics_process(10)
     check(is_equal_approx(lava.surface_y,height),"Volcano transition and ocean do not advance lava")

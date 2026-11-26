@@ -25,9 +25,11 @@ func run():
     game.get_node("TextureStreamer").process_mode=Node.PROCESS_MODE_ALWAYS
     game.get_node("CameraOutput").process_mode=Node.PROCESS_MODE_ALWAYS
     eagle.reset()
-    check(rings.get_child_count()==18 and rings.ring_centers.size()==3,"Three rings have exactly eighteen oranges")
+    check(rings.get_child_count()==42 and rings.ring_centers.size()==7,"Seven rings have exactly forty-two oranges")
     check(is_equal_approx(bird_stage._spawn.y-rings.ring_centers[0].y,650.0),"First ring sits 650 pixels above bird spawn")
     check(rings.ring_radius==95,"Uses compact ocean ring size")
+    for i in range(1,rings.ring_centers.size()):
+        check(rings.ring_centers[i-1].y-rings.ring_centers[i].y>400,"Rings progress upward with clear separation")
     for ring in rings.ring_centers.size():
         for i in 6:
             var orange=rings.get_child(ring*6+i)
@@ -56,13 +58,13 @@ func run():
         for step in [Vector2(0,-75),Vector2(75,0),Vector2(0,75),Vector2(-75,0)]:
             bird.global_position=game.to_global(center+step)
             rings._physics_process(.01)
-    check(ledger.collected_count==18,"Small four-direction flight collects all eighteen")
+    check(ledger.collected_count==42,"Small four-direction flight collects all forty-two")
     check(rings.get_children().all(func(o):return o.collected and o._collector==bird),"Oranges absorb into bird")
     rings._physics_process(.01)
-    check(ledger.collected_count==18,"Collected oranges cannot count twice")
+    check(ledger.collected_count==42,"Collected oranges cannot count twice")
     for orange in rings.get_children():orange._process(.4)
     check(rings.get_children().all(func(o):return not o.visible),"Absorption finishes naturally")
     bird_stage.reset()
-    check(ledger.collected_count==18 and first.collected,"Retry preserves sky pickup progress")
+    check(ledger.collected_count==42 and first.collected,"Retry preserves sky pickup progress")
     print("SKY_ORANGE_RINGS failures=",failures)
     quit(1 if failures else 0)

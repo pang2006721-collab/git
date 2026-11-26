@@ -1,8 +1,8 @@
 extends CanvasLayer
 ## 原画数字 HUD；收集事件排队逐颗弹动，计数仍由本局收集模块负责。
 @export_node_path("Node2D") var collection_path: NodePath=^"../HellOranges"
-@export var right_margin: float=48.0
-@export var bottom_margin: float=64.0
+@export var left_margin: float=48.0
+@export var top_margin: float=32.0
 @export var artwork_scale: float=1.0
 @export_range(0.0,1.0) var motion_amount: float=1.0
 @export var pop_seconds: float=.22
@@ -54,7 +54,7 @@ func _render_digits() -> void:
         width+=glyph_width
     width+=maxi(0,text.length()-1)*5.0
     # 数字从固定起点排，换字宽度和进位不会把橘子与乘号推来推去。
-    numbers.position=Vector2(-132.0+width*.5,0)
+    numbers.position=Vector2(131.0+width*.5,30.8)
     var x: float=-width*.5
     for index in text.length():
         var sprite=Sprite2D.new()
@@ -63,16 +63,16 @@ func _render_digits() -> void:
         sprite.position=Vector2(x+widths[index]*.5,0)
         numbers.add_child(sprite)
         x+=widths[index]+5.0
-    _multiply_origin=Vector2(-156,1)
-    _logo_origin=Vector2(-225,0)
+    _multiply_origin=Vector2(107,31.8)
+    _logo_origin=Vector2(38,30.8)
 func _process(delta: float) -> void:
     # CanvasLayer 独立于地图相机；预载关卡时不提前出现在开场动画中。
     var entry: Node=level.get_node("WallEntry")
     visible=level.is_visible_in_tree() and (entry.playing or entry.completed)
-    anchor.offset_left=-right_margin
-    anchor.offset_right=-right_margin
-    anchor.offset_top=-bottom_margin
-    anchor.offset_bottom=-bottom_margin
+    anchor.offset_left=left_margin
+    anchor.offset_right=left_margin
+    anchor.offset_top=top_margin
+    anchor.offset_bottom=top_margin
     contents.scale=Vector2.ONE*artwork_scale
     var real_delta: float=delta/maxf(Engine.time_scale,.001)
     _clock+=real_delta

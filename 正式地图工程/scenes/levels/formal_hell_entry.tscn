@@ -82,6 +82,11 @@
 
 [ext_resource type="Shader" path="res://shaders/hell_left_rock_join.gdshader" id="wall_rock_join"]
 
+[ext_resource type="Shader" path="res://shaders/hell_tall_wall_join.gdshader" id="tall_wall_join"]
+
+[sub_resource type="ShaderMaterial" id="tall_wall_join_material"]
+shader = ExtResource("tall_wall_join")
+
 [sub_resource type="ShaderMaterial" id="wall_rock_join_material"]
 shader = ExtResource("wall_rock_join")
 shader_parameter/rock_art = ExtResource("layer_rock2")
@@ -1386,6 +1391,7 @@ region_filter_clip_enabled = true
 region_rect = Rect2(0, 1, 1920, 2048)
 
 [node name="Tile22" type="Sprite2D" parent="WorldLayers/Walls/Left" unique_id=63995045]
+material = SubResource("tall_wall_join_material")
 position = Vector2(0, 45016)
 texture = ExtResource("wall_left_22")
 centered = false

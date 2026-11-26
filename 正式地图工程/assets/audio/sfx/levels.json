@@ -1,0 +1,202 @@
+{
+  "ui": {
+    "file": "ui.mp3",
+    "source": "UI点击.mp3",
+    "gain_db": 12.05,
+    "duration": 0.3135,
+    "active_rms_db": -36.05,
+    "peak_db": -19.65,
+    "output_rms_db": -24.0,
+    "output_peak_db": -7.6
+  },
+  "arrow": {
+    "file": "arrow.mp3",
+    "source": "开头动画射箭.mp3",
+    "gain_db": 11.06,
+    "duration": 0.3396,
+    "active_rms_db": -33.08,
+    "peak_db": -17.06,
+    "output_rms_db": -22.02,
+    "output_peak_db": -6.0
+  },
+  "volley": {
+    "file": "volley.mp3",
+    "source": "开头动画射箭-多.mp3",
+    "gain_db": 7.17,
+    "duration": 0.8359,
+    "active_rms_db": -29.17,
+    "peak_db": -16.09,
+    "output_rms_db": -22.0,
+    "output_peak_db": -8.92
+  },
+  "possess": {
+    "file": "possess.mp3",
+    "source": "地狱shift.mp3",
+    "gain_db": 7.64,
+    "duration": 0.418,
+    "active_rms_db": -29.64,
+    "peak_db": -14.68,
+    "output_rms_db": -22.0,
+    "output_peak_db": -7.04
+  },
+  "fracture": {
+    "file": "fracture.mp3",
+    "source": "地狱石块碎裂.mp3",
+    "gain_db": 15.27,
+    "duration": 2.0898,
+    "active_rms_db": -40.05,
+    "peak_db": -18.27,
+    "output_rms_db": -24.78,
+    "output_peak_db": -3.0
+  },
+  "fork": {
+    "file": "fork.mp3",
+    "source": "扔出叉子.mp3",
+    "gain_db": 9.97,
+    "duration": 0.1567,
+    "active_rms_db": -31.97,
+    "peak_db": -16.89,
+    "output_rms_db": -22.0,
+    "output_peak_db": -6.92
+  },
+  "bounce": {
+    "file": "bounce.mp3",
+    "source": "射中球后的跳跃.mp3",
+    "gain_db": 2.72,
+    "duration": 0.1829,
+    "active_rms_db": -24.72,
+    "peak_db": -15.35,
+    "output_rms_db": -22.0,
+    "output_peak_db": -12.64
+  },
+  "death": {
+    "file": "death.mp3",
+    "source": "死亡.mp3",
+    "gain_db": 4.89,
+    "duration": 0.3396,
+    "active_rms_db": -26.89,
+    "peak_db": -17.7,
+    "output_rms_db": -22.0,
+    "output_peak_db": -12.81
+  },
+  "demon_run": {
+    "file": "demon_run.mp3",
+    "source": "小恶魔奔跑.mp3",
+    "gain_db": 2.32,
+    "duration": 0.3135,
+    "active_rms_db": -26.32,
+    "peak_db": -16.45,
+    "output_rms_db": -24.0,
+    "output_peak_db": -14.14
+  },
+  "jump": {
+    "file": "jump.mp3",
+    "source": "小恶魔跳跃.mp3",
+    "gain_db": 2.08,
+    "duration": 0.1567,
+    "active_rms_db": -24.08,
+    "peak_db": -14.86,
+    "output_rms_db": -22.0,
+    "output_peak_db": -12.78
+  },
+  "ghost_run": {
+    "file": "ghost_run.mp3",
+    "source": "小幽灵奔跑.mp3",
+    "gain_db": 8.13,
+    "duration": 2.7167,
+    "active_rms_db": -38.95,
+    "peak_db": -20.13,
+    "output_rms_db": -30.82,
+    "output_peak_db": -12.0
+  },
+  "soul_exit": {
+    "file": "soul_exit.mp3",
+    "source": "shift出.mp3",
+    "gain_db": 0.97,
+    "duration": 0.2351,
+    "active_rms_db": -22.97,
+    "peak_db": -15.34,
+    "output_rms_db": -22.0,
+    "output_peak_db": -14.37
+  },
+  "fish_enter": {
+    "file": "fish_enter.mp3",
+    "source": "shift入.mp3",
+    "gain_db": 1.6,
+    "duration": 0.418,
+    "active_rms_db": -23.6,
+    "peak_db": -14.13,
+    "output_rms_db": -22.0,
+    "output_peak_db": -12.53
+  },
+  "tentacle_slap": {
+    "file": "tentacle_slap.mp3",
+    "source": "触手拍打.mp3",
+    "gain_db": 4.43,
+    "duration": 0.1829,
+    "active_rms_db": -26.43,
+    "peak_db": -15.22,
+    "output_rms_db": -22.0,
+    "output_peak_db": -10.79
+  },
+  "transition_travel": {
+    "file": "transition_travel.mp3",
+    "source": "过场-吸内.mp3",
+    "gain_db": 10.78,
+    "duration": 2.9518,
+    "active_rms_db": -34.78,
+    "peak_db": -16.55,
+    "output_rms_db": -24.0,
+    "output_peak_db": -5.76
+  },
+  "shark_dash": {
+    "file": "shark_dash.mp3",
+    "source": "鲨鱼突刺.mp3",
+    "gain_db": 8.97,
+    "duration": 0.3918,
+    "active_rms_db": -30.97,
+    "peak_db": -19.44,
+    "output_rms_db": -22.0,
+    "output_peak_db": -10.46
+  },
+  "jellyfish_strike": {
+    "file": "jellyfish_strike.mp3",
+    "source": "水母.mp3",
+    "gain_db": 11.28,
+    "duration": 0.5224,
+    "active_rms_db": -33.28,
+    "peak_db": -19.1,
+    "output_rms_db": -22.0,
+    "output_peak_db": -7.82
+  },
+  "fish_blink": {
+    "file": "fish_blink.mp3",
+    "source": "瞬移.mp3",
+    "gain_db": 5.89,
+    "duration": 0.1829,
+    "active_rms_db": -27.89,
+    "peak_db": -16.63,
+    "output_rms_db": -22.0,
+    "output_peak_db": -10.74
+  },
+  "octopus_ink": {
+    "file": "octopus_ink.mp3",
+    "source": "章鱼墨汁.mp3",
+    "gain_db": 7.32,
+    "duration": 2.4033,
+    "active_rms_db": -29.32,
+    "peak_db": -11.29,
+    "output_rms_db": -22.0,
+    "output_peak_db": -3.97
+  },
+  "transition_mouth": {
+    "file": "transition_mouth.mp3",
+    "source": "转场-吸入喷出.mp3",
+    "gain_db": 6.84,
+    "duration": 0.4441,
+    "active_rms_db": -28.84,
+    "peak_db": -16.63,
+    "output_rms_db": -22.0,
+    "output_peak_db": -9.79
+  }
+}

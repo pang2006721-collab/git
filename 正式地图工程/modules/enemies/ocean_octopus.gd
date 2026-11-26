@@ -1,6 +1,7 @@
 extends Node2D
 ## 世界坐标游动，参考动画的头部注册与喷墨后反冲。
 signal ink_sprayed
+signal ink_released
 signal appeared
 enum State { WAITING, ENTERING, SWIMMING, SQUASHING, INKING, EXITING, DASHING }
 @export var spawn_interval: float = 3.0
@@ -233,6 +234,7 @@ func _appear(spawn_point: Vector2 = Vector2.INF) -> void:
     appeared.emit()
 
 func _release_cloud() -> void:
+    ink_released.emit()
     _cloud = Sprite2D.new()
     _cloud.texture = CLOUD
     _cloud.material = sprite.material

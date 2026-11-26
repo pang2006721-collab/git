@@ -1,4 +1,5 @@
 extends "res://modules/environment/hell_platform.gd"
+signal fractured
 ## 使用作者手绘碎片；分离后独立累计速度和旋转，不再回写平台位置。
 @export var debris_gravity: float = 1100.0
 @export var separation_speed: float = 120.0
@@ -49,6 +50,7 @@ func _physics_process(delta: float) -> void:
 
 func _release_pieces() -> void:
 	broken = true
+	fractured.emit()
 	collision.set_deferred("disabled", true)
 	sprite.hide()
 	sprite.transform = _art_transform

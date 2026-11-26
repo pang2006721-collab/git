@@ -1,5 +1,6 @@
 extends Node2D
 signal enemy_spawned(enemy: Node2D)
+signal fork_thrown
 const ENEMY=preload("res://scenes/enemies/flying_demon.tscn")
 const PROJECTILE=preload("res://scenes/enemies/enemy_fork.tscn")
 @export var enabled: bool = true
@@ -86,6 +87,7 @@ func _shoot(aim: Vector2, origin: Vector2) -> void:
     fork.position=to_local(origin)
     $Projectiles.add_child(fork)
     fork.launch(aim)
+    fork_thrown.emit()
     total_shots+=1
 
 func reset() -> void:

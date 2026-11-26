@@ -4,6 +4,8 @@ const SURFACE = preload("res://modules/environment/hell_surface.gd")
 signal exchanged(body: Node2D)
 signal interaction_reset
 signal travelled(from: Vector2, to: Vector2)
+signal thrown
+signal bounced
 @export_range(0.0,1.0) var enemy_hit_chance: float = 0.8
 var _enemy_attack_target: Node2D
 var _combat_rng := RandomNumberGenerator.new()
@@ -119,6 +121,7 @@ func _throw() -> void:
         return
     flying = true
     lodged = selected
+    thrown.emit()
     selected = null
     fork.global_position = demon.global_position + Vector2(50*demon.get_node("Movement").facing,-70)
     var incoming := (lodged.global_position-fork.global_position).angle()
@@ -200,6 +203,7 @@ func _exchange() -> void:
     exchanged.emit(demon)
 
 func _release_ball() -> void:
+    bounced.emit()
     lodged = null
     if _arrival_feedback != null: _arrival_feedback.kill()
     _arrival_feedback = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
@@ -275,6 +279,7 @@ func _throw_at_enemy() -> void:
     selected=null
     _enemy_attack_target=victim
     flying=true
+    thrown.emit()
     _set_held(false)
     fork.global_position=demon.global_position+Vector2(45*demon.get_node("Movement").facing,-65)
     fork.show()

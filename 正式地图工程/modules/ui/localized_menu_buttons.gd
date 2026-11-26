@@ -16,8 +16,12 @@ const ART = {
 var _bounds: Dictionary
 var _buttons: Dictionary = {}
 var labels: Dictionary = {}
+var _language := ""
+var _feedback: Node
 
 func configure(start: TextureButton, settings: TextureButton) -> void:
+	_feedback = preload("res://modules/ui/settings_interaction_bounce.gd").new()
+	add_child(_feedback)
 	_bounds = JSON.parse_string(FileAccess.get_file_as_string(FOLDER+"layers.json"))
 	_buttons = {"start": start, "settings": settings}
 	for key in _buttons:
@@ -38,6 +42,9 @@ func configure(start: TextureButton, settings: TextureButton) -> void:
 
 func refresh() -> void:
 	var language: String = GameSettings.LANGUAGES[GameSettings.language_index]
+	if language == _language: return
+	var animate := not _language.is_empty()
+	_language = language
 	for key in _buttons:
 		var name_key: String = key+"_"+language
 		var label: TextureRect = labels[key]
@@ -46,3 +53,5 @@ func refresh() -> void:
 		label.texture = ART[name_key]
 		label.position = Vector2(box[0]-base[0],box[1]-base[1])
 		label.size = Vector2(box[2]-box[0],box[3]-box[1])
+		label.pivot_offset = label.size * 0.5
+		if animate: _feedback.pulse(label, 0.20)

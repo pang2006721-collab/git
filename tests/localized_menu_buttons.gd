@@ -35,6 +35,14 @@ func run():
 	menu._settings_popup._cycle_language(1)
 	var language: String = settings.LANGUAGES[settings.language_index]
 	check(menu._localized_buttons.labels.start.texture.resource_path.ends_with("start_"+language+".png"), "changing settings updates menu behind popup immediately")
+	for label in menu._localized_buttons.labels.values():
+		check(not label.scale.is_equal_approx(Vector2.ONE), "menu text duang immediately on language change")
+	var pulses: int = menu._localized_buttons._feedback.pulse_count
+	settings.changed.emit()
+	check(menu._localized_buttons._feedback.pulse_count == pulses, "same language or audio change does not restart text bounce")
+	await create_timer(1.0).timeout
+	for label in menu._localized_buttons.labels.values():
+		check(label.scale.is_equal_approx(Vector2.ONE), "text settles after repeated language changes")
 	menu._settings_popup.close()
 	await create_timer(0.2).timeout
 	menu.get_node("Start/Pulse").pulse()

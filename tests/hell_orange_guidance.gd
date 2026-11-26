@@ -59,13 +59,15 @@ func run():
     game.demon.get_node("Host").take_control()
     var fork=game.get_node("Fork")
     var target_ball=game.get_node("Fork/Targets/Target01")
-    game.demon.position=Vector2(1182,51809)
+    game.demon.position=Vector2(400,51796)
     fork.lodged=target_ball
     fork._exchange()
     for id in ["FirstJumpGuide01","FirstJumpGuide02","FirstJumpGuide03"]:
-        check(trail.get_node(id).collected,"Actual opening teleport absorbs orange along travelled path: "+id)
+        check(trail.get_node(id).collected,"First-ball transfer grants the guide orange even from an off-route start: "+id)
     check(not trail.get_node("UpperMiddleRow01").collected,"Teleport does not sweep unrelated distant oranges")
     var after_teleport:int=trail.collected_count
+    fork.exchanged.emit(game.demon)
+    check(trail.collected_count==after_teleport,"Repeated first-ball exchange cannot grant the same three oranges twice")
     trail._physics_process(0)
     check(trail.collected_count==after_teleport,"Arrival cannot double count the path pickup")
     var other=trail.get_node("UpperMiddleRow01")

@@ -45,3 +45,8 @@ settlement_cloud_gate.gd负责可操作云面及钻入；halo_reward_preview.gd�
 ## duang与上下分环
 
 最新封赏保留上帝头上的原光环，2.16秒从原环直接向上弹出一个小光环，随后沿弧线飞向玩家实时头顶，3.8秒戴上；删除上帝重新戴回的动作与音效。总时长6.2秒，云面流程读取动画duration，回顾内部时间轴保持原样。可控幽灵的封赏形变作为视觉叠加：收到光环时约0.82倍压扁、1.15倍拉长及短回弹，水平反比缩放保持面积，物理位置与输入不被动画改写。出云、起跳和落地也有阻尼弹簧回弹；每帧从基础比例重新合成，杜绝越弹越扁。7键在钻云开始前由主线程准备封赏资源，保证透明光环纹理可用，弹出后的连续交接仍无黑幕。tests/halo_reward_preview.gd、seamless_halo_cloud_gate.gd和ending_quick_start.gd覆盖上述行为。
+
+
+## 正式入口
+
+现在由SkyCloudExit/EndingHandoff统一接续正常登顶和7键。正常读取HellOranges.collected_count及RunRetrospective.snapshot；7键只覆盖100与切换前快照。100以下同样钻云回顾，但不授环或播放授环声。支持首页Gameplay嵌套场景，整棵旧首页/地图同帧卸载，真实视口坐标、比例与弹出速度继承不变。

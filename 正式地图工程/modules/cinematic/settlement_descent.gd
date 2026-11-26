@@ -1,5 +1,5 @@
 extends Node2D
-## 独立结尾预览。保留用户长图内全部原文，数字覆盖原横线，等待真实记录注入。
+## 正式结尾与独立预览共用。保留原文，数字覆盖原横线，注入本局收集与回放。
 const HALO = preload("res://scenes/previews/halo_reward_preview.tscn")
 const STAGES = [&"hell", &"ocean", &"jungle", &"sky"]
 const FRAME_INSET = (976.0-453.0*16.0/9.0)*.5
@@ -165,7 +165,7 @@ func _process(delta: float) -> void:
         gate.advance(delta,_read_direction(),elapsed >= opening.duration)
         opening.external_offset = opening_offset
         opening.sample(minf(elapsed,opening.duration))
-        if elapsed < opening.duration:
+        if oranges_total >= 100 and elapsed < opening.duration:
             for impact in [2.16,3.8]:
                 if previous < impact and elapsed >= impact: Sfx.play(&"bounce")
         _render_scene(minf(elapsed,8.4))

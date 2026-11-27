@@ -69,4 +69,6 @@ func _apply() -> void:
     if index == 1:
         get_tree().current_scene.get_node("HellTutorial").replay_on_entry()
     entry.start_segment(index)
+    if index == 3:
+        get_tree().current_scene.get_node("OceanTutorial").replay_now()
     segment_started.emit(index)

@@ -58,9 +58,14 @@ func _build_canopy() -> void:
                 var below_leaf:=false
                 for y in 300:
                     if underside.get_pixel(x,y).g>.22: below_leaf=true
-                    if below_leaf: underside.set_pixel(x,y,Color.TRANSPARENT)
+                    if below_leaf:
+                        # Retain source RGB under zero alpha to avoid dark filtered fringes.
+                        var pixel:=underside.get_pixel(x,y)
+                        pixel.a=0.0
+                        underside.set_pixel(x,y,pixel)
             art.texture=ImageTexture.create_from_image(underside)
             art.region_enabled=false
+            art.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
         else:
             art.material=material
         add_child(art)

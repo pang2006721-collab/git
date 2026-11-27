@@ -66,5 +66,7 @@ func _apply() -> void:
         cloud.ending_handoff.preview_oranges_override = ENDING_ORANGES
         cloud.ending_handoff.history_override = _ending_history
         _ending_history = {}
+    if index == 1:
+        get_tree().current_scene.get_node("HellTutorial").replay_on_entry()
     entry.start_segment(index)
     segment_started.emit(index)

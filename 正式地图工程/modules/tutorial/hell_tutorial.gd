@@ -2,6 +2,8 @@ extends CanvasLayer
 signal completed
 signal dismissed
 @export var save_path:String="user://tutorials.cfg"
+@export_range(0.0,1.0) var backdrop_opacity:float=.84
+var _force_replay:=false
 var active:=false
 var panel:Control
 var key_art:TextureRect
@@ -22,10 +24,15 @@ func _ready():
     var game=get_parent()
     if game.has_meta("skip_tutorial") or "--script" in OS.get_cmdline_args():return
     game.get_node("WallEntry").control_ready.connect(_offer,CONNECT_ONE_SHOT)
+func replay_on_entry():
+    _force_replay=true
+    var entry=get_parent().get_node("WallEntry")
+    if not entry.control_ready.is_connected(_offer):
+        entry.control_ready.connect(_offer,CONNECT_ONE_SHOT)
 func _offer():
     var cfg=ConfigFile.new()
     cfg.load(save_path)
-    if not cfg.get_value("watched","hell",false):start.call_deferred()
+    if _force_replay or not cfg.get_value("watched","hell",false):start.call_deferred()
 func start():
     if active:return
     active=true
@@ -58,7 +65,8 @@ func start():
     panel.add_child(movie)
     movie.finished.connect(func():finish(true))
     frame=ColorRect.new()
-    frame.size=movie.size
+    frame.position=Vector2(-10.41,-10.41)
+    frame.size=movie.size+Vector2(20.82,20.82)
     frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
     frame.material=mat
     panel.add_child(frame)
@@ -87,7 +95,7 @@ func start():
         bounce.tween_callback(func():finish(false)))
     Sfx.play(&"bounce")
     var enter=create_tween().set_parallel()
-    enter.tween_property(shade,"color:a",.62,.25)
+    enter.tween_property(shade,"color:a",backdrop_opacity,.25)
     enter.tween_property(panel,"scale",Vector2.ONE,.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
     await enter.finished
     if not _closing:movie.play()

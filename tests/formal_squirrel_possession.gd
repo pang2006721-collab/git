@@ -23,8 +23,6 @@ func run():
     fish.get_node("Patrol").stop()
     for name in ["Shark","Octopus","PinkSharks","SideTentacle","JellyfishBoss","BossTentacleNet"]:
         stage.get_node(name).process_mode = Node.PROCESS_MODE_DISABLED
-    var grab = stage.get_node("SurfaceGrab")
-    grab.set_physics_process(false)
     var shore = stage.get_node("ShoreExit")
     shore.set_physics_process(false)
     var blink = fish.get_node("Teleport")

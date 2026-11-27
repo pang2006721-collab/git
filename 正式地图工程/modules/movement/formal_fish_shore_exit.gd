@@ -9,7 +9,6 @@ func _ready() -> void:
     landed_on_shore.connect(func(): _sprite.position = Vector2(8,-11.5))
 func _physics_process(delta: float) -> void:
     if not stage.active or stage.level.dead or stage.level.player!=_fish: return
-    if stage.get_node("SurfaceGrab").blocks_exit(): return
     super._physics_process(delta)
     if state==State.STRANDED: struggle.sample(elapsed,stranding_duration)
     _fish.get_node("Teleport").enabled = state==State.SWIMMING

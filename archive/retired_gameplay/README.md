@@ -1,0 +1,1 @@
+Historical prototype and cancelled surface-grab implementation. Preserves original paths relative to the former Godot project. Not a runnable project; dependencies may remain shared by current gameplay. Do not copy back into production without reviewing references.

@@ -89,7 +89,6 @@ func _on_player_died() -> void:
     fish.get_node("Stun").reset(false)
     if not active: return
     $JungleHandoff.cancel()
-    $SurfaceGrab.reset()
     $JellyfishBoss.enabled = false
     $BossTentacleNet.finish_existing()
     $Shark.finish_current_attack()
@@ -110,7 +109,6 @@ func reset() -> void:
     fish.get_node("Stun").reset(false)
     $JungleHandoff.reset()
     $JungleLayout.reset()
-    $SurfaceGrab.reset()
     $ShoreExit.reset()
     $BossTentacleNet.reset()
     $JellyfishBoss.reset()

@@ -88,9 +88,6 @@ func start_segment(index: int) -> void:
             var shore := stage.get_node("ShoreExit")
             var squirrel := stage.get_node("JungleLayout/Squirrel")
             shore.start_on_shore(squirrel.global_position.x+120)
-            var grab := stage.get_node("SurfaceGrab")
-            grab._finish()
-            grab.rounds_completed = grab.total_rounds
             stage.get_node("JungleLayout")._update_nearby()
             stage.get_node("JungleHandoff")._physics_process(0)
             stage.get_node("JunglePossession")._physics_process(0)

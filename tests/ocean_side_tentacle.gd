@@ -28,7 +28,7 @@ func run():
     await create_timer(.05).timeout
     check(attacks.is_empty() and is_zero_approx(trap.linger_elapsed),"An unpossessed fish never triggers the trap")
     stage.activate()
-    for name in ["Shark","Octopus","PinkSharks","JellyfishBoss","BossTentacleNet","SurfaceGrab"]:
+    for name in ["Shark","Octopus","PinkSharks","JellyfishBoss","BossTentacleNet"]:
         stage.get_node(name).process_mode=Node.PROCESS_MODE_DISABLED
     stage.host.take_control()
     stage._on_transfer_finished(stage.host)

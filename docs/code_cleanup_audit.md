@@ -18,3 +18,13 @@ Branch: feature/code-cleanup-modules. Local changes only; no upload authorized.
 ## Current organization
 
 173 GDScript files before this cleanup. Existing folders separate movement, input, possession, camera, enemies, status, visual, UI, audio and collectibles. Environment (43 scripts) mixes level assembly, checkpoints, combat and rendering glue. Follow-up refactors should move one subsystem at a time and update scene references/tests. There is no measured basis to attribute current performance to unused source files alone; instantiated nodes and preloaded textures require profiling.
+
+
+## Retired gameplay removal (feature/remove-retired-gameplay)
+
+- Removed SurfaceGrab from formal_ocean_fish and removed production reset, teleport, shore-exit, shortcut and camera dependencies.
+- Archived its four exclusive scripts and UID files outside the project. Shared jellyfish tendrils/warnings and main-menu surface_arrow_volley remain active and unchanged.
+- Archived the five prototype scene/controller pairs, their old game_flow scene/controller and two old prototype sky transitions. No production scene/script referenced these entry points.
+- Archived three tests dedicated to the removed grab; updated active fixtures and final-shark/shore/camera assertions to test the current flow.
+- Archive preserves original source for reference; it is not an independently runnable Godot project. Original artwork is retained because shared assets are not proven unused.
+- Formal ending preview scenes are retained because production handoff still uses them.

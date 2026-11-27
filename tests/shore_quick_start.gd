@@ -33,7 +33,7 @@ func run():
     check(game.camera.zoom.is_equal_approx(Vector2.ONE*1.35) and game.camera.target==stage.fish,"Camera starts on shore with normal framing")
     check(controller.enabled and controller.selected_host==squirrel.get_node("Host"),"Nearby squirrel is immediately ready for Shift possession")
     check(squirrel.get_node("Visual/SelectedSprite").visible,"Authored Shift prompt is visible")
-    check(not stage.get_node("SurfaceGrab").blocks_exit() and stage.get_node("SurfaceGrab").state==stage.get_node("SurfaceGrab").State.FINISHED,"Shortcut cannot restart the final water grab")
+    check(not stage.has_node("SurfaceGrab"),"Shortcut has no retired grab node")
     check(not stage.get_node("JellyfishBoss").enabled and not stage.get_node("Shark").enabled,"Underwater pursuit stays inactive at the shore checkpoint")
     var shift := InputEventKey.new()
     shift.physical_keycode = KEY_SHIFT

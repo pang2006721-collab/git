@@ -18,7 +18,7 @@ func run():
     var fish=stage.fish
     fish.get_node("Movement").set_physics_process(false)
     fish.position=Vector2(960,35000)
-    for name in ["Shark","Octopus","PinkSharks","SideTentacle","BossTentacleNet","SurfaceGrab","JellyfishBoss"]:
+    for name in ["Shark","Octopus","PinkSharks","SideTentacle","BossTentacleNet","JellyfishBoss"]:
         stage.get_node(name).set_physics_process(false)
     var view=stage.get_node("JellyfishReveal")
     view.set_process(false)
@@ -55,11 +55,6 @@ func run():
     view._process(0)
     for i in 130: view._process(.015)
     view.finish_for_surface()
-    var shot=stage.get_node("SurfaceGrab").shot
-    shot.begin(game.camera)
-    shot._process(.4)
-    check(abs(game.camera.zoom.x-1.35*1.055)<.001,"The surface close-up takes ownership from normal zoom without a camera conflict")
-    shot.reset()
     view.reset()
     boss._begin_entrance()
     view._process(0)

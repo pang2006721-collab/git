@@ -20,7 +20,6 @@
 [ext_resource type="Texture2D" path="res://assets/art/characters/fish/shore/stranded.png" id="stranded_art"]
 [ext_resource type="Texture2D" path="res://assets/art/characters/fish/shore/dead.png" id="dead_art"]
 
-[ext_resource type="Script" path="res://modules/enemies/surface_jellyfish_grab.gd" id="surface_grab"]
 
 [ext_resource type="PackedScene" path="res://scenes/levels/formal_jungle_layout.tscn" id="jungle_layout"]
 
@@ -122,9 +121,6 @@ shape = SubResource("OriginalBank")
 one_way_collision = true
 one_way_collision_margin = 8.0
 
-[node name="SurfaceGrab" type="Node2D" parent="."]
-script = ExtResource("surface_grab")
-enabled = false
 
 [node name="FinalSharks" parent="." instance=ExtResource("final_sharks")]
 

@@ -23,7 +23,7 @@ func run():
     stage.set_physics_process(false)
     fish.get_node("Movement").enabled=false
     fish.get_node("Patrol").stop()
-    for n in ["Shark","Octopus","PinkSharks","SideTentacle","JellyfishBoss","BossTentacleNet","SurfaceGrab","FinalSharks"]:
+    for n in ["Shark","Octopus","PinkSharks","SideTentacle","JellyfishBoss","BossTentacleNet","FinalSharks"]:
         stage.get_node(n).process_mode=Node.PROCESS_MODE_DISABLED
     check(rings.get_child_count()==42,"Seven rings contain exactly 42 oranges")
     await physics_frame

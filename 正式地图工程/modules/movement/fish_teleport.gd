@@ -38,8 +38,6 @@ func _unhandled_input(event: InputEvent) -> void:
 func try_teleport(direction: Vector2 = Vector2.ZERO) -> bool:
     var stun := body.get_node_or_null("Stun")
     if stun!=null and (stun.stun_remaining>0 or stun.dizzy_remaining>0): return false
-    var grab := stage.get_node_or_null("SurfaceGrab")
-    if grab!=null and grab.state==grab.State.CAUGHT: return false
     if not enabled or _busy or cooldown_remaining>0.0 or not body.get_node("Host").claimed:
         return false
     if not stage.active or stage.level.dead or stage.level.exit_in_progress or stage.level.player!=body:

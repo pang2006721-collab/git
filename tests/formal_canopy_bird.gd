@@ -14,7 +14,7 @@ func run():
     var stage=game.get_node("OceanLink/FishStage")
     stage.activate()
     stage.set_physics_process(false)
-    for name in ["Shark","Octopus","PinkSharks","SideTentacle","JellyfishBoss","BossTentacleNet","SurfaceGrab"]:
+    for name in ["Shark","Octopus","PinkSharks","SideTentacle","JellyfishBoss","BossTentacleNet"]:
         stage.get_node(name).process_mode=Node.PROCESS_MODE_DISABLED
     var layout=stage.get_node("JungleLayout")
     var bird=layout.get_node("Bird")

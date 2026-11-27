@@ -28,7 +28,6 @@ func run() -> void:
     stage.get_node("JellyfishReveal").reset()
     var fish=stage.fish
     var trio=stage.get_node("FinalSharks")
-    var grab=stage.get_node("SurfaceGrab")
     var shore=stage.get_node("ShoreExit")
     fish.get_node("Movement").enabled=false
     fish.position=Vector2(960,shore.surface_y+1500)
@@ -42,7 +41,7 @@ func run() -> void:
     check(await until(func():return trio.triggered),"Ascending triggers final wave")
     check(trio.sharks.size()==3,"Exactly three skinny sharks")
     check(trio.sharks.all(func(s):return s.state==s.State.LOCKING),"All sharks lock simultaneously")
-    check(not grab.enabled and not grab.blocks_exit() and grab.attacks_started==0,"Four-arm grab disabled without blocking exit")
+    check(not stage.has_node("SurfaceGrab"),"Retired four-arm grab is absent")
     check(not stage.get_node("Shark").enabled,"Ordinary shark stays suppressed")
     await create_timer(.5).timeout
     await shot("lock")

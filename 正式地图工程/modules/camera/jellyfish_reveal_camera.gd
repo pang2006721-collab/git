@@ -39,10 +39,9 @@ func _process(delta: float) -> void:
         return
     if state==State.FINISHED: return
     var shore=stage.get_node("ShoreExit")
-    var grab=stage.get_node("SurfaceGrab")
     if state==State.WIDE: _wide_elapsed+=delta
     var near_surface: bool=fish.position.y<=shore.surface_y+restore_depth
-    var surface_sequence: bool=shore.state!=shore.State.SWIMMING or grab.state in [grab.State.WARNING,grab.State.REACHING,grab.State.CAUGHT]
+    var surface_sequence: bool=shore.state!=shore.State.SWIMMING
     if state!=State.RETURNING and ((near_surface and state==State.WIDE and _wide_elapsed>=minimum_wide_seconds) or surface_sequence or stage.level.player!=fish):
         state=State.RETURNING
         elapsed=0
@@ -56,17 +55,13 @@ func _process(delta: float) -> void:
             _wide_elapsed=0
             reveal_finished.emit()
     elif state==State.RETURNING:
-        # If the surface camera has already taken ownership, do not compete with it.
-        if grab.shot._owned:
-            _finish_return(false)
-            return
         var u:=smoothstep(0,return_seconds,elapsed)
         camera.zoom=_return_zoom.lerp(_rest_zoom,u)
         if elapsed>=return_seconds: _finish_return()
 func finish_for_surface() -> void:
     if state not in [State.WAITING,State.FINISHED]: _finish_return()
-func _finish_return(restore_zoom: bool=true) -> void:
-    if restore_zoom: camera.zoom=_rest_zoom
+func _finish_return() -> void:
+    camera.zoom=_rest_zoom
     state=State.FINISHED
 func reset() -> void:
     if state not in [State.WAITING,State.FINISHED] and is_instance_valid(camera): camera.zoom=_rest_zoom

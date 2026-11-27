@@ -165,8 +165,9 @@ func _process(delta: float) -> void:
         gate.advance(delta,_read_direction(),elapsed >= opening.duration)
         opening.external_offset = opening_offset
         opening.sample(minf(elapsed,opening.duration))
-        if oranges_total >= 100 and elapsed < opening.duration:
-            for impact in [2.16,3.8]:
+        if elapsed < opening.duration:
+            var impacts: Array=[2.16,3.8] if oranges_total>=100 else [.6,1.7,2.6,4.7,5.1]
+            for impact in impacts:
                 if previous < impact and elapsed >= impact: Sfx.play(&"bounce")
         _render_scene(minf(elapsed,8.4))
         if gate.phase == gate.Phase.COMPLETE: _begin_review()
@@ -180,6 +181,7 @@ func _process(delta: float) -> void:
 func _begin_review() -> void:
     if _review_started: return
     _review_started = true
+    if opening.under100!=null:opening.under100.restore()
     gate.release_to_flight(ghost_layer)
     flight.configure(opening.soul,opening.soul_halo,opening.face)
     ghost_layer.hide()

@@ -6,6 +6,7 @@ extends CanvasLayer
 @export var hole_origin:=Vector2(50,42)
 @export var hole_size:=Vector2(735,463)
 @export var clean_left_matte:=false
+@export var clean_outer_matte:=false
 @export_file("*.png") var hole_mask_path:String=""
 signal completed
 signal dismissed
@@ -71,6 +72,7 @@ func start():
     mat.set_shader_parameter("hole_origin",hole_origin)
     mat.set_shader_parameter("hole_size",hole_size)
     mat.set_shader_parameter("clean_left_matte",clean_left_matte)
+    mat.set_shader_parameter("clean_outer_matte",clean_outer_matte)
     if not hole_mask_path.is_empty():
         mat.set_shader_parameter("hole_mask",load(hole_mask_path))
         mat.set_shader_parameter("use_hole_mask",true)

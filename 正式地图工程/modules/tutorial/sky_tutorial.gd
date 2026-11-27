@@ -1,6 +1,7 @@
 extends "res://modules/tutorial/recorded_tutorial.gd"
 func _ready():
     stage_key="sky"
+    clean_outer_matte=true
     recording_path="res://assets/video/sky_shift"
     frame_origin=Vector2(254, 2708)
     frame_size=Vector2(824, 532)

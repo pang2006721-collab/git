@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://c5f8o4chrpmk6"]
 
+[ext_resource type="Script" path="res://modules/tutorial/hell_tutorial.gd" id="hell_tutorial"]
+
 [ext_resource type="Texture2D" uid="uid://cs5lsrurqfiwu" path="res://assets/art/hell/new/fork.png" id="49_trgvh"]
 [ext_resource type="Script" uid="uid://b8g1wg1tifrm5" path="res://modules/environment/hell_platform.gd" id="52_rs4er"]
 [ext_resource type="Texture2D" uid="uid://28q14b5k1ha3" path="res://assets/art/hell/new/platform.png" id="53_o7s3p"]
@@ -1582,3 +1584,6 @@ script = ExtResource("ocean_bottom_join")
 
 [node name="HellLeftEdgeCover" type="Node2D" parent="WorldLayers"]
 script = ExtResource("hell_left_edge_cover")
+
+[node name="HellTutorial" type="CanvasLayer" parent="."]
+script = ExtResource("hell_tutorial")

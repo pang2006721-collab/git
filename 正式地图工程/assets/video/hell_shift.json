@@ -1,0 +1,10 @@
+{
+  "duration": 10.5,
+  "jump_from": "Platforms/Static08",
+  "shift_beats": [
+    1.0,
+    4.0,
+    7.83333333333333
+  ],
+  "target": "Target02"
+}

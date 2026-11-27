@@ -12,13 +12,15 @@ var frame:ColorRect
 var movie:VideoStreamPlayer
 var shade:ColorRect
 var elapsed:=0.0
-var pulses:Array[float]=[1.0,3.667]
+var pulses:Array[float]=[]
 var pulse_index:=0
 var saved_modes:Dictionary={}
 var was_paused:=false
 var _closing:=false
 var _pulse:Tween
 func _ready():
+    var recording=JSON.parse_string(FileAccess.get_file_as_string("res://assets/video/hell_shift.json"))
+    pulses.assign(recording.shift_beats)
     layer=95
     process_mode=Node.PROCESS_MODE_ALWAYS
     var game=get_parent()

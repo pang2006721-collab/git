@@ -21,9 +21,12 @@ func run():
     assert(tutorial.pulse_index==1)
     await RenderingServer.frame_post_draw
     root.get_texture().get_image().save_png("C:/Users/14930/Documents/Codex/2026-11-18/m/tutorial-popup.png")
-    await create_timer(2.6).timeout
-    assert(tutorial.pulse_index==2)
-    await create_timer(2.2).timeout
+    var pulse_count:=0
+    for i in 160:
+        if not is_instance_valid(tutorial):break
+        pulse_count=maxi(pulse_count,tutorial.pulse_index)
+        await create_timer(.1).timeout
+    assert(pulse_count==3,"All three recorded Shift uses must receive a matching cue")
     assert(not paused)
     var cfg=ConfigFile.new()
     assert(cfg.load("user://test_hell_tutorial.cfg")==OK)

@@ -7,6 +7,7 @@ uniform vec2 frame_size=vec2(830.0,545.0);
 uniform vec2 hole_origin=vec2(50.0,42.0);
 uniform vec2 hole_size=vec2(735.0,463.0);
 uniform float outer_outline_pixels = 3.5;
+uniform bool clean_left_matte = false;
 float coverage(vec2 p){
  vec3 c=texture(frame_art,(p+frame_origin)/vec2(1280.0,4667.0)).rgb;
  return 1.0-min(c.r,min(c.g,c.b));
@@ -27,6 +28,10 @@ vec4 compose_sample(vec2 p){
   }
   ink*=alpha/max(expanded,.0001);
   alpha=expanded;
+ }
+ if(clean_left_matte && p.x<5.0){
+  ink=vec3(0.0);
+  alpha=smoothstep(.08,.95,alpha);
  }
  vec2 movie_uv=(p-hole_origin)/hole_size;
  movie_uv.x=(movie_uv.x-.5)*(hole_size.x/hole_size.y/(1280.0/720.0))+.5;

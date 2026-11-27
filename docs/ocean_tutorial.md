@@ -1,6 +1,6 @@
 # Ocean dodge tutorial
 
-Uses the original blue frame from the supplied JPG and the existing Shift/close artwork. The shared recorded-tutorial presentation retains the 84% dark backdrop, outer outline, smooth scaling, button squash and automatic dismissal.
+Uses the original blue frame from the supplied JPG and the existing Shift/close artwork. The shared recorded-tutorial presentation uses a lighter 38% backdrop for the ocean (hell remains 84%), while retaining the outer outline, smooth scaling, button squash and automatic dismissal.
 
 The 4.883-second, 60 FPS recording runs the real fish teleport and real shark locking/dash/swept-hit controller on the authored ocean map. The shark locks and commits before the fish blinks upward; it continues along its committed line and misses. Recording assertions verify a 300+ pixel upward displacement, unchanged committed aim, exactly one blink and no shark hit. The single Shift cue time is stored in ocean_dodge.json.
 

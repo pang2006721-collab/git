@@ -24,6 +24,7 @@ var saved_modes:Dictionary={}
 var was_paused:=false
 var _closing:=false
 var _pulse:Tween
+var _enter:Tween
 func _ready():
     var recording=JSON.parse_string(FileAccess.get_file_as_string(recording_path+".json"))
     pulses.assign(recording.shift_beats)
@@ -52,6 +53,7 @@ func start():
     panel.position=(get_viewport().get_visible_rect().size-panel.size)*.5
     panel.pivot_offset=panel.size*.5
     panel.scale=Vector2(.7,.7)
+    panel.modulate.a=0.0
     screen.add_child(panel)
     movie=VideoStreamPlayer.new()
     movie.expand=true
@@ -85,6 +87,7 @@ func start():
     panel.add_child(key_art)
     close_art=TextureButton.new()
     close_art.texture_normal=load("res://assets/art/ui/tutorial_close.png")
+    close_art.disabled=true
     close_art.ignore_texture_size=true
     close_art.stretch_mode=TextureButton.STRETCH_KEEP_ASPECT_CENTERED
     close_art.size=Vector2(82,82)
@@ -98,12 +101,24 @@ func start():
         bounce.tween_property(close_art,"scale",Vector2(.78,1.13),.07)
         bounce.tween_property(close_art,"scale",Vector2.ONE,.1)
         bounce.tween_callback(func():finish(false)))
+    # Decode while transparent, then reveal the frame and movie in one draw.
+    movie.play()
+    for i in 8:
+        await get_tree().process_frame
+        if _closing:return
+        var texture=movie.get_video_texture()
+        if texture!=null and texture.get_width()>0:
+            await RenderingServer.frame_post_draw
+            break
+    if _closing:return
+    frame.material.set_shader_parameter("movie_texture",movie.get_video_texture())
+    frame.material.set_shader_parameter("movie_ready",true)
+    panel.modulate.a=1.0
+    close_art.disabled=false
     Sfx.play(&"bounce")
-    var enter=create_tween().set_parallel()
-    enter.tween_property(shade,"color:a",backdrop_opacity,.25)
-    enter.tween_property(panel,"scale",Vector2.ONE,.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-    await enter.finished
-    if not _closing:movie.play()
+    _enter=create_tween().set_parallel()
+    _enter.tween_property(shade,"color:a",backdrop_opacity,.25)
+    _enter.tween_property(panel,"scale",Vector2.ONE,.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 func _freeze(node:Node):
     if node==self:return
     saved_modes[node]=node.process_mode
@@ -140,6 +155,7 @@ func _key_feedback():
 func finish(watched:bool):
     if not active or _closing:return
     _closing=true
+    if _enter and _enter.is_running():_enter.kill()
     Sfx.play(&"bounce")
     movie.paused=true
     var tween=create_tween()

@@ -7,6 +7,7 @@ const PROJECTILE=preload("res://scenes/enemies/enemy_fork.tscn")
 @export var spawn_interval: float = 5.0
 @export var max_alive: int = 6
 var _next_side: float = -1.0
+var departing: bool = false
 var elapsed: float = 0.0
 var total_spawned: int = 0
 var total_shots: int = 0
@@ -34,8 +35,8 @@ func flight_bounds() -> Rect2:
     return Rect2(bounds.position+Vector2(170,0),bounds.size-Vector2(340,0))
 
 func _physics_process(delta: float) -> void:
-    if level.exit_in_progress:
-        if $Enemies.get_child_count()>0 or $Projectiles.get_child_count()>0:reset()
+    if departing:
+        _cleanup_departed()
         return
     if not is_active():return
     for enemy in enemies():
@@ -90,7 +91,34 @@ func _shoot(aim: Vector2, origin: Vector2) -> void:
     fork_thrown.emit()
     total_shots+=1
 
+func begin_departure() -> void:
+    # Stop new attacks; existing artwork stays until the camera leaves it behind.
+    departing=true
+    enabled=false
+    for enemy in enemies():
+        enemy.lock.conceal()
+        enemy.remove_from_group("fork_targets")
+        enemy.collision_layer=0
+        enemy.collision_mask=0
+        enemy.get_node("Detection").set_deferred("monitorable",false)
+
+func _cleanup_departed() -> void:
+    for child in $Enemies.get_children()+$Projectiles.get_children():
+        var visible_in_view:=false
+        for art in child.find_children("*","Sprite2D",true,false):
+            if not art.is_visible_in_tree():continue
+            var rect: Rect2=art.get_rect()
+            var transform: Transform2D=art.get_global_transform_with_canvas()
+            var bounds:=Rect2(transform*rect.position,Vector2.ZERO)
+            for corner in [Vector2(rect.end.x,rect.position.y),rect.end,Vector2(rect.position.x,rect.end.y)]:
+                bounds=bounds.expand(transform*corner)
+            if bounds.intersects(get_viewport_rect().grow(32)):
+                visible_in_view=true
+                break
+        if not visible_in_view:child.queue_free()
+
 func reset() -> void:
+    departing=false
     process_mode=Node.PROCESS_MODE_INHERIT
     _next_side=-1.0
     elapsed=0

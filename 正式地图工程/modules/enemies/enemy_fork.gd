@@ -17,7 +17,7 @@ func launch(aim: Vector2) -> void:
 
 func _physics_process(delta: float) -> void:
     _age+=delta
-    if _age>lifetime:queue_free();return
+    if _age>lifetime and not encounter.departing:queue_free();return
     if deflected:
         global_position+=velocity*delta+Vector2(0,gravity*delta*delta*.5)
         velocity.y+=gravity*delta

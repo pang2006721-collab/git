@@ -63,6 +63,11 @@ func _physics_process(delta: float) -> void:
         if _state_time >= death_spin_seconds and death_gravity*_state_time > death_jump_speed and _death_art_is_outside_view():
             queue_free()
         return
+    if is_instance_valid(encounter) and encounter.departing:
+        global_position+=velocity*delta
+        velocity=velocity.move_toward(Vector2.ZERO,180.0*delta)
+        _pose(delta)
+        return
     if not is_instance_valid(encounter) or not encounter.is_active():return
     if mode==Mode.ENTERING:
         if flight.enter_tick(self,entry_point,delta):

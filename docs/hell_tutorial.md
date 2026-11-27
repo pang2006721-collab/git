@@ -7,3 +7,5 @@
 - Full playback persists `watched/hell=true` to `user://tutorials.cfg`. Closing early leaves it unwatched. Tests use separate config files; they do not alter the player's watched state. Existing script-driven tests and recording opt out of automatic offers; the tutorial test starts it explicitly.
 - This pass implements hell only. Other stage recordings and homepage replay are not connected yet.
 - Validation: native ANGLE tutorial test covers playback, both beats, frozen player, automatic close, persistence, process-mode restoration and early dismissal; existing demon automatic teleport regression passes. Native preview exported for review. No upload or main merge.
+
+Edge refinement: continuous white-matte coverage replaces the hard color threshold. Frame and movie now composite together in premultiplied space with four coverage samples per screen pixel. Linear mipmapped sampling applies to the frame, Shift and close artwork, including their bounce scaling. Before the first decoded frame the hole stays transparent rather than flashing white. Original image bytes remain unchanged. Native playback/dismissal regression and 1280x720 visual review pass.

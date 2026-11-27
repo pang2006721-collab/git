@@ -6,6 +6,7 @@ var active:=false
 var panel:Control
 var key_art:TextureRect
 var close_art:TextureButton
+var frame:ColorRect
 var movie:VideoStreamPlayer
 var shade:ColorRect
 var elapsed:=0.0
@@ -33,6 +34,7 @@ func start():
     get_tree().paused=true
     var screen=Control.new()
     screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+    screen.texture_filter=CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
     add_child(screen)
     shade=ColorRect.new()
     shade.color=Color(0,0,0,0)
@@ -51,15 +53,14 @@ func start():
     var mat=ShaderMaterial.new()
     mat.shader=load("res://shaders/tutorial_movie_frame.gdshader")
     mat.set_shader_parameter("frame_art",load("res://assets/art/ui/tutorial_frames.jpg"))
-    movie.material=mat
+    movie.self_modulate.a=0.0
     movie.stream=load("res://assets/video/hell_shift.ogv")
     panel.add_child(movie)
     movie.finished.connect(func():finish(true))
-    var frame=ColorRect.new()
+    frame=ColorRect.new()
     frame.size=movie.size
     frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    frame.material=mat.duplicate()
-    frame.material.set_shader_parameter("frame_only",true)
+    frame.material=mat
     panel.add_child(frame)
     key_art=TextureRect.new()
     key_art.texture=load("res://assets/art/ui/tutorial_shift.png")
@@ -97,6 +98,8 @@ func _freeze(node:Node):
     for child in node.get_children():_freeze(child)
 func _process(_delta:float):
     if not active or _closing or not is_instance_valid(movie) or not movie.is_playing():return
+    frame.material.set_shader_parameter("movie_texture",movie.get_video_texture())
+    frame.material.set_shader_parameter("movie_ready",true)
     elapsed=movie.stream_position
     if pulse_index<pulses.size() and elapsed>=pulses[pulse_index]:
         pulse_index+=1

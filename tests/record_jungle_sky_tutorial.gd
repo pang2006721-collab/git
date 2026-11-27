@@ -3,11 +3,19 @@ var frames:=0
 var game
 var stage
 var layout
+var demo_bee
+var bee_deflected:=false
+var bee_impact_time:float=-1.0
 func _initialize():run.call_deferred()
 func wait_frames(count:int):
     for i in count:
         await process_frame
         frames+=1
+        if is_instance_valid(demo_bee) and demo_bee.mode==demo_bee.Mode.DEFLECTED and not bee_deflected:
+            bee_deflected=true
+            bee_impact_time=frames/60.0
+            assert(layout.get_node("Squirrel/AirSpin").is_invulnerable(),"The bee is deflected during the real air spin")
+            print("BEE_SPIN_IMPACT ",bee_impact_time)
 func run():
     root.size=Vector2i(1280,720)
     game=load("res://scenes/levels/formal_hell_entry.tscn").instantiate()
@@ -67,10 +75,24 @@ func record_jungle():
     assert(climber.vine!=null,"Held Shift catches the real vine after jumping")
     reader.jump_held=false
     reader.move_axis=1
+    var encounter=layout.get_node("BeeEncounter")
+    encounter.process_mode=Node.PROCESS_MODE_INHERIT
+    encounter.enabled=true
+    for hive in layout.get_node("Beehives").get_children():hive.set_physics_process(false)
     var caught_at:=frames
     var ready:=false
     for i in 240:
         await wait_frames(1)
+        if frames>=210 and not is_instance_valid(demo_bee):
+            encounter._spawn(layout.get_node("Beehives/Beehive07"))
+            demo_bee=encounter.get_child(encounter.get_child_count()-1)
+            demo_bee.set_physics_process(false)
+            demo_bee.global_position=layout.get_node("InteractiveVines/Vine08").global_position+Vector2(-180,500)
+            demo_bee._set_mode(demo_bee.Mode.FLYING)
+            demo_bee.lifetime=1.0
+            demo_bee.velocity=Vector2.ZERO
+            demo_bee.cooldown=20.0
+            demo_bee._pose(0)
         if frames-caught_at>90 and body.velocity.x>250 and body.velocity.y<0:
             ready=true
             break
@@ -78,6 +100,8 @@ func record_jungle():
     var before:Vector2=body.global_position
     var release_time:=frames/60.0
     Input.action_release(&"possess")
+    assert(is_instance_valid(demo_bee))
+    demo_bee.set_physics_process(true)
     await wait_frames(3)
     assert(climber.vine==null and body.velocity.y<0,"Releasing Shift launches the squirrel upward")
     game.camera.resume_follow_from_current_position(body)
@@ -100,12 +124,13 @@ func record_jungle():
         await wait_frames(5)
         assert(climber.vine==next_vine,"Held Shift catches the next actual vine")
         beats.append(catch_time)
-        await wait_frames(65)
+        await wait_frames(110)
         holds.append([catch_time,frames/60.0])
     else:
         assert(body.global_position.y<before.y,"Release demonstrates upward progress")
         await wait_frames(25)
     Input.action_release(&"possess")
+    assert(bee_deflected and not game.dead,"Spinning squirrel must actually hit and knock away the bee without dying")
     save_recording("jungle",beats,holds)
 func record_sky():
     var bird=layout.get_node("Bird")
@@ -154,6 +179,7 @@ func record_sky():
     save_recording("sky",[beat],[[beat,release_time]])
 func save_recording(key:String,beats:Array,holds:Array):
     var data={"shift_beats":beats,"shift_holds":holds,"duration":frames/60.0}
+    if key=="jungle":data["bee_impact"]=bee_impact_time
     var file=FileAccess.open("res://assets/video/"+key+"_shift.json",FileAccess.WRITE)
     file.store_string(JSON.stringify(data,"  "))
     file.close()

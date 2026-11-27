@@ -99,6 +99,8 @@
 
 [ext_resource type="Script" path="res://modules/environment/ocean_wall_bottom_join.gd" id="ocean_bottom_join"]
 
+[ext_resource type="Script" path="res://modules/environment/hell_left_edge_cover.gd" id="hell_left_edge_cover"]
+
 [sub_resource type="ShaderMaterial" id="tall_wall_join_material"]
 shader = ExtResource("tall_wall_join")
 
@@ -1577,3 +1579,6 @@ script = ExtResource("sky_orange_rings")
 
 [node name="OceanWallBottomJoin" type="Node2D" parent="WorldLayers"]
 script = ExtResource("ocean_bottom_join")
+
+[node name="HellLeftEdgeCover" type="Node2D" parent="WorldLayers"]
+script = ExtResource("hell_left_edge_cover")

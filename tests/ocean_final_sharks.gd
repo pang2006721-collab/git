@@ -30,7 +30,7 @@ func run() -> void:
     var trio=stage.get_node("FinalSharks")
     var shore=stage.get_node("ShoreExit")
     fish.get_node("Movement").enabled=false
-    fish.position=Vector2(960,shore.surface_y+1500)
+    fish.position=Vector2(960,shore.surface_y+2200)
     fish.velocity=Vector2(0,-100)
     game.camera.set_process(false)
     game.camera.adopt_view(fish.global_position,Vector2.ONE*1.1)

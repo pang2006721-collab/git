@@ -7,7 +7,7 @@ func run():
     game.get_node("FlyingEnemies").enabled=false
     root.add_child(game)
     current_scene=game
-    for name_key in ["HellTutorial","OceanTutorial"]:
+    for name_key in ["HellTutorial","OceanTutorial","JungleTutorial","SkyTutorial"]:
         var tutorial=game.get_node(name_key)
         tutorial.save_path="user://test_tutorial_sync.cfg"
         tutorial.start()

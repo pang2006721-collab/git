@@ -6,6 +6,7 @@ extends CanvasLayer
 @export var hole_origin:=Vector2(50,42)
 @export var hole_size:=Vector2(735,463)
 @export var clean_left_matte:=false
+@export_file("*.png") var hole_mask_path:String=""
 signal completed
 signal dismissed
 @export var save_path:String="user://tutorials.cfg"
@@ -21,6 +22,7 @@ var shade:ColorRect
 var elapsed:=0.0
 var pulses:Array[float]=[]
 var pulse_index:=0
+var shift_holds:Array=[]
 var saved_modes:Dictionary={}
 var was_paused:=false
 var _closing:=false
@@ -29,6 +31,7 @@ var _enter:Tween
 func _ready():
     var recording=JSON.parse_string(FileAccess.get_file_as_string(recording_path+".json"))
     pulses.assign(recording.shift_beats)
+    shift_holds=recording.get("shift_holds",[])
     layer=95
     process_mode=Node.PROCESS_MODE_ALWAYS
 func _offer():
@@ -68,6 +71,9 @@ func start():
     mat.set_shader_parameter("hole_origin",hole_origin)
     mat.set_shader_parameter("hole_size",hole_size)
     mat.set_shader_parameter("clean_left_matte",clean_left_matte)
+    if not hole_mask_path.is_empty():
+        mat.set_shader_parameter("hole_mask",load(hole_mask_path))
+        mat.set_shader_parameter("use_hole_mask",true)
     movie.self_modulate.a=0.0
     movie.stream=load(recording_path+".ogv")
     panel.add_child(movie)
@@ -131,6 +137,10 @@ func _process(_delta:float):
     frame.material.set_shader_parameter("movie_texture",movie.get_video_texture())
     frame.material.set_shader_parameter("movie_ready",true)
     elapsed=movie.stream_position
+    var held:=false
+    for interval in shift_holds:
+        if elapsed>=interval[0] and elapsed<interval[1]:held=true
+    key_art.self_modulate=Color(1.0,.88,.62) if held else Color.WHITE
     if pulse_index<pulses.size() and elapsed>=pulses[pulse_index]:
         pulse_index+=1
         _key_feedback()

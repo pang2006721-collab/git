@@ -1,5 +1,9 @@
 [gd_scene format=3 uid="uid://c5f8o4chrpmk6"]
 
+[ext_resource type="Script" path="res://modules/tutorial/sky_tutorial.gd" id="sky_tutorial"]
+
+[ext_resource type="Script" path="res://modules/tutorial/jungle_tutorial.gd" id="jungle_tutorial"]
+
 [ext_resource type="Script" path="res://modules/tutorial/ocean_tutorial.gd" id="ocean_tutorial"]
 
 [ext_resource type="Script" path="res://modules/tutorial/hell_tutorial.gd" id="hell_tutorial"]
@@ -1592,3 +1596,9 @@ script = ExtResource("hell_tutorial")
 
 [node name="OceanTutorial" type="CanvasLayer" parent="."]
 script = ExtResource("ocean_tutorial")
+
+[node name="JungleTutorial" type="CanvasLayer" parent="."]
+script = ExtResource("jungle_tutorial")
+
+[node name="SkyTutorial" type="CanvasLayer" parent="."]
+script = ExtResource("sky_tutorial")

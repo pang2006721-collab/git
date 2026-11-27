@@ -2,6 +2,8 @@ shader_type canvas_item;
 uniform sampler2D frame_art : source_color, filter_linear_mipmap;
 uniform sampler2D movie_texture : source_color, filter_linear;
 uniform bool movie_ready = false;
+uniform bool use_hole_mask = false;
+uniform sampler2D hole_mask : filter_linear;
 uniform vec2 frame_origin=vec2(248.0,497.0);
 uniform vec2 frame_size=vec2(830.0,545.0);
 uniform vec2 hole_origin=vec2(50.0,42.0);
@@ -32,6 +34,11 @@ vec4 compose_sample(vec2 p){
  if(clean_left_matte && p.x<5.0){
   ink=vec3(0.0);
   alpha=smoothstep(.08,.95,alpha);
+ }
+ if(use_hole_mask && p.x>12.0 && p.x<frame_size.x-12.0 && p.y>12.0 && p.y<frame_size.y-12.0){
+  float hole=texture(hole_mask,(p+vec2(.5))/frame_size).r;
+  ink=mix(art,ink,hole);
+  alpha=mix(1.0,alpha,hole);
  }
  vec2 movie_uv=(p-hole_origin)/hole_size;
  movie_uv.x=(movie_uv.x-.5)*(hole_size.x/hole_size.y/(1280.0/720.0))+.5;

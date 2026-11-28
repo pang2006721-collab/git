@@ -100,12 +100,14 @@ func _process(delta:float):
     if hold_demo:
         var hold_time:float=fmod(_age,repeat_seconds)
         if _is_holding():shape_y=.68
-        elif hold_time<.12:shape_y=lerpf(1.0,.68,smoothstep(0.0,.12,hold_time))
-        elif hold_time<1.15:shape_y=.68
-        elif hold_time<1.55:shape_y=1.0-.32*cos((hold_time-1.15)*24.0)*exp(-(hold_time-1.15)*13.0)
+        elif hold_time<.55:shape_y=1.0
+        elif hold_time<.7:shape_y=lerpf(1.0,.68,smoothstep(.55,.7,hold_time))
+        elif hold_time<1.65:shape_y=.68
+        elif hold_time<2.05:shape_y=1.0-.32*cos((hold_time-1.65)*24.0)*exp(-(hold_time-1.65)*13.0)
         else:shape_y=1.0
     var enter:float=clampf(_age/.2,0.0,1.0)
     var pop:float=1.0+2.70158*pow(enter-1.0,3)+1.70158*pow(enter-1.0,2)
+    if hold_demo:pop=1.0
     art.scale=Vector2(1.0/sqrt(shape_y),shape_y)*maxf(.01,pop)
     var depressed:bool=shape_y<.85
     art.modulate=Color(1.0,.88 if depressed else 1.0,.68 if depressed else 1.0,_alpha)

@@ -11,7 +11,7 @@ var _hold_done:bool=false
 func _ready():
     super._ready()
     hold_demo=true
-    repeat_seconds=1.9
+    repeat_seconds=3.0
     level.died.connect(func():_held_seconds=0.0;_hold_done=false;_reset_visual())
 func _eligible()->bool:
     return level.visible and not level.dead and not level.exit_in_progress and level.player==body and body.get_node("Host").claimed and body.visible and not body.transferring and layout.get_node("CanopyPossession").state!=PossessionController.State.TRANSFERRING

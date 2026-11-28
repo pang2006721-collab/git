@@ -28,14 +28,22 @@ func run():
     assert(not game.has_node("JungleTutorial") and not paused)
     await create_timer(.3).timeout
     assert(hint.visible and hint.hold_demo,"Nearby vine shows the hold lesson")
-    hint._age=.4
+    assert(hint.repeat_seconds==3.0)
+    for time in [0.0,.3,.5,2.3,2.99,3.0,3.3]:
+        hint._age=time
+        hint._process(0)
+        assert(hint.art.scale.is_equal_approx(Vector2.ONE),"Each cycle starts and rests in the original shape")
+    hint._age=.85
     hint._process(0)
     var center:Vector2=hint.art.get_global_transform()*(hint.art.size*.5)
     assert(hint.art.scale.y<.7)
-    hint._age=.95
+    hint._age=1.4
     hint._process(0)
     assert(hint.art.scale.y<.7,"Demo stays pressed instead of repeatedly tapping")
     assert((hint.art.get_global_transform()*(hint.art.size*.5)).is_equal_approx(center))
+    hint._age=3.0
+    hint._process(0)
+    assert(hint.art.scale.is_equal_approx(Vector2.ONE),"Next cycle resets at exactly three seconds")
     Input.action_press(climber.grab_action)
     await create_timer(.5).timeout
     assert(hint.art.scale.y<.7 and not hint.learned)

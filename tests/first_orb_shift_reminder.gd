@@ -20,6 +20,8 @@ func run():
     var body=game.demon
     body.get_node("Host").take_control()
     game.player=body
+    game.sleeping.hide()
+    game.zzz.hide()
     body.show()
     body.get_node("Visual").show()
     var motor=body.get_node("Movement")
@@ -52,11 +54,22 @@ func run():
             assert(hint.missed.has(ball.name),"Missed jump arms the next opportunity")
         else:
             assert(await until(func():return hint.visible))
-            var center:Vector2=hint.art.get_global_transform()*(hint.art.size*.5)
             hint._process(.15)
             assert(hint.art.scale.y<.8,"Reminder has a strong pressed shape")
-            assert((hint.art.get_global_transform()*(hint.art.size*.5)).is_equal_approx(center),"Repeated press keeps the image center fixed")
+            assert((hint.art.get_global_transform()*(hint.art.size*.5)).is_equal_approx(hint._follow_position),"Repeated press is centered on the following anchor")
             assert(not paused,"Reminder does not interrupt play")
+            var target_before:Vector2=hint.head_target()
+            assert(hint._follow_position.distance_to(target_before)<100,"Hint stays near the demon head rather than screen center")
+            body.global_position.x+=100
+            var moved:Vector2=hint.head_target()
+            hint._follow_head(.016)
+            assert(hint._follow_position.x<moved.x-10,"Head label trails horizontal movement")
+            for i in 90:hint._follow_head(1.0/60)
+            assert(hint._follow_position.distance_to(moved)<1,"Head label catches up after stopping")
+            body.global_position.x-=100
+            hint._follow_ready=false
+            hint._process(0)
+
             if DisplayServer.get_name()!="headless":
                 await RenderingServer.frame_post_draw
                 root.get_texture().get_image().save_png("C:/Users/14930/Documents/Codex/2026-11-18/m/first-orb-shift-reminder.png")
@@ -70,7 +83,7 @@ func run():
             assert(rig.flying and hint.learned.has(ball.name))
             hint._process(.15)
             assert(hint.visible and hint.art.scale.y<.8,"Actual Shift gives a visible pressed response before dismissal")
-            assert((hint.art.get_global_transform()*(hint.art.size*.5)).is_equal_approx(center),"Actual Shift also rebounds around the same center")
+            assert((hint.art.get_global_transform()*(hint.art.size*.5)).is_equal_approx(hint._follow_position),"Actual Shift also rebounds around the following center")
             reader.jump_held=false
             assert(await until(func():return not hint.visible))
             hint._reset_interaction()

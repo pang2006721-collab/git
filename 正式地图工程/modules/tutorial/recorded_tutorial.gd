@@ -8,6 +8,8 @@ extends CanvasLayer
 @export var clean_left_matte:=false
 @export var clean_outer_matte:=false
 @export_file("*.png") var hole_mask_path:String=""
+signal presented
+@export var book_mode:=false
 signal completed
 signal dismissed
 @export var save_path:String="user://tutorials.cfg"
@@ -39,14 +41,15 @@ func _ready():
 func _offer():
     var cfg=ConfigFile.new()
     cfg.load(save_path)
-    if _force_replay or not cfg.get_value("watched",stage_key,false):start.call_deferred()
+    if _force_replay or not cfg.get_value("level_entered",stage_key,false):start.call_deferred()
 func start():
     if active:return
     active=true
     was_paused=get_tree().paused
-    _backdrop_streamer=get_parent().get_node_or_null("TextureStreamer")
-    _freeze(get_parent())
-    get_tree().paused=true
+    if not book_mode:
+        _backdrop_streamer=get_parent().get_node_or_null("TextureStreamer")
+        _freeze(get_parent())
+        get_tree().paused=true
     var screen=Control.new()
     screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     screen.texture_filter=CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
@@ -129,8 +132,9 @@ func start():
     close_art.disabled=false
     Sfx.play(&"bounce")
     _enter=create_tween().set_parallel()
-    _enter.tween_property(shade,"color:a",backdrop_opacity,.25)
+    _enter.tween_property(shade,"color:a",0.0 if book_mode else backdrop_opacity,.25)
     _enter.tween_property(panel,"scale",Vector2.ONE,.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+    presented.emit()
 func _freeze(node:Node):
     if node==self:return
     saved_modes[node]=node.process_mode
@@ -170,6 +174,12 @@ func _key_feedback():
         tween.chain().tween_callback(accent.queue_free)
 func finish(watched:bool):
     if not active or _closing:return
+    if watched and book_mode:
+        _mark_watched()
+        completed.emit()
+        pulse_index=0
+        movie.play()
+        return
     _closing=true
     if _enter and _enter.is_running():_enter.kill()
     Sfx.play(&"bounce")
@@ -180,19 +190,29 @@ func finish(watched:bool):
     tween.parallel().tween_property(panel,"modulate:a",0.0,.23)
     tween.parallel().tween_property(shade,"color:a",0.0,.23)
     await tween.finished
-    if watched:
-        var cfg=ConfigFile.new()
-        cfg.load(save_path)
-        cfg.set_value("watched",stage_key,true)
-        cfg.save(save_path)
+    if watched:_mark_watched()
+    if not book_mode:_mark_level_entered()
     _restore()
     if watched:completed.emit()
     else:dismissed.emit()
     queue_free()
+func _mark_level_entered():
+    if book_mode:return
+    var cfg=ConfigFile.new()
+    cfg.load(save_path)
+    if cfg.get_value("level_entered",stage_key,false):return
+    cfg.set_value("level_entered",stage_key,true)
+    cfg.save(save_path)
+func _mark_watched():
+    var cfg=ConfigFile.new()
+    cfg.load(save_path)
+    if cfg.get_value("watched",stage_key,false):return
+    cfg.set_value("watched",stage_key,true)
+    cfg.save(save_path)
 func _restore():
     for node in saved_modes:
         if is_instance_valid(node):node.process_mode=saved_modes[node]
     saved_modes.clear()
-    if active:get_tree().paused=was_paused
+    if active and not book_mode:get_tree().paused=was_paused
     active=false
 func _exit_tree():_restore()

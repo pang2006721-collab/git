@@ -11,7 +11,7 @@ func _ready():
     hole_mask_path="res://assets/art/ui/tutorial_sky_hole.png"
     super._ready()
     var game=get_parent()
-    if game.has_meta("skip_tutorial") or "--script" in OS.get_cmdline_args():return
+    if book_mode or game.has_meta("skip_tutorial") or "--script" in OS.get_cmdline_args():return
     game.get_node("OceanLink/FishStage/JungleLayout/CanopyPossession").possession_finished.connect(_on_possessed)
 func _on_possessed(_host):_offer.call_deferred()
 func replay_now():

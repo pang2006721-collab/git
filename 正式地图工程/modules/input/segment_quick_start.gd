@@ -18,14 +18,14 @@ func _input(event: InputEvent) -> void:
     if event.ctrl_pressed or event.alt_pressed or event.meta_pressed:
         return
     var key: int = event.physical_keycode if event.physical_keycode != 0 else event.keycode
-    var index: int = {KEY_1:1,KEY_2:2,KEY_3:3,KEY_4:4,KEY_5:5,KEY_6:6,KEY_7:7}.get(key,0)
+    var index: int = {KEY_1:1,KEY_2:2,KEY_3:3,KEY_4:4,KEY_5:5,KEY_6:6,KEY_7:7,KEY_8:8}.get(key,0)
     if index == 0: return
     get_viewport().set_input_as_handled()
     start_segment(index)
 
 func start_segment(index: int) -> void:
-    if index not in [1,2,3,4,5,6,7]: return
-    if index == 7:
+    if index not in [1,2,3,4,5,6,7,8]: return
+    if index in [7,8]:
         _ending_history = {}
         var scene := get_tree().current_scene
         if scene != null:
@@ -61,14 +61,14 @@ func _apply() -> void:
     _loading = false
     Engine.time_scale = 1.0
     var entry := get_tree().current_scene.get_node("SegmentStart")
-    if index == 7:
+    if index in [7,8]:
         var cloud := get_tree().current_scene.get_node("OceanLink/FishStage/JungleLayout/SkyCloudExit")
-        cloud.ending_handoff.preview_oranges_override = ENDING_ORANGES
+        cloud.ending_handoff.preview_oranges_override = ENDING_ORANGES if index == 7 else 0
         cloud.ending_handoff.history_override = _ending_history
         _ending_history = {}
     if index == 1:
         get_tree().current_scene.get_node("HellTutorial").replay_on_entry()
-    entry.start_segment(index)
+    entry.start_segment(7 if index == 8 else index)
     if index == 3:
         get_tree().current_scene.get_node("OceanTutorial").replay_now()
     if index == 5:

@@ -2,7 +2,7 @@ extends "res://modules/tutorial/recorded_tutorial.gd"
 func _ready():
     super._ready()
     var game=get_parent()
-    if game.has_meta("skip_tutorial") or "--script" in OS.get_cmdline_args():return
+    if book_mode or game.has_meta("skip_tutorial") or "--script" in OS.get_cmdline_args():return
     game.get_node("WallEntry").control_ready.connect(_offer,CONNECT_ONE_SHOT)
 func replay_on_entry():
     _force_replay=true

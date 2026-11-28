@@ -3,13 +3,19 @@ const SETTINGS_POPUP = preload("res://modules/ui/settings_popup.gd")
 var _settings_popup: CanvasLayer
 var _localized_buttons: Node
 var _starting := false
+var _tutorial_book:CanvasLayer
 func _ready() -> void:
+	preload("res://modules/ui/authored_cursor.gd").apply()
 	_localized_buttons = preload("res://modules/ui/localized_menu_buttons.gd").new()
 	add_child(_localized_buttons)
 	_localized_buttons.configure($Start, $Settings)
 	_settings_popup = SETTINGS_POPUP.new()
 	add_child(_settings_popup)
 	_settings_popup.closed.connect(_settings_closed)
+	_tutorial_book=preload("res://modules/tutorial/tutorial_book.gd").new()
+	add_child(_tutorial_book)
+	_tutorial_book.open_requested.connect(_tutorial_requested)
+	_tutorial_book.closed.connect(_settings_closed)
 	Bgm.play_track(Bgm.Track.MENU)
 	$ArrivalMotion.arrived.connect(func(): Bgm.play_track(Bgm.Track.HELL))
 	$Start.pressed.connect(_start_game)
@@ -26,7 +32,13 @@ func _ready() -> void:
 	$OpeningChase.ghost_returned.connect($DescentWorld/ArrivalMap/PillarArrows.start)
 	$OpeningChase.finished.connect($DescentWorld/ArrivalMap/NearMissArrows.stop)
 	$OpeningChase.finished.connect($DescentWorld/ArrivalMap/ExitArrows.start)
+func _tutorial_requested() -> void:
+	if _starting or _settings_popup.is_open():return
+	if $Bird/MouseDrag.dragging:$Bird/MouseDrag.end_drag()
+	$Bird/MouseDrag.set_process_input(false)
+	_tutorial_book.open()
 func _settings_pressed() -> void:
+	if _tutorial_book.is_open():return
 	$Settings/Pulse.pulse()
 	if $Bird/MouseDrag.dragging:
 		$Bird/MouseDrag.end_drag()
@@ -37,9 +49,10 @@ func _settings_closed() -> void:
 	if not _starting:
 		$Bird/MouseDrag.set_process_input(true)
 func _start_game() -> void:
-	if _starting or _settings_popup.is_open():
+	if _starting or _settings_popup.is_open() or _tutorial_book.is_open():
 		return
 	_starting = true
+	_tutorial_book.hide_entry()
 	$GameHandoff.warmup()
 	$Start/Pulse.pulse()
 	$Start.disabled = true

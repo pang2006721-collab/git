@@ -20,6 +20,7 @@ var art:TextureRect
 var accents:Array[Line2D]=[]
 @onready var level:Node2D=get_parent()
 @onready var fork:Node2D=level.get_node("Fork")
+@onready var combat:Node=level.get_node("HellCombatShiftReminder")
 func _ready():
     layer=80
     var screen=Control.new()
@@ -106,7 +107,8 @@ func _follow_head(delta:float):
         _follow_velocity=(_follow_velocity-follow_frequency*impulse*delta)*decay
     _follow_position=target+(_follow_position-target).clamp(-maximum_lag,maximum_lag)
 func _process(delta:float):
-    var wanted:bool=_eligible() and not get_tree().paused and not fork.flying and not fork.swapping and not fork.launching and _watched(fork.selected) and missed.has(fork.selected.name)
+    var orb_needed:bool=_watched(fork.selected) and missed.has(fork.selected.name)
+    var wanted:bool=_eligible() and not get_tree().paused and not fork.flying and not fork.swapping and not fork.launching and (orb_needed or combat.is_reminding())
     if wanted and not _shown:
         _age=0.0
         if _alpha<=0.0:_follow_ready=false

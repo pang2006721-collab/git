@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://c5f8o4chrpmk6"]
 
+[ext_resource type="Script" path="res://modules/tutorial/hell_combat_shift_reminder.gd" id="combat_shift_hint"]
+
 [ext_resource type="Script" path="res://modules/tutorial/first_orb_shift_reminder.gd" id="first_orb_hint"]
 
 [ext_resource type="Script" path="res://modules/tutorial/sky_tutorial.gd" id="sky_tutorial"]
@@ -7,8 +9,6 @@
 [ext_resource type="Script" path="res://modules/tutorial/jungle_tutorial.gd" id="jungle_tutorial"]
 
 [ext_resource type="Script" path="res://modules/tutorial/ocean_tutorial.gd" id="ocean_tutorial"]
-
-[ext_resource type="Script" path="res://modules/tutorial/hell_tutorial.gd" id="hell_tutorial"]
 
 [ext_resource type="Texture2D" uid="uid://cs5lsrurqfiwu" path="res://assets/art/hell/new/fork.png" id="49_trgvh"]
 [ext_resource type="Script" uid="uid://b8g1wg1tifrm5" path="res://modules/environment/hell_platform.gd" id="52_rs4er"]
@@ -1593,9 +1593,6 @@ script = ExtResource("ocean_bottom_join")
 [node name="HellLeftEdgeCover" type="Node2D" parent="WorldLayers"]
 script = ExtResource("hell_left_edge_cover")
 
-[node name="HellTutorial" type="CanvasLayer" parent="."]
-script = ExtResource("hell_tutorial")
-
 [node name="OceanTutorial" type="CanvasLayer" parent="."]
 script = ExtResource("ocean_tutorial")
 
@@ -1607,3 +1604,6 @@ script = ExtResource("sky_tutorial")
 
 [node name="FirstOrbShiftReminder" type="CanvasLayer" parent="."]
 script = ExtResource("first_orb_hint")
+
+[node name="HellCombatShiftReminder" type="Node" parent="."]
+script = ExtResource("combat_shift_hint")

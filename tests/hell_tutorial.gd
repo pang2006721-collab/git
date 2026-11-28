@@ -9,7 +9,8 @@ func run():
     current_scene=game
     game.get_node("WallEntry").play()
     await create_timer(1.0).timeout
-    var tutorial=game.get_node("HellTutorial")
+    var tutorial=load("res://modules/tutorial/hell_tutorial.gd").new()
+    game.add_child(tutorial)
     tutorial.save_path="user://test_hell_tutorial.cfg"
     if FileAccess.file_exists(tutorial.save_path):DirAccess.remove_absolute(tutorial.save_path)
     var old_mode=game.get_node("FlyingEnemies").process_mode

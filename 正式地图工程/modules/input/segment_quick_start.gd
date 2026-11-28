@@ -67,8 +67,6 @@ func _apply() -> void:
         cloud.ending_handoff.history_override = _ending_history
         _ending_history = {}
     entry.start_segment(7 if index == 8 else index)
-    if index == 5:
-        get_tree().current_scene.get_node("JungleTutorial").replay_now()
     if index == 6:
         get_tree().current_scene.get_node("SkyTutorial").replay_now()
     segment_started.emit(index)

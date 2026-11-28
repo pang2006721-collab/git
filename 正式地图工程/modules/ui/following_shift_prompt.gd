@@ -1,6 +1,7 @@
 extends CanvasLayer
 ## Shared head-follow presentation; gameplay-specific controllers only supply eligibility and demand.
 @export var repeat_seconds:float=1.0
+@export var hold_demo:bool=false
 @export var head_offset:=Vector2(0,-74)
 @export var follow_frequency:float=12.0
 @export var maximum_lag:=Vector2(80,26)
@@ -38,6 +39,7 @@ func _ready():
 func _eligible()->bool:return false
 func _wants_prompt()->bool:return false
 func _head_sprite()->Sprite2D:return null
+func _is_holding()->bool:return false
 func _reset_visual():
     _shown=false
     _age=0.0
@@ -95,10 +97,18 @@ func _process(delta:float):
     if beat<.1:shape_y=lerpf(1.0,.68,smoothstep(0.0,.1,beat))
     elif beat<.2:shape_y=.68
     elif beat<.5:shape_y=1.0-.32*cos((beat-.2)*24.0)*exp(-(beat-.2)*13.0)
+    if hold_demo:
+        var hold_time:float=fmod(_age,repeat_seconds)
+        if _is_holding():shape_y=.68
+        elif hold_time<.12:shape_y=lerpf(1.0,.68,smoothstep(0.0,.12,hold_time))
+        elif hold_time<1.15:shape_y=.68
+        elif hold_time<1.55:shape_y=1.0-.32*cos((hold_time-1.15)*24.0)*exp(-(hold_time-1.15)*13.0)
+        else:shape_y=1.0
     var enter:float=clampf(_age/.2,0.0,1.0)
     var pop:float=1.0+2.70158*pow(enter-1.0,3)+1.70158*pow(enter-1.0,2)
     art.scale=Vector2(1.0/sqrt(shape_y),shape_y)*maxf(.01,pop)
-    art.modulate=Color(1.0,.88 if beat<.2 else 1.0,.68 if beat<.2 else 1.0,_alpha)
+    var depressed:bool=shape_y<.85
+    art.modulate=Color(1.0,.88 if depressed else 1.0,.68 if depressed else 1.0,_alpha)
     for i in accents.size():
         var side:float=-1.0 if i==0 else 1.0
         accents[i].position=art.position+art.size*.5+Vector2(side*12.0*sin(minf(beat/.35,1.0)*PI),0)

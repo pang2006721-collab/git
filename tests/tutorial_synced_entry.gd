@@ -10,11 +10,14 @@ func run():
     for name_key in ["HellTutorial","OceanTutorial","JungleTutorial","SkyTutorial"]:
         var tutorial=game.get_node(name_key)
         tutorial.save_path="user://test_tutorial_sync.cfg"
+        var streamer=game.get_node("TextureStreamer")
+        var original_mode:int=streamer.process_mode
         tutorial.start()
         for i in 60:
             await process_frame
             if tutorial.panel.modulate.a>.99:break
         assert(tutorial.panel.modulate.a>.99)
+        assert(streamer.can_process(),"Rendering service continues while the world is paused")
         assert(tutorial.frame.material.get_shader_parameter("movie_ready"))
         assert(tutorial.movie.is_playing() and tutorial.movie.stream_position<.3)
         assert(tutorial.panel.scale.x<.95,"Video must already be playing during the start of the bounce")
@@ -24,5 +27,6 @@ func run():
         tutorial.finish(false)
         await create_timer(.5).timeout
         assert(not paused,"Closing during entry cancels the entrance and restores gameplay")
+        assert(streamer.process_mode==original_mode,"Closing restores the original streaming process mode")
         print("SYNCED_ENTRY_PASS ",name_key)
     quit()

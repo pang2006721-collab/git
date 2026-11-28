@@ -24,6 +24,8 @@ func run():
         var photograph_time:float=2.0 if index==5 else 6.9
         await create_timer(photograph_time).timeout
         assert(actor.global_position==frozen,"Tutorial must freeze the controlled body")
+        assert(is_equal_approx(tutorial.shade.color.a,.62),"Jungle and sky retain visible background detail")
+        assert(current_scene.get_node("TextureStreamer").can_process(),"Background streaming must continue while gameplay is paused")
         assert(tutorial.frame.material.get_shader_parameter("movie_ready"))
         assert(tutorial.key_art.self_modulate.g<.95,"Held Shift is visually held during the recorded action")
         if index==6:assert(tutorial.frame.material.get_shader_parameter("use_hole_mask"),"Sky preserves the white cloud border")

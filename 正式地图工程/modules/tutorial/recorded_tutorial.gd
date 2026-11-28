@@ -29,6 +29,7 @@ var was_paused:=false
 var _closing:=false
 var _pulse:Tween
 var _enter:Tween
+var _backdrop_streamer:Node
 func _ready():
     var recording=JSON.parse_string(FileAccess.get_file_as_string(recording_path+".json"))
     pulses.assign(recording.shift_beats)
@@ -43,6 +44,7 @@ func start():
     if active:return
     active=true
     was_paused=get_tree().paused
+    _backdrop_streamer=get_parent().get_node_or_null("TextureStreamer")
     _freeze(get_parent())
     get_tree().paused=true
     var screen=Control.new()
@@ -132,7 +134,7 @@ func start():
 func _freeze(node:Node):
     if node==self:return
     saved_modes[node]=node.process_mode
-    node.process_mode=Node.PROCESS_MODE_PAUSABLE
+    node.process_mode=Node.PROCESS_MODE_ALWAYS if node==_backdrop_streamer else Node.PROCESS_MODE_PAUSABLE
     for child in node.get_children():_freeze(child)
 func _process(_delta:float):
     if not active or _closing or not is_instance_valid(movie) or not movie.is_playing():return

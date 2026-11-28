@@ -19,6 +19,7 @@ func align_floor_to_bank(bank: CollisionShape2D) -> void:
     var center: Vector2 = floor_shape.global_position
     center.y = top.y+floor_shape.shape.size.y*.5*floor_shape.global_scale.y
     floor_shape.global_position = center
+    $BottomFunnel.rebuild()
 func _process(delta: float) -> void:
     _elapsed += delta
     if _elapsed<.15: return

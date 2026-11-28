@@ -1,6 +1,6 @@
 extends Node
 ## 自由下落只记录落差，真正落地时才判定摔死；空中抓藤可自救。
-@export var fatal_drop_pixels: float = 1000.0
+@export var fatal_drop_pixels: float = 1500.0
 var _tracking: bool = false
 var _apex_y: float = 0.0
 @onready var body: CharacterBody2D = get_parent()

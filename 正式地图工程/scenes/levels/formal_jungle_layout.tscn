@@ -1,5 +1,7 @@
 [gd_scene format=3]
 
+[ext_resource type="Script" path="res://modules/environment/jungle_bottom_funnel.gd" id="bottom_funnel"]
+
 [ext_resource type="Script" path="res://modules/environment/formal_jungle_layout.gd" id="layout"]
 [ext_resource type="Texture2D" path="res://assets/art/jungle/formal/main_vines.png" id="main_art"]
 [ext_resource type="Texture2D" path="res://assets/art/jungle/formal/hanging_vines.png" id="hanging_art"]
@@ -311,3 +313,6 @@ script=ExtResource("canopy_bird_stage")
 
 [node name="SkyCloudExit" type="Node2D" parent="."]
 script = ExtResource("sky_cloud_exit")
+
+[node name="BottomFunnel" type="Node2D" parent="."]
+script = ExtResource("bottom_funnel")

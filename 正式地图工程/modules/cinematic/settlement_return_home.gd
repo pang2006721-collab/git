@@ -3,7 +3,7 @@ extends CanvasLayer
 signal completed
 const MENU = "res://scenes/ui/main_menu.tscn"
 const LOADING = preload("res://scenes/ui/loading_character_overlay.tscn")
-@export var overlay_layer: int = 80
+@export var overlay_layer: int = 1100
 @export var fade_to_black_seconds: float = .7
 @export var minimum_black_seconds: float = 2.4
 @export var reveal_seconds: float = 1.4

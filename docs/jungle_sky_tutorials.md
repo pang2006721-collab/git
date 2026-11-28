@@ -1,6 +1,6 @@
 # Jungle and sky tutorial recordings
 
-Both chapters use the shared recorded_tutorial presenter: composed first-frame entry, a 62% backdrop that keeps the darker jungle/sky scenery readable, original Shift/close artwork, squash feedback, automatic dismissal, level pause/restore and independent watched flags. Natural entry hooks are JunglePossession and CanopyPossession completion. Shortcut 5 forces jungle replay; shortcut 6 forces sky replay, without clearing progress.
+Both chapters use the shared recorded_tutorial presenter: composed first-frame entry, a 62% backdrop that keeps the darker jungle/sky scenery readable, original Shift/close artwork, squash feedback, looping playback until the player closes the popup, level pause/restore and independent watched flags. Natural entry hooks are JunglePossession and CanopyPossession completion. Shortcut 5 forces jungle replay; shortcut 6 forces sky replay, without clearing progress.
 
 Jungle: 6.75 seconds of actual controller/rope simulation. The squirrel starts on authored ground, jumps, holds Shift to catch Vine09, builds real right/up swing velocity, releases into the configured upward boost and holds Shift again to catch Vine08. Assertions cover grounded start, first grab, physical swing momentum, upward release and next-vine catch. Camera follow resumes from the current view rather than an old cached hell position. No forced target/vine assignment is used for the demonstrated catches.
 

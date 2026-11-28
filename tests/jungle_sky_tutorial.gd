@@ -36,6 +36,9 @@ func run():
             if not is_instance_valid(tutorial):break
             count=maxi(count,tutorial.pulse_index)
             await create_timer(.1).timeout
+        assert(is_instance_valid(tutorial) and tutorial.active and paused,"Playback completion must leave the level tutorial open")
+        tutorial.close_art.pressed.emit()
+        await create_timer(.8).timeout
         assert(not paused)
         assert(count==(2 if index==5 else 1))
         preview_clips.append({"stage":stage_key,"start":clip_start,"end":Engine.get_process_frames()/60.0})

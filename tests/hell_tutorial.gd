@@ -27,6 +27,9 @@ func run():
         pulse_count=maxi(pulse_count,tutorial.pulse_index)
         await create_timer(.1).timeout
     assert(pulse_count==3,"All three recorded Shift uses must receive a matching cue")
+    assert(is_instance_valid(tutorial) and tutorial.active and paused,"Playback completion must leave the level tutorial open")
+    tutorial.close_art.pressed.emit()
+    await create_timer(.8).timeout
     assert(not paused)
     var cfg=ConfigFile.new()
     assert(cfg.load("user://test_hell_tutorial.cfg")==OK)
@@ -41,7 +44,9 @@ func run():
     second.close_art.pressed.emit()
     await create_timer(.8).timeout
     assert(not paused)
-    assert(not FileAccess.file_exists("user://test_tutorial_dismiss.cfg"))
+    var skipped=ConfigFile.new()
+    assert(skipped.load("user://test_tutorial_dismiss.cfg")==OK)
+    assert(not skipped.get_value("watched","hell",false) and skipped.get_value("level_entered","hell",false))
     print("HELL_TUTORIAL_PASS: video, synced pulse, freeze, completion, restore, close")
     game.queue_free()
     await process_frame

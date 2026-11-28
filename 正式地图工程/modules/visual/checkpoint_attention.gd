@@ -12,9 +12,11 @@ func _ready() -> void:
     _rest_scale = scale
     checkpoint.activated.connect(hide)
     hide()
+func _can_show()->bool:
+    var stage:Node2D=checkpoint.stage
+    return not checkpoint.active and stage.active and stage.host.claimed and stage.level.player==stage.fish and not stage.level.dead and stage.fish.global_position.distance_to(checkpoint.global_position)<show_distance
 func _process(delta: float) -> void:
-    var stage: Node2D = checkpoint.stage
-    visible = not checkpoint.active and stage.active and stage.host.claimed and stage.level.player==stage.fish and not stage.level.dead and stage.fish.global_position.distance_to(checkpoint.global_position)<show_distance
+    visible=_can_show()
     if not visible:
         _clock=0.0
         return

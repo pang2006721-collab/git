@@ -39,9 +39,18 @@ func run() -> void:
     var rest:Vector2=point.get_node("Float").position
     await create_timer(.3).timeout
     check(not point.active and point.get_node("Float").position==rest,"Bound diamond stays completely still before touch")
+    var attention=point.get_node("Attention")
+    attention._process(.1)
+    check(attention.visible and attention.material.shader.resource_path.ends_with("checkpoint_white_ink.gdshader"),"Nearby unactivated jungle checkpoint has the white authored cue")
+    body.global_position.x-=1300
+    attention._process(.1)
+    check(not attention.visible,"Checkpoint cue hides outside its local range")
+    body.global_position.x+=1300
+    attention._process(.1)
     await shot("bound")
     body.global_position=point.get_node("Contact").global_position-Vector2(34,-81.5)
     check(await until(func():return point.active,1),"Touching bound diamond activates checkpoint")
+    check(not attention.visible,"Activation immediately hides the cue")
     check(not point.get_node("Binding").visible,"Binding bursts off on contact")
     await create_timer(.2).timeout
     await shot("burst")

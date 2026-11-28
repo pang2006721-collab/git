@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://c5f8o4chrpmk6"]
 
+[ext_resource type="Script" path="res://modules/tutorial/first_orb_shift_reminder.gd" id="first_orb_hint"]
+
 [ext_resource type="Script" path="res://modules/tutorial/sky_tutorial.gd" id="sky_tutorial"]
 
 [ext_resource type="Script" path="res://modules/tutorial/jungle_tutorial.gd" id="jungle_tutorial"]
@@ -1602,3 +1604,6 @@ script = ExtResource("jungle_tutorial")
 
 [node name="SkyTutorial" type="CanvasLayer" parent="."]
 script = ExtResource("sky_tutorial")
+
+[node name="FirstOrbShiftReminder" type="CanvasLayer" parent="."]
+script = ExtResource("first_orb_hint")

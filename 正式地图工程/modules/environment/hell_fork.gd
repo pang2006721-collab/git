@@ -1,6 +1,7 @@
 extends Node2D
 ## 锁定来自 Nodes Plus；一次投叉命中后自动交换并弹射。
 const SURFACE = preload("res://modules/environment/hell_surface.gd")
+signal selection_changed(target: Node2D)
 signal exchanged(body: Node2D)
 signal interaction_reset
 signal travelled(from: Vector2, to: Vector2)
@@ -87,6 +88,7 @@ func _physics_process(_delta: float) -> void:
     selected = nearest
     if is_instance_valid(selected):
         selected.set_state(1)
+    selection_changed.emit(selected)
 
 func _ball_is_above_player(target: Node2D) -> bool:
     var sprite: Sprite2D = _visual.get_node("Sprite")

@@ -3,6 +3,7 @@ extends CanvasLayer
 @export var repeat_seconds:float=1.0
 @export var hold_demo:bool=false
 @export var head_offset:=Vector2(0,-74)
+@export var anchor_below:bool=false
 @export var follow_frequency:float=12.0
 @export var maximum_lag:=Vector2(80,26)
 var _follow_position:=Vector2.ZERO
@@ -58,7 +59,7 @@ func head_target()->Vector2:
     var transform:Transform2D=sprite.get_global_transform_with_canvas()
     var bounds:=Rect2(transform*rect.position,Vector2.ZERO)
     for corner in [Vector2(rect.end.x,rect.position.y),rect.end,Vector2(rect.position.x,rect.end.y)]:bounds=bounds.expand(transform*corner)
-    var head:=Vector2(bounds.get_center().x,bounds.position.y)
+    var head:=Vector2(bounds.get_center().x,bounds.end.y if anchor_below else bounds.position.y)
     var margin:Vector2=art.size*.5+Vector2(24,20)
     return (head+head_offset).clamp(margin,get_viewport().get_visible_rect().size-margin)
 func _follow_head(delta:float):

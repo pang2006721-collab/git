@@ -13,7 +13,8 @@ func _ready():
     super._ready()
     hold_demo=true
     repeat_seconds=3.0
-    head_offset=Vector2(0,-70)
+    anchor_below=true
+    head_offset=Vector2(0,82)
     level.died.connect(func():_remaining=0.0;_reset_visual())
 func _head_sprite()->Sprite2D:return bird.get_node("Visual/Sprite")
 func _is_holding()->bool:return Input.is_action_pressed(&"bird_boost")

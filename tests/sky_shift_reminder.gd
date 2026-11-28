@@ -47,6 +47,12 @@ func run():
     assert(hint._danger_near(),"Predict imminent impact before contact")
     await create_timer(.2).timeout
     assert(hint.visible and hint.hold_demo and not paused)
+    var sprite=bird.get_node("Visual/Sprite")
+    var transform:Transform2D=sprite.get_global_transform_with_canvas()
+    var rect:Rect2=sprite.get_rect()
+    var bottom:float=-INF
+    for corner in [rect.position,Vector2(rect.end.x,rect.position.y),rect.end,Vector2(rect.position.x,rect.end.y)]:bottom=maxf(bottom,(transform*corner).y)
+    assert(hint.anchor_below and hint.head_target().y-hint.art.size.y*.5>bottom+20,"Sky reminder sits below the bird with a clear gap")
     hint._age=.9
     hint._process(0)
     assert(hint.art.scale.y<.7,"Danger lesson shows a sustained press")

@@ -47,11 +47,24 @@ func run():
     bee._aim=Vector2(800,27950)
     bee._physics_process(.1)
     check(bee._aim.x>800,"Warning follows the player before its final lock")
+    var warning=bee.get_node("AttackWarning")
+    warning._process(0)
+    check(warning.visible and warning.sprite.scale.x>0,"Bee windup shows the shared warning")
+    check(warning.sprite.material.shader.resource_path.ends_with("checkpoint_white_ink.gdshader"),"Bee warning uses transparent white ink")
     var locked: Vector2=bee._aim
     bee.elapsed=.48
     body.global_position.x+=150
     bee._physics_process(.01)
     check(bee._aim==locked,"Final warning remains locked to allow a last-second dodge")
+    bee._set_mode(bee.Mode.DARTING)
+    check(not warning.visible,"Starting a dart immediately removes the warning")
+    bee.ranged=true
+    bee._set_mode(bee.Mode.WINDUP)
+    bee.elapsed=.2
+    warning._process(0)
+    check(warning.visible,"Ranged bee also warns before firing")
+    bee._set_mode(bee.Mode.RECOVERING)
+    check(not warning.visible,"No lingering warning during recovery")
     body.global_position=Vector2(960,28000)
     encounter.fire_stinger(Vector2(560,27750),Vector2(1200,27750))
     var needle=encounter.get_child(encounter.get_child_count()-1)

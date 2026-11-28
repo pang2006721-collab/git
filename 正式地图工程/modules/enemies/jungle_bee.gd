@@ -37,6 +37,9 @@ func _ready() -> void:
     art_scale=150.0/maxf(visual.texture.get_width(),visual.texture.get_height())
     visual.scale=Vector2.ONE*art_scale
     add_child(visual)
+    var warning=preload("res://modules/visual/bee_attack_warning.gd").new()
+    warning.name="AttackWarning"
+    add_child(warning)
     flight=Node.new()
     flight.set_script(FLIGHT)
     add_child(flight)
@@ -158,6 +161,7 @@ func _tick_deflection(delta: float) -> void:
 func _set_mode(value: Mode) -> void:
     mode=value
     elapsed=0
+    if has_node("AttackWarning"):get_node("AttackWarning").sample(-1.0)
 func _pose(delta: float) -> void:
     # 原图朝左；以小恶魔同样的倾身表现运动，翅膀以整图短促弹性轻颤表现。
     visual.flip_h=velocity.x>15 if absf(velocity.x)>15 else visual.flip_h

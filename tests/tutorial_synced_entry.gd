@@ -9,8 +9,8 @@ func run():
     current_scene=game
     for name_key in ["HellTutorial","OceanTutorial","JungleTutorial","SkyTutorial"]:
         var tutorial
-        if name_key=="HellTutorial":
-            tutorial=load("res://modules/tutorial/hell_tutorial.gd").new()
+        if name_key in ["HellTutorial","OceanTutorial"]:
+            tutorial=load("res://modules/tutorial/"+("hell" if name_key=="HellTutorial" else "ocean")+"_tutorial.gd").new()
             game.add_child(tutorial)
         else:tutorial=game.get_node(name_key)
         tutorial.save_path="user://test_tutorial_sync.cfg"

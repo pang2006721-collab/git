@@ -174,10 +174,11 @@ func _key_feedback():
         tween.chain().tween_callback(accent.queue_free)
 func finish(watched:bool):
     if not active or _closing:return
-    if watched and book_mode:
+    if watched:
         _mark_watched()
         completed.emit()
         pulse_index=0
+        elapsed=0.0
         movie.play()
         return
     _closing=true
@@ -190,11 +191,9 @@ func finish(watched:bool):
     tween.parallel().tween_property(panel,"modulate:a",0.0,.23)
     tween.parallel().tween_property(shade,"color:a",0.0,.23)
     await tween.finished
-    if watched:_mark_watched()
     if not book_mode:_mark_level_entered()
     _restore()
-    if watched:completed.emit()
-    else:dismissed.emit()
+    dismissed.emit()
     queue_free()
 func _mark_level_entered():
     if book_mode:return

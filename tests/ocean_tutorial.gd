@@ -30,6 +30,9 @@ func run():
     for i in 80:
         if not is_instance_valid(tutorial):break
         await create_timer(.1).timeout
+    assert(is_instance_valid(tutorial) and tutorial.active and paused,"Playback completion must leave the level tutorial open")
+    tutorial.close_art.pressed.emit()
+    await create_timer(.8).timeout
     assert(not paused)
     var cfg=ConfigFile.new()
     assert(cfg.load(SAVE)==OK and cfg.get_value("watched","ocean",false))

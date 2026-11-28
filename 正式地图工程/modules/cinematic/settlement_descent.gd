@@ -126,7 +126,8 @@ func set_history(history: Dictionary) -> void:
         for child in group.get_children():
             group.remove_child(child)
             child.queue_free()
-        var value := str(maxi(0, int(data.get("deaths", {}).get(STAGES[i], 0))))
+        # The successful run is an attempt too; keep raw death records unchanged.
+        var value := str(maxi(0, int(data.get("deaths", {}).get(STAGES[i], 0)))+1)
         var width: float = 0.0
         for digit in value:
             var sprite := Sprite2D.new()

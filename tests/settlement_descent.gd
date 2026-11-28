@@ -63,6 +63,16 @@ func run():
     check(replay_size.is_equal_approx(preview.WINDOWS[0].size),"16:9 recordings fill the replay opening without side gaps")
     check(is_equal_approx(preview.screens[0].scale.x,preview.screens[0].scale.y),"Replay characters and scenery keep their original proportions")
     check(not preview.screens[1].visible, "Missing recordings are never replaced with invented replays")
+    var counts={"deaths":{&"hell":0,&"ocean":1,&"jungle":9,&"sky":11},"clips":{},"fps":8}
+    for repeat in 2:
+        preview.set_history(counts)
+        for i in 4:
+            var expected:String=["1","2","10","12"][i]
+            var digits=preview.numbers[i].get_children()
+            check(digits.size()==expected.length(),"Each stage displays its own attempt count")
+            for j in mini(digits.size(),expected.length()):
+                check(digits[j].texture==preview._digit_textures[int(expected[j])],"Attempts equal deaths plus the successful run")
+    check(counts.deaths[&"hell"]==0 and counts.deaths[&"sky"]==11,"Repeated settlement rendering never changes recorded deaths")
     print("SETTLEMENT_FAILURES=",failures.size(), " MAX_SCROLL_STEP=",max_step)
     preview.free()
     level.free()

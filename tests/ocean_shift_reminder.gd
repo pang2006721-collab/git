@@ -51,7 +51,11 @@ func run():
     assert(hint.visible)
     assert(blink.try_teleport(Vector2.UP))
     await create_timer(.45).timeout
-    assert(hint.learned.tentacle and not hint.learned.shark and not hint.visible,"Successful tentacle blink learns only that category")
+    assert(not hint.learned.tentacle and hint.successes.tentacle==1,"First tentacle success does not finish teaching")
+    blink.reset()
+    assert(blink.try_teleport(Vector2.UP))
+    await create_timer(.45).timeout
+    assert(hint.learned.tentacle and hint.successes.tentacle==2 and not hint.learned.shark,"Second tentacle success learns only that category")
     side.attacking=false
     var net=stage.get_node("BossTentacleNet")
     var row=Node2D.new()
@@ -79,7 +83,11 @@ func run():
     assert((hint.art.get_global_transform()*(hint.art.size*.5)).is_equal_approx(hint._follow_position))
     assert(blink.try_teleport(Vector2.RIGHT))
     await create_timer(.45).timeout
-    assert(hint.learned.shark and hint.learned.tentacle,"Successful shark dodge learns separately")
+    assert(not hint.learned.shark and hint.successes.shark==1,"First shark dodge still allows reminders")
+    blink.reset()
+    assert(blink.try_teleport(Vector2.RIGHT))
+    await create_timer(.45).timeout
+    assert(hint.learned.shark and hint.successes.shark==2 and hint.learned.tentacle,"Second shark dodge learns separately")
     shark.reset()
     var final_shark=stage.get_node("FinalSharks").get_child(0)
     final_shark._begin_lock()
@@ -87,6 +95,7 @@ func run():
     final_shark.cancel_pending_attack()
     shark._begin_lock()
     hint.learned.shark=false
+    hint.successes.shark=0
     blink.reset()
     assert(blink.try_teleport(Vector2.RIGHT))
     await create_timer(.07).timeout

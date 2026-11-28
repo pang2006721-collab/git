@@ -55,7 +55,12 @@ func run():
     assert(hint._hold_done and hint.visible and hint.art.scale.y<.7)
     Input.action_release(climber.grab_action)
     await create_timer(.2).timeout
-    assert(hint.learned and not hint.visible,"Sustained grip then release completes the lesson")
+    assert(not hint.learned and hint.successes==1 and hint.visible,"First successful hold still permits guidance")
+    Input.action_press(climber.grab_action)
+    await create_timer(1.2).timeout
+    Input.action_release(climber.grab_action)
+    await create_timer(.2).timeout
+    assert(hint.learned and hint.successes==2 and not hint.visible,"Second successful grip completes the lesson")
     game.player=stage.fish
     hint.learned=false
     hint._process(.2)

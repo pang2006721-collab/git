@@ -80,12 +80,22 @@ func run():
             key.pressed=true
             hint._input(key)
             rig._unhandled_input(key)
-            assert(rig.flying and hint.learned.has(ball.name))
+            assert(rig.flying and hint.successes==0,"Throwing alone is not successful teleportation")
             hint._process(.15)
             assert(hint.visible and hint.art.scale.y<.8,"Actual Shift gives a visible pressed response before dismissal")
             assert((hint.art.get_global_transform()*(hint.art.size*.5)).is_equal_approx(hint._follow_position),"Actual Shift also rebounds around the following center")
             reader.jump_held=false
             assert(await until(func():return not hint.visible))
+            assert(hint.successes==1,"One actual exchange keeps lesson available")
+            assert(await until(func():return not rig.launching and not rig.swapping))
+            rig.reset()
+            motor.enabled=false
+            body.global_position=ball.global_position+Vector2(-180,220)
+            body.velocity=Vector2.ZERO
+            rig.selected=ball
+            rig._throw()
+            assert(await until(func():return hint.successes==2))
+            assert(not hint._watched(ball),"Two actual exchanges stop the orb hint")
             hint._reset_interaction()
             assert(hint.learned.has(ball.name),"Retry keeps learned orb state within this run")
     print("FIRST_ORB_REMINDER_PASS: actual missed/repeated jump, strong press, throw acknowledgement, no pause")

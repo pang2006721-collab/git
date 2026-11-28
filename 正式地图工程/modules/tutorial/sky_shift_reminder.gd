@@ -4,6 +4,7 @@ extends "res://modules/ui/following_shift_prompt.gd"
 @export var minimum_notice_seconds:float=.12
 @export var reaction_seconds:float=.22
 var _remaining:float=0.0
+var successes:int=0
 @onready var level:Node2D=get_parent()
 @onready var layout:Node2D=level.get_node("OceanLink/FishStage/JungleLayout")
 @onready var bird:CharacterBody2D=layout.get_node("Bird")
@@ -15,6 +16,7 @@ func _ready():
     repeat_seconds=3.0
     anchor_below=true
     head_offset=Vector2(0,82)
+    hail.stone_melted.connect(_on_melted)
     level.died.connect(func():_remaining=0.0;_reset_visual())
 func _head_sprite()->Sprite2D:return bird.get_node("Visual/Sprite")
 func _is_holding()->bool:return Input.is_action_pressed(&"bird_boost")
@@ -42,7 +44,11 @@ func _danger_near()->bool:
         var reachable:float=minf(speed*available,absf(bird.velocity.x)*available+.5*acceleration*available*available)
         if reachable<escape+20.0:return true
     return false
+func _on_melted():
+    successes=mini(2,successes+1)
+    if successes>=2:_reset_visual()
 func _wants_prompt()->bool:
+    if successes>=2:return false
     if fire.is_burning():
         if _is_holding():_remaining=maxf(_remaining,.15)
         return _remaining>0.0

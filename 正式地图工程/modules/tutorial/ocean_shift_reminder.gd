@@ -1,6 +1,7 @@
 extends "res://modules/ui/following_shift_prompt.gd"
 var needed:Dictionary={"tentacle":false,"shark":false}
 var learned:Dictionary={"tentacle":false,"shark":false}
+var successes:Dictionary={"tentacle":0,"shark":0}
 var _attempt:int=0
 @onready var level:Node2D=get_parent()
 @onready var stage:Node2D=level.get_node("OceanLink/FishStage")
@@ -52,5 +53,8 @@ func _on_blink(_from:Vector2,_to:Vector2):
     await get_tree().create_timer(.3).timeout
     # Do not label a mistimed blink learned if it still ends in damage/death.
     if attempt!=_attempt or not _eligible() or stun.stun_remaining>0.0:return
-    if tentacle:learned.tentacle=true
-    if shark:learned.shark=true
+    if tentacle:_record_success("tentacle")
+    if shark:_record_success("shark")
+func _record_success(kind:String):
+    successes[kind]=mini(2,successes[kind]+1)
+    learned[kind]=successes[kind]>=2

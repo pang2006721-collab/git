@@ -56,6 +56,7 @@ func run():
             rig._unhandled_input(key)
             assert(rig.flying and not prompt.is_reminding(),"Throw acknowledges this enemy's prompt")
             await create_timer(.75).timeout
+            assert(prompt.successes==index+1,"Only defeated enemies advance success count")
             assert(enemy.is_defeated(),"Hint leaves the actual enemy defeat animation intact")
             assert(not hint.visible)
         rig.reset()

@@ -71,6 +71,11 @@ func run():
     assert(fire.is_burning() and hint.visible and hint.art.scale.y<.7,"Actual held Shift stays depressed while burning")
     Input.action_release(&"bird_boost")
     fire.tick(.01,false)
+    hail.stone_melted.emit()
+    assert(hint.successes==1,"One complete melt keeps guidance available")
+    hail.stone_melted.emit()
+    hint._process(.2)
+    assert(hint.successes==2 and not hint.visible,"Two completed melts disable sky guidance")
     game.player=stage.fish
     await create_timer(.2).timeout
     assert(not hint.visible,"Other stages cannot see sky guidance")

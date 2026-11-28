@@ -2,6 +2,7 @@ extends "res://modules/ui/following_shift_prompt.gd"
 @export var notice_distance:float=380.0
 @export var learn_hold_seconds:float=1.1
 var learned:bool=false
+var successes:int=0
 var _held_seconds:float=0.0
 var _hold_done:bool=false
 @onready var level:Node2D=get_parent()
@@ -30,6 +31,9 @@ func _process(delta:float):
             _held_seconds+=delta
             if _held_seconds>=learn_hold_seconds:_hold_done=true
         elif not _is_holding():
-            if _hold_done:learned=true
+            if _hold_done:
+                successes=mini(2,successes+1)
+                learned=successes>=2
+                _hold_done=false
             _held_seconds=0.0
     super._process(delta)

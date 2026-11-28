@@ -3,6 +3,7 @@ extends "res://modules/ui/following_shift_prompt.gd"
 @export var targets:Array[StringName]=[&"Target01",&"Target02"]
 var missed:Dictionary={}
 var learned:Dictionary={}
+var successes:int=0
 var _jumping:=false
 var _jump_target:Node2D
 @onready var level:Node2D=get_parent()
@@ -15,12 +16,13 @@ func _ready():
     level.died.connect(_on_death)
     fork.selection_changed.connect(_on_selection)
     fork.thrown.connect(_on_throw)
+    fork.exchanged.connect(_on_exchange)
     fork.interaction_reset.connect(_reset_interaction)
     hide()
 func _eligible()->bool:
     return level.visible and not level.dead and not level.exit_in_progress and level.get_node("WallEntry").completed and level.player==level.demon and level.demon.get_node("Host").claimed and level.get_node("OceanLink").stage==0
 func _watched(ball:Node2D)->bool:
-    return is_instance_valid(ball) and ball.name in targets and not learned.has(ball.name)
+    return is_instance_valid(ball) and ball.name in targets and successes<2
 func _on_jump():
     if not _eligible():return
     _jumping=true
@@ -37,10 +39,14 @@ func _on_death():
     _reset_interaction()
 func _on_throw():
     if is_instance_valid(fork.lodged) and fork.lodged.name in targets:
-        learned[fork.lodged.name]=true
         _jumping=false
         _jump_target=null
         if _pressed_age<0.0:_reset_interaction()
+func _on_exchange(_body:Node2D):
+    if is_instance_valid(fork.lodged) and fork.lodged.name in targets:
+        successes=mini(2,successes+1)
+        learned[fork.lodged.name]=true
+        if successes>=2:_reset_interaction()
 func _reset_interaction():
     _jumping=false
     _jump_target=null

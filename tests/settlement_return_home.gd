@@ -13,6 +13,7 @@ func run():
     transition.reveal_seconds = .2
     root.add_child(transition)
     check(transition.beans.get_node("Layout/Corner").get_child_count() == 5,"Reuses all five original loading characters")
+    check(transition.layer>1000 and transition.beans.layer>transition.layer,"Black curtain covers menu UI and cursor, beans stay on top")
     transition.start()
     await create_timer(.08).timeout
     check(transition.black.color.a > .99,"Loading starts on a fully black screen")

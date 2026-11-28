@@ -2,7 +2,7 @@ extends CanvasLayer
 ## 屏幕固定的加载提示，只依赖 begin_loading/finish_loading 两个接口。
 signal finished
 enum State { IDLE, ENTERING, LOADING, EXITING }
-@export_range(0.0, 0.8) var dim_strength: float = 0.42
+@export_range(0.0, 1.0) var dim_strength: float = 1.0
 @export var stagger: float = 0.12
 @export var wave_delay: float = 0.15
 @export var wave_period: float = 1.65

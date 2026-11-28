@@ -8,10 +8,3 @@ func _ready():
     hole_origin=Vector2(55,55)
     hole_size=Vector2(710,430)
     super._ready()
-    var game=get_parent()
-    if book_mode or game.has_meta("skip_tutorial") or "--script" in OS.get_cmdline_args():return
-    game.get_node("OceanLink/FishStage/Possession").possession_finished.connect(_on_possessed)
-func _on_possessed(_host):_offer.call_deferred()
-func replay_now():
-    _force_replay=true
-    _offer()

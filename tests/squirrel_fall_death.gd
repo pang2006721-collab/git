@@ -35,12 +35,12 @@ func run():
 	body.global_position = Vector2(960, 25000)
 	body.velocity = Vector2(0, 100)
 	monitor._physics_process(.01)
-	body.position.y += 999
+	body.position.y += 1499
 	monitor._physics_process(.01)
-	check(not game.dead, "999 pixels is safe")
+	check(not game.dead, "1499 pixels is safe")
 	body.position.y += 1
 	monitor._physics_process(.01)
-	check(not game.dead, "Exactly 1000 pixels is safe")
+	check(not game.dead, "Exactly 1500 pixels is safe")
 	# Catching a vine clears the earlier free fall even while it swings downward.
 	climber.vine = layout.vines[0]
 	body.position.y += 300
@@ -67,12 +67,12 @@ func run():
 	defeat.reset()
 	check(not monitor._tracking, "Retry reset clears drop history")
 	monitor._physics_process(.01)
-	body.position.y += 1001
+	body.position.y += 1501
 	game.camera.set_process(false)
 	game.camera.global_position = body.global_position
 	game.camera.make_current()
 	monitor._physics_process(.01)
-	check(not game.dead, "Crossing 1000 pixels in midair does not kill")
+	check(not game.dead, "Crossing 1500 pixels in midair does not kill")
 	# 使用真实地面碰撞验证落地判定，而非伪造 is_on_floor。
 	var floor_body := StaticBody2D.new()
 	floor_body.collision_layer = 16
@@ -91,10 +91,20 @@ func run():
 		if game.dead: break
 		await physics_frame
 	check(body.is_on_floor(), "Actual collision reaches the ground")
-	check(game.dead and game.death_reason == &"fall", "Landing after a drop above 1000 pixels kills the squirrel")
+	check(game.dead and game.death_reason == &"fall", "Landing after a drop above 1500 pixels kills the squirrel")
 	check(defeat.falling and defeat.corpse.visible, "Original stunned expression starts immediately")
 	check(not body.get_node("Visual/Sprite").visible, "Live pose is hidden")
 	check(defeat.corpse.texture.atlas.resource_path.ends_with("stunned.png"), "Uses supplied squirrel pose")
+	check(defeat._ground_impact,"Fatal landing starts a grounded squash")
+	defeat.set_process(false)
+	var impact_position:Vector2=defeat.corpse.global_position
+	defeat._process(.06)
+	check(defeat.corpse.scale.y<defeat._rest_scale.y*.8,"Impact visibly squashes the original death pose")
+	defeat._process(.07)
+	check(not defeat._ground_impact and defeat._fall_velocity.y<0,"Squash releases into an upward rebound")
+	defeat._process(.08)
+	check(defeat.corpse.global_position.y<impact_position.y,"Corpse duangs upward before falling out")
+	defeat.set_process(true)
 	var flow = game.get_node("DeathFlow")
 	await process_frame
 	check(not flow.overlay.visible and defeat.falling, "Popup waits for the falling animation")

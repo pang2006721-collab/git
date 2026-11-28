@@ -1,4 +1,5 @@
 extends CharacterBody2D
+signal defeated
 signal shot(aim: Vector2, origin: Vector2)
 enum Mode { ENTERING, FLYING, WINDUP, RECOVERING, DYING }
 const IDLE=preload("res://assets/art/enemies/flying_demon/idle.png")
@@ -131,6 +132,7 @@ func _death_art_is_outside_view() -> bool:
 func take_hit() -> void:
     if is_defeated():return
     mode=Mode.DYING
+    defeated.emit()
     _state_time=0
     lock.conceal()
     remove_from_group("fork_targets")

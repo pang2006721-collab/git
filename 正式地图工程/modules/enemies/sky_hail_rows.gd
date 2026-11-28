@@ -1,5 +1,6 @@
 extends Node2D
 ## 六颗与七颗交替错排；普通小缝封住，只保留每排一个错位通道。
+signal stone_melted
 signal row_spawned(row_index: int, gap_start: int)
 const ART = preload("res://assets/art/sky/formal/hailstone.png")
 const LANE_COUNT = 7
@@ -126,6 +127,7 @@ func _physics_process(delta: float) -> void:
             stone.hit_reported=true
             hit=true
         if art.global_position.y>bottom or stone.age>8.0 or (stone.get("melting",false) and stone.melt_elapsed>=melt_seconds):
+            if can_hit and stone.get("melting",false) and stone.melt_elapsed>=melt_seconds:stone_melted.emit()
             art.hide()
             art.queue_free()
             stones.remove_at(i)

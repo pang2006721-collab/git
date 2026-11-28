@@ -70,7 +70,9 @@ func run():
     hail._physics_process(.1)
     check(absf(stone.art.global_position.x-bird.global_position.x)<1,"Melting block moves with the bird head")
     check(is_equal_approx(paid_heat-fire.heat,.3*.25/.8),"Heat is transferred gradually in proportion to actual melting time")
+    var melted_before:int=game.get_node("SkyShiftReminder").successes
     hail._physics_process(.56)
+    check(game.get_node("SkyShiftReminder").successes==melted_before+1,"Only completed ice melting reports a tutorial success")
     check(not hail.stones.has(stone) and not game.dead,"Sustained flame fully melts the block safely")
     check(is_equal_approx(paid_heat-fire.heat,.3),"Complete melt consumes exactly thirty percent in total")
     hail.reset()

@@ -66,13 +66,5 @@ func _apply() -> void:
         cloud.ending_handoff.preview_oranges_override = ENDING_ORANGES if index == 7 else 0
         cloud.ending_handoff.history_override = _ending_history
         _ending_history = {}
-    if index == 1:
-        get_tree().current_scene.get_node("HellTutorial").replay_on_entry()
     entry.start_segment(7 if index == 8 else index)
-    if index == 3:
-        get_tree().current_scene.get_node("OceanTutorial").replay_now()
-    if index == 5:
-        get_tree().current_scene.get_node("JungleTutorial").replay_now()
-    if index == 6:
-        get_tree().current_scene.get_node("SkyTutorial").replay_now()
     segment_started.emit(index)

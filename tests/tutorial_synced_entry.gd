@@ -8,7 +8,11 @@ func run():
     root.add_child(game)
     current_scene=game
     for name_key in ["HellTutorial","OceanTutorial","JungleTutorial","SkyTutorial"]:
-        var tutorial=game.get_node(name_key)
+        var tutorial
+        if name_key in ["HellTutorial","OceanTutorial","JungleTutorial","SkyTutorial"]:
+            tutorial=load("res://modules/tutorial/"+{"HellTutorial":"hell","OceanTutorial":"ocean","JungleTutorial":"jungle","SkyTutorial":"sky"}[name_key]+"_tutorial.gd").new()
+            game.add_child(tutorial)
+        else:tutorial=game.get_node(name_key)
         tutorial.save_path="user://test_tutorial_sync.cfg"
         var streamer=game.get_node("TextureStreamer")
         var original_mode:int=streamer.process_mode

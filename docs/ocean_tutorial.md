@@ -11,3 +11,5 @@ The hell and ocean hooks are separate small scripts over recorded_tutorial.gd. F
 Local feature work only; no main merge or upload.
 
 Blue-frame left-edge cleanup: the JPG matte contained blue/gray compression fringe beside the black stroke, visible as a short light line. An ocean-only shader option removes color contamination and faint matte noise within the outermost five source columns; the blue band, inner hole and hell frame remain unchanged. Native ocean playback/replay/close checks pass, and the 1280x720 screenshot confirms the left short line is gone.
+
+Current behavior: the recording is now homepage-only. Natural fish possession and shortcut 3 do not open a modal; gameplay uses ocean_shift_reminder.gd. See ocean_shift_reminder.md.

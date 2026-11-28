@@ -1,0 +1,5 @@
+# Windows试玩包
+
+使用正式地图工程/export_presets.cfg的Windows Desktop预设及Godot 4.7.2稳定版Windows x86_64发布模板。all_resources保留动态加载的角色、教程视频、JSON与音频；不包含Godot编辑器及源工程文件夹。输出EXE和同名PCK，连同说明文件一起ZIP分发。保持项目已有ANGLE后端。
+
+本次输出至桌面oh_my_god_Windows_20261127，基于main aa85065的游戏内容。打包配置保存在独立feature分支，不自动上传或发布。

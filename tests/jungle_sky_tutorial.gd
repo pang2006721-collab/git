@@ -9,17 +9,17 @@ func run():
         if node.name in ["JungleTutorial","SkyTutorial"]:node.save_path=SAVE)
     for index in [5,6]:
         root.get_node("SegmentQuickStart").start_segment(index)
-        if index==5:
+        if index in [5,6]:
             for i in 240:
                 await create_timer(.02).timeout
-                if current_scene!=null and current_scene.has_node("JungleShiftReminder"):break
-            assert(not paused and not current_scene.has_node("JungleTutorial"))
-            var chapter=load("res://modules/tutorial/jungle_tutorial.gd").new()
-            chapter.name="JungleTutorialPreview"
+                if current_scene!=null and current_scene.has_node("JungleShiftReminder" if index==5 else "SkyShiftReminder"):break
+            assert(not paused and not current_scene.has_node("JungleTutorial" if index==5 else "SkyTutorial"))
+            var chapter=load("res://modules/tutorial/"+("jungle" if index==5 else "sky")+"_tutorial.gd").new()
+            chapter.name="JungleTutorialPreview" if index==5 else "SkyTutorialPreview"
             chapter.save_path=SAVE
             current_scene.add_child(chapter)
             chapter.start()
-        var name_key="JungleTutorialPreview" if index==5 else "SkyTutorial"
+        var name_key="JungleTutorialPreview" if index==5 else "SkyTutorialPreview"
         var stage_key="jungle" if index==5 else "sky"
         var tutorial
         for i in 240:
@@ -54,12 +54,12 @@ func run():
         preview_clips.append({"stage":stage_key,"start":clip_start,"end":Engine.get_process_frames()/60.0})
         var cfg=ConfigFile.new()
         assert(cfg.load(SAVE)==OK and cfg.get_value("watched",stage_key,false))
-        if index==5:assert(not cfg.get_value("watched","sky",false))
+        if index in [5,6]:assert(not cfg.get_value("watched","sky",false))
         root.get_node("SegmentQuickStart").start_segment(index)
-        if index==5:
+        if index in [5,6]:
             await create_timer(.8).timeout
-            assert(not paused and not current_scene.has_node("JungleTutorial"))
-            print("JUNGLE_NO_MODAL_PASS")
+            assert(not paused and not current_scene.has_node("JungleTutorial" if index==5 else "SkyTutorial"))
+            print("NO_MODAL_PASS ",stage_key)
             continue
         for i in 240:
             await create_timer(.02).timeout

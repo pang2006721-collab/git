@@ -45,8 +45,9 @@ func try_teleport(direction: Vector2 = Vector2.ZERO) -> bool:
     if direction.is_zero_approx(): direction = reader.get_visual_direction()
     if direction.is_zero_approx(): direction = Vector2.RIGHT if sprite.flip_h else Vector2.LEFT
     direction = direction.normalized()
-    var hit := _blink_motion(direction*distance,true)
-    var travel := hit.get_travel() if hit != null else direction*distance
+    var motion:=_limit_surface_motion(direction*distance)
+    var hit := _blink_motion(motion,true)
+    var travel := hit.get_travel() if hit != null else motion
     if travel.length()<minimum_distance: return false
     _busy = true
     cooldown_remaining = cooldown_seconds
@@ -77,7 +78,16 @@ func _perform(direction: Vector2) -> void:
     stage.level.camera.blend_to_target(body,camera_blend_seconds)
     teleported.emit(start,body.global_position)
 
+func _limit_surface_motion(motion: Vector2) -> Vector2:
+    var final_sharks: Node=stage.get_node_or_null("FinalSharks")
+    if motion.y<0 and final_sharks!=null and body.position.x>=0 and body.position.x<=1920 and not final_sharks.can_leave_water():
+        var shore: Node=stage.get_node("ShoreExit")
+        if body.position.y>=shore.surface_y:
+            motion.y=maxf(motion.y,minf(0.0,shore.surface_y+final_sharks.shore_clearance-body.position.y))
+    return motion
+
 func _blink_motion(motion: Vector2, test_only: bool) -> KinematicCollision2D:
+    motion=_limit_surface_motion(motion)
     # 地形与触手共用碰撞层，只临时忽略触手本体，不关闭整层地形碰撞。
     var temporary: Array[PhysicsBody2D] = []
     var existing := body.get_collision_exceptions()

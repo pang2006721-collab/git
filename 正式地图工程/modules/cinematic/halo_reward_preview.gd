@@ -1,5 +1,5 @@
 extends Node2D
-## 独立效果预览：先审核动画，再接正式通关条件；99颗及以下只展示头顶漂浮。
+## Shared ending: halo reward at 100 oranges, original-art conversation below 100.
 @export var oranges_total:int=100
 @export var auto_play:bool=true
 @export var duration:float=6.2
@@ -13,6 +13,7 @@ var face:Node2D
 var gaze:ShaderMaterial
 var halo_texture:Texture2D
 var accents:Node2D
+var under100: Node2D
 var external_soul:bool=false
 var external_offset:=Vector2.ZERO
 var initial_god_halo_offset:=Vector2.ZERO
@@ -58,6 +59,11 @@ func _ready() -> void:
     accents.set_script(preload("res://modules/visual/halo_preview_accents.gd"))
     accents.z_index=5
     add_child(accents)
+    if oranges_total<100:
+        duration=7.2
+        under100=preload("res://modules/cinematic/under100_ending_reaction.gd").new()
+        add_child(under100)
+        under100.configure(self)
     sample(0.0)
 func make_halo() -> Sprite2D:
     var halo=Sprite2D.new()
@@ -172,8 +178,10 @@ func sample(t:float) -> void:
         if t<.65 or t>=4.2: looking_at=live_position+Vector2(0,-90*live_scale.y*.7)-external_offset
         elif t>=2.30: looking_at=soul_halo.position-external_offset
         if accents.marks.size()>=2: accents.marks[1].position=soul_halo.position-external_offset
+    if oranges_total<100 and external_soul:looking_at=live_position+Vector2(0,-90*live_scale.y*.7)-external_offset
     var direction:Vector2=((looking_at-Vector2(960,480))/Vector2(420,300)).limit_length(1.0)
     gaze.set_shader_parameter("gaze_pixels",direction*Vector2(12,8))
     gaze.set_shader_parameter("blink",blink)
+    if under100!=null:under100.sample(t)
     face.queue_redraw()
     accents.queue_redraw()

@@ -20,6 +20,7 @@ var platforms: Array = []
 var player: CharacterBody2D
 
 func _ready() -> void:
+	preload("res://modules/ui/authored_cursor.gd").apply()
 	player = soul
 	_demon_spawn = demon.position
 	var surface: Vector2 = SURFACE.top_at($Ground/Collision,demon.global_position.x)

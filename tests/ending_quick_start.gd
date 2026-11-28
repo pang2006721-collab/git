@@ -1,6 +1,7 @@
 extends SceneTree
 var failures: Array[String] = []
 var starts: Array[int] = []
+var preview_index:int=8 if "--under100" in OS.get_cmdline_user_args() else 7
 class FakeRun extends Node2D:
     signal died
     var dead := false
@@ -17,7 +18,7 @@ func until(predicate: Callable, seconds: float = 15.0) -> bool:
     return false
 func seven():
     var key := InputEventKey.new()
-    key.physical_keycode = KEY_7
+    key.physical_keycode = KEY_8 if preview_index==8 else KEY_7
     key.pressed = true
     root.push_input(key,true)
 func is_ending() -> bool:
@@ -36,14 +37,14 @@ func run():
     paused = true
     Engine.time_scale = .1
     seven()
-    check(await until(func(): return starts.has(7)),"Physical key 7 works while paused and restores normal time")
+    check(await until(func(): return starts.has(preview_index)),"Physical key 7 works while paused and restores normal time")
     check(not paused and Engine.time_scale == 1.0,"Ending shortcut clears death freeze")
     var cloud = current_scene.get_node("OceanLink/FishStage/JungleLayout/SkyCloudExit")
     check(cloud.state == cloud.State.ENTERING and current_scene.exit_in_progress,"Key 7 immediately starts the original cloud transition")
     check(await until(is_ending),"Cloud transition automatically continues into the ending")
     if is_ending():
         check(root.canvas_transform.is_equal_approx(Transform2D.IDENTITY),"Ending does not inherit the sky camera's old offset")
-        check(current_scene.oranges_total == 100 and current_scene.opening.oranges_total == 100,"Ending shortcut always grants the 100-orange halo preview")
+        check(current_scene.oranges_total == (0 if preview_index==8 else 100) and current_scene.opening.oranges_total == current_scene.oranges_total,"Shortcut uses the requested orange preview count")
         if DisplayServer.get_name() != "headless":
             await RenderingServer.frame_post_draw
             var frame: Image = root.get_texture().get_image()
@@ -57,10 +58,11 @@ func run():
             check(yellow > 100,"Quick-start halo is actually visible after the cloud handoff")
         check(current_scene.data.deaths[&"hell"] == 3,"Existing run's death history survives the shortcut")
         current_scene.opening.sample(6.5)
-        check(current_scene.opening.soul_halo.visible,"The ghost receives its halo")
+        check(current_scene.opening.soul_halo.visible == (preview_index==7),"Only the 100-orange preview grants a halo")
+        check((current_scene.opening.under100!=null)==(preview_index==8),"Key 8 selects the under-100 reaction")
     # 在结尾中再次按7，必须能重放整段穿云，随后按6可以取消旧结尾交接。
     seven()
-    check(await until(func(): return starts.count(7) == 2),"Key 7 can restart from the ending itself")
+    check(await until(func(): return starts.count(preview_index) == 2),"Key 7 can restart from the ending itself")
     quick.start_segment(6)
     check(await until(func(): return starts.back() == 6),"Existing key 6 can interrupt the ending shortcut")
     var game_id: int = current_scene.get_instance_id()

@@ -50,8 +50,7 @@ func _capture(body: CharacterBody2D) -> void:
     level.get_node("CameraAttention").enabled = false
     var enemies = level.get_node("FlyingEnemies")
     _enemies_enabled = enemies.enabled
-    enemies.enabled = false
-    enemies.reset()
+    enemies.begin_departure()
     var motor = body.get_node("Movement")
     for property in [&"move_speed", &"acceleration", &"braking", &"jump_speed", &"gravity", &"max_fall_speed", &"fast_fall_multiplier"]:
         _motor_settings[property] = motor.get(property)

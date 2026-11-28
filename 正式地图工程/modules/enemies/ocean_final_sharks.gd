@@ -4,6 +4,9 @@ signal player_hit(direction: Vector2)
 signal attack_started
 @export var trigger_depth: float = 1100.0
 @export var lock_seconds: float = 1.0
+@export var dash_experience_seconds: float = .55
+@export var shore_clearance: float = 80.0
+var attack_elapsed: float = 0.0
 var triggered: bool = false
 var finished: bool = false
 @onready var stage: Node2D = get_parent()
@@ -17,7 +20,7 @@ func _ready() -> void:
         shark.player_hit.connect(func(direction: Vector2): player_hit.emit(direction))
     level.died.connect(_on_death)
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
     if not stage.active or stage.level.dead or stage.level.exit_in_progress or stage.level.player!=fish or not stage.host.claimed: return
     var shore := stage.get_node("ShoreExit")
     if shore.state!=shore.State.SWIMMING:
@@ -26,19 +29,28 @@ func _physics_process(_delta: float) -> void:
             finished=true
         return
     if triggered:
+        attack_elapsed+=delta
         if not finished and sharks.all(func(shark): return shark.state==shark.State.WAITING): finished=true
         return
     var depth: float = fish.position.y-shore.surface_y
-    if depth>trigger_depth or depth<80.0 or fish.velocity.y>-40.0: return
+    var motor: Node=fish.get_node("Movement")
+    var blink: Node=fish.get_node("Teleport")
+    # Reserve both reaction time and two fast upward blinks before the shore.
+    var approach_depth:=maxf(trigger_depth,motor.max_rise_speed*(lock_seconds+dash_experience_seconds)+blink.distance*2+240.0)
+    if depth>approach_depth or (depth>320.0 and fish.velocity.y>-40.0): return
     if stage.has_node("Pacing"):
         if not stage.get_node("Pacing").can_start_final(): return
         stage.get_node("Pacing").prepare_final()
     triggered = true
+    attack_elapsed=0.0
     for shark in sharks:
         shark.lock_seconds = lock_seconds
         shark.enabled = true
         shark._begin_lock()
     attack_started.emit()
+
+func can_leave_water() -> bool:
+    return finished or (triggered and attack_elapsed>=lock_seconds+dash_experience_seconds)
 
 func _cancel() -> void:
     for shark in sharks: shark.cancel_pending_attack()
@@ -50,3 +62,4 @@ func reset() -> void:
     _cancel()
     triggered=false
     finished=false
+    attack_elapsed=0.0

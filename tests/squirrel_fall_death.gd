@@ -95,6 +95,16 @@ func run():
 	check(defeat.falling and defeat.corpse.visible, "Original stunned expression starts immediately")
 	check(not body.get_node("Visual/Sprite").visible, "Live pose is hidden")
 	check(defeat.corpse.texture.atlas.resource_path.ends_with("stunned.png"), "Uses supplied squirrel pose")
+	check(defeat._ground_impact,"Fatal landing starts a grounded squash")
+	defeat.set_process(false)
+	var impact_position:Vector2=defeat.corpse.global_position
+	defeat._process(.06)
+	check(defeat.corpse.scale.y<defeat._rest_scale.y*.8,"Impact visibly squashes the original death pose")
+	defeat._process(.07)
+	check(not defeat._ground_impact and defeat._fall_velocity.y<0,"Squash releases into an upward rebound")
+	defeat._process(.08)
+	check(defeat.corpse.global_position.y<impact_position.y,"Corpse duangs upward before falling out")
+	defeat.set_process(true)
 	var flow = game.get_node("DeathFlow")
 	await process_frame
 	check(not flow.overlay.visible and defeat.falling, "Popup waits for the falling animation")
